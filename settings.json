@@ -1,0 +1,14 @@
+{
+    "twitch": {
+        "client_id": "",
+        "bot_token": "",
+        "channels": [
+            "#", "#"
+        ],
+        "prefix": "!"
+    },
+    "discord": {
+        "bot_token": "",
+        "guild_id": ""
+    }
+}
