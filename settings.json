@@ -2,13 +2,19 @@
     "twitch": {
         "client_id": "",
         "bot_token": "",
-        "channels": [
-            "#", "#"
-        ],
-        "prefix": "!"
+        "channels": {
+            "username_1": false,
+            "username_2": false
+        },
+        "prefix": ""
     },
     "discord": {
         "bot_token": "",
-        "guild_id": ""
+        "guild_id": "",
+        "channels": {
+            "admin": "",
+            "commands": "",
+            "stream": ""
+        }
     }
 }

@@ -1,7 +1,6 @@
+import asyncio
 import logging
-import multiprocessing
 import os
-import time
 
 from ValkyrieUtils.Config import ValkyrieConfig
 from ValkyrieUtils.Logger import ValkyrieLogger
@@ -16,41 +15,33 @@ class ValkyrieBot:
     def __init__(self, config_path, debug):
         self.debug = debug
         self.logger = ValkyrieLogger('info', 'logger.log', 'ValkyrieBot', True, self.debug)
+        for v in valky:
+            self.logger.info(v)
         if os.path.exists(config_path):
             self._cfg = ValkyrieConfig(config_path, self.logger, self.debug)
         else:
             raise ConfigError(f"Configuration file not found: {config_path}")
         self.config = self._cfg.get_config()
-        
-    # Twitch bot setup
-    def run_twitch(self):
-        # https://twitchtokengenerator.com/
-        client_id = self.config['twitch']['client_id']
-        bot_token = self.config['twitch']['bot_token']
-        channels = self.config['twitch']['channels']
-        prefix = self.config['twitch']['prefix']
-        
-        tw_bot = TwitchBot(client_id, bot_token, channels, prefix)
-        tw_bot.run()
-    
-    # Discord bot setup
-    def run_discord(self):
-        bot_token = self.config['discord']['bot_token']
-        guild_id = self.config['discord']['guild_id']
-    
-        dc_bot = DiscordBot(bot_token, guild_id)
-        dc_bot.run()
+        self.tw_bot = TwitchBot(self.config, self.logger)
+        self.dc_bot = DiscordBot(self.config, self.tw_bot, self.logger)
     
     def run(self):
-        # Twitch bot
-        twitch_process = multiprocessing.Process(target = self.run_twitch)
-        discord_process = multiprocessing.Process(target = self.run_discord)
-        twitch_process.daemon = True
-        discord_process.daemon = True
-        twitch_process.start()
-        discord_process.start()
-        twitch_process.join()
-        discord_process.join()
+        # Create an asyncio event loop
+        loop = asyncio.get_event_loop()
+        
+        # Start the Discord bot and the Twitch bot concurrently
+        self.dc_bot.setup()
+        loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
+        loop.create_task(self.tw_bot.run())
+        
+        try:
+            loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            # Cleanup and close the event loop
+            loop.run_until_complete(loop.shutdown_asyncgens())
+            loop.close()
 
 
 if __name__ == "__main__":
@@ -61,9 +52,25 @@ if __name__ == "__main__":
     
     _config_file = parsed_options['config_file']
 
+    valky = [
+        r"=======================================================================================================",
+        r"                                                                                                       ",
+        r"          (`-.     ('-.              .-. .-')                      _ .-') _     ('-.        (`-.       ",
+        r"        _(OO  )_  ( OO ).-.          \  ( OO )                    ( (  OO) )  _(  OO)     _(OO  )_     ",
+        r"    ,--(_/   ,. \ / . --. / ,--.     ,--. ,--.   ,--.   ,--.       \     .'_ (,------.,--(_/   ,. \    ",
+        r"    \   \   /(__/ | \-.  \  |  |.-') |  .'   /    \  `.'  /        ,`'--..._) |  .---'\   \   /(__/    ",
+        r"     \   \ /   /.-'-'  |  | |  | OO )|      /,  .-')     /         |  |  \  ' |  |     \   \ /   /     ",
+        r"      \   '   /, \| |_.'  | |  |`-' ||     ' _)(OO  \   /          |  |   ' |(|  '--.   \   '   /,     ",
+        r"       \     /__) |  .-.  |(|  '---.'|  .   \   |   /  /\_         |  |   / : |  .--'    \     /__)    ",
+        r"        \   /     |  | |  | |      | |  |\   \  `-./  /.__)        |  '--'  / |  `---.    \   /        ",
+        r"         `-'      `--' `--' `------' `--' '--'    `--'             `-------'  `------'     `-'         ",
+        r"                                                                                                       ",
+        r"======================================================================================================="
+    ]
+
     try:
-        APE = ValkyrieBot(_config_file, _debug)
-        APE.run()
+        VB = ValkyrieBot(_config_file, _debug)
+        VB.run()
 
     except Exception as exc:
         logging.error(exc)
