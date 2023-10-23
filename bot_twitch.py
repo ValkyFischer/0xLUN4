@@ -30,10 +30,15 @@ Example:
 """
 
 import datetime
+import json
 import logging
 import aiohttp
 
 from twitchio.ext import commands
+from ValkyrieUtils.Tools import ValkyrieTools
+from luna import Luna
+
+LUNA: Luna = None
 
 
 class TwitchBot(commands.Bot):
@@ -52,6 +57,9 @@ class TwitchBot(commands.Bot):
         bot_token = self.config['twitch']['bot_token']
         channels = [f"#{x}" for x in self.config['twitch']['channels']]
         super().__init__(token = bot_token, prefix = prefix, initial_channels = channels)
+        
+        global LUNA
+        LUNA = Luna(self.logger, self.config)
 
     async def event_ready(self):
         """
@@ -155,3 +163,51 @@ class TwitchBot(commands.Bot):
         """
         self.logger.info(f'Twitch Command | exval | {ctx.author.name}')
         await ctx.send(f'[EXVAL] Want to know more about ExVal Limited? Check out the official website of ExVal Ltd. | https://exv.al/en')
+        
+    @commands.command()
+    async def translate(self, ctx: commands.Context, *, text: str):
+        """
+        A command that can be used to translate text using Luna.
+        
+        Args:
+            ctx (commands.Context): The context of the command.
+            text (str): The text to translate.
+        """
+        self.logger.info(f'Twitch Command | translate | {ctx.author.name}')
+        try:
+            response = await LUNA.lunaTranslate(text)
+        except Exception as e:
+            self.logger.error(f'Failed to make the request: {str(e)}')
+            response = {
+                "msg": "Command failed",
+                "Return": False,
+                "ReturnCode": 0,
+                "data": {
+                    "message": "Command failed"
+                }
+            }
+        await ctx.send(f'[LUNA] {response["data"]}')
+        
+    @commands.command()
+    async def ask(self, ctx: commands.Context, *, text: str):
+        """
+        A command that can be used to ask Luna a question.
+        
+        Args:
+            ctx (commands.Context): The context of the command.
+            text (str): The question to ask.
+        """
+        self.logger.info(f'Twitch Command | ask | {ctx.author.name}')
+        try:
+            response = await LUNA.lunaAsk(text)
+        except Exception as e:
+            self.logger.error(f'Failed to make the request: {str(e)}')
+            response = {
+                "msg": "Command failed",
+                "Return": False,
+                "ReturnCode": 0,
+                "data": {
+                    "message": "Command failed"
+                }
+            }
+        await ctx.send(f'[LUNA] {response["data"]}')

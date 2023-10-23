@@ -15,7 +15,12 @@
             "admin": "",
             "commands": "",
             "stream": ""
-        },
-        "interval": 60000
+        }
+    },
+    "interval": 60000,
+    "luna": {
+        "host": "example.com",
+        "port": 443,
+        "version": 1
     }
 }

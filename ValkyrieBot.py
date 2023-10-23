@@ -83,12 +83,15 @@ class ValkyrieBot:
 
 
 if __name__ == "__main__":
-    _debug = False
     
-    start_arg = ValkyrieOptions([('config_file', 'str', 'Configuration File Path and filename', 'settings.json')])
+    start_arg = ValkyrieOptions([
+        ('config_file', 'str', 'Configuration File Path and filename', 'settings.json'),
+        ('debug', 'str', 'Enable Debug Mode', 'False')
+    ])
     parsed_options = start_arg.parse()
     
     _config_file = parsed_options['config_file']
+    _debug = True if parsed_options['debug'].lower() == 'true' else False
 
     valky = [
         r"=======================================================================================================",

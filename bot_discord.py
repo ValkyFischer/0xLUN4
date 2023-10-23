@@ -39,8 +39,11 @@ import datetime
 import logging
 import discord
 
-from discord import app_commands
+from discord import app_commands, ui
 from bot_twitch import TwitchBot
+from luna import Luna
+
+LUNA: Luna = None
 
 
 class DiscordBot:
@@ -69,6 +72,9 @@ class DiscordBot:
         self.ch_admin = None
         self.ch_cmd = None
         self.ch_stream = None
+        
+        global LUNA
+        LUNA = Luna(self.logger, self.config)
     
     async def check_live_loop(self):
         """
@@ -93,7 +99,7 @@ class DiscordBot:
                     self.config['twitch']['channels'][channel] = is_live
                 self.logger.info(f'{channel} is live: {is_live}')
 
-            interval_miliseconds = self.config['discord']['interval'] * 1000
+            interval_miliseconds = self.config['interval'] * 1000
             time_microseconds = (datetime.datetime.now() - start_time).microseconds
             await asyncio.sleep((interval_miliseconds - time_microseconds) / 1000000)
     
@@ -192,4 +198,103 @@ class DiscordBot:
             """
             self.logger.info(f'Discord Command | exval | {interaction.user.name}')
             await interaction.response.send_message(f"[EXVAL] Want to know more about ExVal Limited? Check out the official website of ExVal Ltd. | https://exv.al/en")
+        
+        @self.tree.command(name="translate", description="Translate any text into english", guild=self.guild)
+        async def dc_translate(interaction):
+            """
+            This command allows you to translate any text into english.
             
+            Args:
+                interaction (any): The interaction object.
+            """
+            self.logger.info(f'Discord Command | translate | {interaction.user.name}')
+            await interaction.response.send_modal(LunaTranslate())
+            
+        @self.tree.command(name="ask", description="Ask L.U.N.A. a question", guild=self.guild)
+        async def dc_ask(interaction):
+            """
+            This command allows you to ask L.U.N.A. any kind of question.
+            
+            Args:
+                interaction (any): The interaction object.
+            """
+            self.logger.info(f'Discord Command | ask | {interaction.user.name}')
+            await interaction.response.send_modal(LunaAsk())
+
+class LunaTranslate(discord.ui.Modal, title='L.U.N.A. Translator'):
+    # language = ui.Select(placeholder='Select a language', max_values = 1, min_values = 1, options=[
+    #     discord.SelectOption(label='Bulgarian', description='Bulgarian', value='BG'),
+    #     discord.SelectOption(label='Czech', description='Czech', value='CS'),
+    #     discord.SelectOption(label='Danish', description='Danish', value='DA'),
+    #     discord.SelectOption(label='German', description='German', value='DE'),
+    #     discord.SelectOption(label='Greek', description='Greek', value='EL'),
+    #     discord.SelectOption(label='English', description='English', value='EN'),
+    #     discord.SelectOption(label='Spanish', description='Spanish', value='ES'),
+    #     discord.SelectOption(label='Estonian', description='Estonian', value='ET'),
+    #     discord.SelectOption(label='Finnish', description='Finnish', value='FI'),
+    #     discord.SelectOption(label='French', description='French', value='FR'),
+    #     discord.SelectOption(label='Hungarian', description='Hungarian', value='HU'),
+    #     discord.SelectOption(label='Indonesian', description='Indonesian', value='ID'),
+    #     discord.SelectOption(label='Italian', description='Italian', value='IT'),
+    #     discord.SelectOption(label='Japanese', description='Japanese', value='JA'),
+    #     discord.SelectOption(label='Korean', description='Korean', value='KO'),
+    #     discord.SelectOption(label='Lithuanian', description='Lithuanian', value='LT'),
+    #     discord.SelectOption(label='Latvian', description='Latvian', value='LV'),
+    #     discord.SelectOption(label='Norwegian', description='Norwegian', value='NB'),
+    #     discord.SelectOption(label='Dutch', description='Dutch', value='NL'),
+    #     discord.SelectOption(label='Polish', description='Polish', value='PL'),
+    #     discord.SelectOption(label='Portuguese', description='Portuguese', value='PT'),
+    #     discord.SelectOption(label='Romanian', description='Romanian', value='RO'),
+    #     discord.SelectOption(label='Russian', description='Russian', value='RU'),
+    #     discord.SelectOption(label='Slovak', description='Slovak', value='SK'),
+    #     discord.SelectOption(label='Slovenian', description='Slovenian', value='SL'),
+    #     discord.SelectOption(label='Swedish', description='Swedish', value='SV'),
+    #     discord.SelectOption(label='Turkish', description='Turkish', value='TR'),
+    #     discord.SelectOption(label='Ukrainian', description='Ukrainian', value='UK'),
+    #     discord.SelectOption(label='Chinese', description='Chinese', value='ZH')
+    # ])
+    text_to_translate = ui.TextInput(label='Please type in your message to translate.', style=discord.TextStyle.paragraph,
+                              min_length=13, max_length=420)
+                         
+    async def on_submit(self, interaction: discord.Interaction):
+        try:
+            data = LUNA.lunaTranslate(self.text_to_translate.value, "EN")
+        except Exception as e:
+            await interaction.response.send_message(content = f"An error occurred while translating your message: {str(e)}")
+            return
+        embed_widget = discord.Embed(
+            title=f"L.U.N.A. Translator",
+            description=f"## Text\n> {self.text_to_translate.value}\n\n## Translation\n{data['data']}",
+            color=0xE91E63,
+            timestamp=datetime.datetime.utcnow()
+        )
+        embed_widget.set_footer(text=f"2023 © Valky Dev", icon_url=f"https://exv.al/static/img/dev.webp")
+        embed_widget.set_author(name=f"{interaction.user.name}")
+        await interaction.response.send_message(embed=embed_widget)
+
+
+class LunaAsk(discord.ui.Modal, title='L.U.N.A. Assistant'):
+    question = ui.TextInput(label='Please type in your question.', style=discord.TextStyle.paragraph,
+                              min_length=13, max_length=420)
+                         
+    async def on_submit(self, interaction: discord.Interaction):
+        await interaction.response.send_message(f"Processing your question, please wait...")
+        
+        try:
+            data = await LUNA.lunaAsk(self.question.value)
+        except Exception as e:
+            await interaction.followup.send(content = f"An error occurred while processing your question: {str(e)}")
+            return
+        
+        embed_widget = discord.Embed(
+            title=f"L.U.N.A. Assistant",
+            description=f"## Question\n> {self.question.value}\n\n## Answer\n{data['data']}",
+            color=0xE91E63,
+            timestamp=datetime.datetime.utcnow()
+        )
+        embed_widget.set_footer(text=f"2023 © Valky Dev", icon_url=f"https://exv.al/static/img/dev.webp")
+        embed_widget.set_author(name=f"{interaction.user.name}")
+        
+        await interaction.followup.send(embed = embed_widget)
+        
+# Why is the word "Banana" kind of a meme in javascript?
