@@ -1,3 +1,31 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Created on Oct 23, 2023
+@author: v_lky
+
+--------
+
+About:
+    This script is the main bot script that will run the Discord bot and the Twitch bot concurrently. This script will
+    also handle the configuration file and the logger. The configuration file will be used to configure the bots. The
+    logger will be used to log messages to a log file.
+
+--------
+
+Example:
+    To use this bot, you can interact with it in your Discord server or Twitch chat. Here are some example commands:
+    
+    1. Check the bot's latency:
+       >> /ping
+       This command will show the bot's latency in milliseconds.
+    
+    2. Get the Discord invite link:
+       >> /discord
+       This command will provide you with the Discord invite link to join the community.
+
+"""
+
 import asyncio
 import logging
 import os
@@ -12,7 +40,16 @@ from bot_discord import DiscordBot
 
 
 class ValkyrieBot:
-    def __init__(self, config_path, debug):
+    """
+    The main bot class that will run the Discord bot and the Twitch bot concurrently. This class will also handle the
+    configuration file and the logger. The configuration file will be used to configure the bots. The logger will be
+    used to log messages to a log file.
+    
+    Args:
+        config_path (str): The path to the configuration file.
+        debug (bool): True if debug mode is enabled, False if debug mode is disabled.
+    """
+    def __init__(self, config_path: str, debug: bool):
         self.debug = debug
         self.logger = ValkyrieLogger('info', 'logger.log', 'ValkyrieBot', True, self.debug)
         for v in valky:
@@ -23,13 +60,15 @@ class ValkyrieBot:
             raise ConfigError(f"Configuration file not found: {config_path}")
         self.config = self._cfg.get_config()
         self.tw_bot = TwitchBot(self.config, self.logger)
-        self.dc_bot = DiscordBot(self.config, self.tw_bot, self.logger)
+        self.dc_bot = DiscordBot(self.config, self.logger, self.tw_bot)
     
     def run(self):
-        # Create an asyncio event loop
+        """
+        Runs the Discord bot and the Twitch bot concurrently in an asyncio event loop. The event loop will run until
+        the user presses CTRL+C.
+        """
         loop = asyncio.get_event_loop()
         
-        # Start the Discord bot and the Twitch bot concurrently
         self.dc_bot.setup()
         loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
         loop.create_task(self.tw_bot.run())
@@ -39,7 +78,6 @@ class ValkyrieBot:
         except KeyboardInterrupt:
             pass
         finally:
-            # Cleanup and close the event loop
             loop.run_until_complete(loop.shutdown_asyncgens())
             loop.close()
 
