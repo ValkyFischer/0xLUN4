@@ -25,7 +25,6 @@ class Event:
             self.logger.error(f'Failed to populate channel: {str(e)}')
         
         try:
-            # subscribe to bits and channel points
             topics = [
                 pubsub.channel_points(token)[self.channel.id],
                 pubsub.bits(token)[self.channel.id],
@@ -37,7 +36,8 @@ class Event:
         
         except Exception as e:
             self.logger.error(f'Failed to subscribe to topics: {str(e)}')
-        self.logger.info('=' * 103)
+        
+        self.bot.loaded = True
     
     async def on_bits(self, event: pubsub.PubSubBitsMessage):
         pass  # TODO: Implement this

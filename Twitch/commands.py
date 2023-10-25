@@ -10,6 +10,7 @@ class Commands:
         self.logger = bot.logger
         self.luna = bot.luna
         self.channel = bot.channel
+        self.stream = bot.stream
      
     async def do_ping(self, ctx: commands.Context):
         """
@@ -113,7 +114,7 @@ class Commands:
         self.logger.info(f'Twitch Command | set_title | {ctx.author.name} | {title}')
         random_emote = random.choice(self.channel.emotes)
         if ctx.author.is_mod:
-            await self.channel.set_info(title = title)
+            await self.stream.set_info(user_id = self.channel.id, title = title)
             await ctx.send(f'[TITLE] {title} | {ctx.author.name} {random_emote}')
         else:
             await ctx.send(
@@ -130,7 +131,7 @@ class Commands:
         self.logger.info(f'Twitch Command | set_game | {ctx.author.name} | {game}')
         random_emote = random.choice(self.channel.emotes)
         if ctx.author.is_mod:
-            await self.channel.set_info(game_name = game)
+            await self.stream.set_info(user_id = self.channel.id, game_name = game)
             await ctx.send(f'[GAME] {game} | {ctx.author.name} {random_emote}')
         else:
             await ctx.send(f'[GAME] You do not have permission to use this command! | {ctx.author.name} {random_emote}')

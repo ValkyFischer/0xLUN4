@@ -52,9 +52,10 @@ class TwitchBot(commands.Bot):
         logger (logging.Logger): The logger.
     """
     def __init__(self, config: dict, logger: logging.Logger):
+        self.loaded = False
         self.logger = logger
         self.config = config
-        self.stream = Stream()
+        self.stream = Stream(self.config, self.logger)
         self.channel = Channel(self.config, self.logger, self.stream)
         self.auth = Auth(self.config, self.logger)
         self.luna = Luna(self.logger, self.config)

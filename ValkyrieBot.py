@@ -29,7 +29,6 @@ Example:
 import asyncio
 import logging
 import os
-import time
 
 from ValkyrieUtils.Config import ValkyrieConfig
 from ValkyrieUtils.Logger import ValkyrieLogger
@@ -38,9 +37,10 @@ from ValkyrieUtils.Exceptions import *
 
 from bot_twitch import TwitchBot
 from bot_discord import DiscordBot
+from bot_valkyrie import ValkyrieBot
 
 
-class ValkyrieBot:
+class Valkyrie:
     """
     The main bot class that will run the Discord bot and the Twitch bot concurrently. This class will also handle the
     configuration file and the logger. The configuration file will be used to configure the bots. The logger will be
@@ -61,7 +61,8 @@ class ValkyrieBot:
             raise ConfigError(f"Configuration file not found: {config_path}")
         self.config = self._cfg.get_config()
         self.tw_bot = TwitchBot(self.config, self.logger)
-        self.dc_bot = DiscordBot(self.config, self.logger, self.tw_bot)
+        self.dc_bot = DiscordBot(self.config, self.logger)
+        self.vk_bot = ValkyrieBot(self.tw_bot, self.dc_bot, self.config, self.logger)
     
     def run(self):
         """
@@ -69,6 +70,9 @@ class ValkyrieBot:
         the user presses CTRL+C.
         """
         loop = asyncio.get_event_loop()
+        
+        # valkyrie
+        loop.create_task(self.vk_bot.check_live_loop())
         
         # discord
         self.dc_bot.setup()
@@ -116,7 +120,7 @@ if __name__ == "__main__":
     ]
 
     try:
-        VB = ValkyrieBot(_config_file, _debug)
+        VB = Valkyrie(_config_file, _debug)
         VB.run()
 
     except Exception as exc:

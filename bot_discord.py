@@ -34,7 +34,6 @@ Example:
     
 """
 
-import asyncio
 import datetime
 import logging
 import discord
@@ -56,7 +55,8 @@ class DiscordBot:
         logger (logging.Logger): The logger.
         twitch_bot (TwitchBot): The Twitch bot object.
     """
-    def __init__(self, config: dict, logger: logging.Logger, twitch_bot: TwitchBot):
+    def __init__(self, config: dict, logger: logging.Logger):
+        self.loaded = False
         self.logger = logger
         self.config = config
         self.token = self.config['discord']['bot_token']
@@ -67,42 +67,12 @@ class DiscordBot:
         self.tree = app_commands.CommandTree(self.client)
         self.guild = discord.Object(id=self.guild_id)
         
-        self.twitch_bot = twitch_bot
-        
         self.ch_admin = None
         self.ch_cmd = None
         self.ch_stream = None
         
         global LUNA
         LUNA = Luna(self.logger, self.config)
-    
-    async def check_live_loop(self):
-        """
-        A loop which checks every 60 seconds if a channel is live or not. If a channel goes live or offline, a
-        notification will be sent to the Discord server.
-        """
-        await asyncio.sleep(10)
-        while True:
-            start_time = datetime.datetime.now()
-            channel = self.twitch_bot.channel.name
-            is_live = await self.twitch_bot.channel.get_status()
-            old_status = self.twitch_bot.channel.is_live
-            if old_status is None or old_status == "":
-                self.twitch_bot.channel.is_live = is_live
-            if old_status != is_live:
-                if is_live:
-                    await self.send_notification(f'{channel}')
-                    self.logger.info(f'Channel went live | {channel}')
-                else:
-                    await self.send_log(f'{channel} went offline')
-                    self.logger.info(f'Channel went offline | {channel}')
-                self.twitch_bot.channel.is_live = is_live
-            
-            self.logger.info(f'{channel} is live: {is_live}')
-
-            interval_miliseconds = self.config['interval'] * 1000
-            time_microseconds = (datetime.datetime.now() - start_time).microseconds
-            await asyncio.sleep((interval_miliseconds - time_microseconds) / 1000000)
     
     async def send_log(self, message: str):
         """
@@ -142,16 +112,15 @@ class DiscordBot:
             This event is called once when the bot goes online.
             """
             await self.tree.sync(guild=self.guild)
-            await asyncio.sleep(3)
+            
             self.logger.info(f'Discord Bot logged in as {self.client.user}')
             self.logger.info(f'Discord Bot user id is {self.client.user.id}')
             self.logger.info(f'Discord Bot joined {len(self.client.guilds)} Discords')
             self.ch_admin = self.client.get_channel(int(self.config['discord']['channels'].get("admin")))
             self.ch_cmd = self.client.get_channel(int(self.config['discord']['channels'].get("commands")))
             self.ch_stream = self.client.get_channel(int(self.config['discord']['channels'].get("stream")))
-            self.client.loop.create_task(self.check_live_loop())
-            self.logger.info(f'Discord Bot loaded all tasks')
-            self.logger.info('=' * 103)
+            
+            self.loaded = True
         
         # ==============================================================================================================
         # Commands
