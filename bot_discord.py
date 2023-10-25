@@ -84,20 +84,21 @@ class DiscordBot:
         await asyncio.sleep(10)
         while True:
             start_time = datetime.datetime.now()
-            for channel in self.config['twitch']['channels'].keys():
-                is_live = await self.twitch_bot.check_live(channel)
-                old_status = self.config['twitch']['channels'].get(channel)
-                if old_status is None:
-                    self.config['twitch']['channels'][channel] = is_live
-                if old_status != is_live:
-                    if is_live:
-                        await self.send_notification(f'{channel}')
-                        self.logger.info(f'Channel went live | {channel}')
-                    else:
-                        await self.send_log(f'{channel} went offline')
-                        self.logger.info(f'Channel went offline | {channel}')
-                    self.config['twitch']['channels'][channel] = is_live
-                self.logger.info(f'{channel} is live: {is_live}')
+            channel = self.twitch_bot.channel.name
+            is_live = await self.twitch_bot.check_live(channel)
+            old_status = self.twitch_bot.channel.is_live
+            if old_status is None or old_status == "":
+                self.twitch_bot.channel.is_live = is_live
+            if old_status != is_live:
+                if is_live:
+                    await self.send_notification(f'{channel}')
+                    self.logger.info(f'Channel went live | {channel}')
+                else:
+                    await self.send_log(f'{channel} went offline')
+                    self.logger.info(f'Channel went offline | {channel}')
+                self.twitch_bot.channel.is_live = is_live
+            
+            self.logger.info(f'{channel} is live: {is_live}')
 
             interval_miliseconds = self.config['interval'] * 1000
             time_microseconds = (datetime.datetime.now() - start_time).microseconds
@@ -141,6 +142,7 @@ class DiscordBot:
             This event is called once when the bot goes online.
             """
             await self.tree.sync(guild=self.guild)
+            await asyncio.sleep(3)
             self.logger.info(f'Discord Bot logged in as {self.client.user}')
             self.logger.info(f'Discord Bot user id is {self.client.user.id}')
             self.logger.info(f'Discord Bot joined {len(self.client.guilds)} Discords')

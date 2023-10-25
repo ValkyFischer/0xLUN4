@@ -29,6 +29,7 @@ Example:
 import asyncio
 import logging
 import os
+import time
 
 from ValkyrieUtils.Config import ValkyrieConfig
 from ValkyrieUtils.Logger import ValkyrieLogger
@@ -51,7 +52,7 @@ class ValkyrieBot:
     """
     def __init__(self, config_path: str, debug: bool):
         self.debug = debug
-        self.logger = ValkyrieLogger('info', 'logger.log', 'ValkyrieBot', True, self.debug)
+        self.logger = ValkyrieLogger('info', 'logs/logger.log', 'ValkyrieBot', True, self.debug)
         for v in valky:
             self.logger.info(v)
         if os.path.exists(config_path):
@@ -69,15 +70,20 @@ class ValkyrieBot:
         """
         loop = asyncio.get_event_loop()
         
+        # discord
         self.dc_bot.setup()
         loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
+        
+        # twitch
         loop.create_task(self.tw_bot.run())
         
         try:
+            # run until CTRL+C
             loop.run_forever()
         except KeyboardInterrupt:
             pass
         finally:
+            # cleanup
             loop.run_until_complete(loop.shutdown_asyncgens())
             loop.close()
 

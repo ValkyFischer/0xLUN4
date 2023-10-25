@@ -1,5 +1,5 @@
 /.idea/
-/logger.log
-/logger.log.*
 /settings.bak
 /settings.json
+/logs/logger.log
+/logs/logger.log.*

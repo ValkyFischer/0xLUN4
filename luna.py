@@ -24,7 +24,7 @@ class Luna:
     def _askUrl(self) -> str:
         return f'{self.luna_rest_url}/ask'
     
-    def lunaPing(self) -> dict:
+    async def lunaPing(self) -> dict:
         response = self.response
         
         try:
@@ -62,7 +62,7 @@ class Luna:
                 "ReturnCode": 1,
                 "data": data['Data']
             }
-            self.logger.info(f'Luna Translate | Answer: {data}')
+            self.logger.info(f'Luna Translate | Answer: {data["Data"]}')
             
         except requests.RequestException as e:
             self.logger.error(f'Failed to make the request: {str(e)}')
@@ -86,7 +86,7 @@ class Luna:
                 "data": data['Data']
             }
             self.logger.info(f'Luna Ask | Question: {text}')
-            self.logger.info(f'Luna Ask | Answer: {data}')
+            self.logger.info(f'Luna Ask | Answer: {data["Data"]}')
             
         except requests.RequestException as e:
             self.logger.error(f'Failed to make the request: {str(e)}')
