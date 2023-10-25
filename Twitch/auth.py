@@ -2,13 +2,22 @@ import json
 import http.server
 import socketserver
 import webbrowser
-
 import requests
 
 CODE = None
 
 
+class NullOutput:
+    def write(self, s):
+        pass
+
+
 class OAuthCallbackHandler(http.server.SimpleHTTPRequestHandler):
+    
+    def log_message(self, format, *args):
+        # Suppress the default console output
+        pass
+    
     def do_GET(self):
         # Extract the OAuth code from the query parameters
         global CODE
@@ -75,7 +84,7 @@ class Auth:
             httpd.server_close()
 
             if CODE is not None:
-                self.logger.info(f'Twitch OAuth code is {CODE}')
+                self.logger.info(f'Twitch OAuth code received')
                 return CODE
             else:
                 raise Exception('Failed to get OAuth code')
@@ -100,5 +109,5 @@ class Auth:
         response = requests.post(url, headers=headers)
         if response.status_code == 200:
             response_data = json.loads(response.text)
-            self.logger.info(f'Twitch OAuth token is {response_data.get("access_token")}')
+            self.logger.info(f'Twitch OAuth token received')
             return response_data

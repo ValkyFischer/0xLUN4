@@ -75,7 +75,8 @@ class Valkyrie:
         loop.create_task(self.vk_bot.run())
         
         # discord
-        loop.create_task(self.dc_bot.run())
+        self.dc_bot.setup()
+        loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
         
         # twitch
         loop.create_task(self.tw_bot.run())

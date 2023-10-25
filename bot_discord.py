@@ -189,15 +189,6 @@ class DiscordBot:
             """
             self.logger.info(f'Discord Command | ask | {interaction.user.name}')
             await interaction.response.send_modal(LunaAsk())
-            
-    def run(self):
-        """
-        Starts the Discord bot:
-          - Sets up the bot
-          - Runs the bot
-        """
-        self.setup()
-        self.client.run(self.token)
 
 class LunaTranslate(discord.ui.Modal, title='L.U.N.A. Translator'):
     # language = ui.Select(placeholder='Select a language', max_values = 1, min_values = 1, options=[
