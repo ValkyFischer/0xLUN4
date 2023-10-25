@@ -72,11 +72,10 @@ class Valkyrie:
         loop = asyncio.get_event_loop()
         
         # valkyrie
-        loop.create_task(self.vk_bot.check_live_loop())
+        loop.create_task(self.vk_bot.run())
         
         # discord
-        self.dc_bot.setup()
-        loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
+        loop.create_task(self.dc_bot.run())
         
         # twitch
         loop.create_task(self.tw_bot.run())

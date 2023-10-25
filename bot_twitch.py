@@ -30,7 +30,6 @@ Example:
 """
 
 import logging
-import random
 
 from twitchio.ext import commands, pubsub
 

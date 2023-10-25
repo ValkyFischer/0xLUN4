@@ -39,7 +39,6 @@ import logging
 import discord
 
 from discord import app_commands, ui
-from bot_twitch import TwitchBot
 from luna import Luna
 
 LUNA: Luna = None
@@ -53,7 +52,6 @@ class DiscordBot:
     Args:
         config (dict): The configuration dictionary.
         logger (logging.Logger): The logger.
-        twitch_bot (TwitchBot): The Twitch bot object.
     """
     def __init__(self, config: dict, logger: logging.Logger):
         self.loaded = False
@@ -191,6 +189,15 @@ class DiscordBot:
             """
             self.logger.info(f'Discord Command | ask | {interaction.user.name}')
             await interaction.response.send_modal(LunaAsk())
+            
+    def run(self):
+        """
+        Starts the Discord bot:
+          - Sets up the bot
+          - Runs the bot
+        """
+        self.setup()
+        self.client.run(self.token)
 
 class LunaTranslate(discord.ui.Modal, title='L.U.N.A. Translator'):
     # language = ui.Select(placeholder='Select a language', max_values = 1, min_values = 1, options=[
