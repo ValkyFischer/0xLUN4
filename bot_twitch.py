@@ -140,11 +140,12 @@ class TwitchBot(commands.Bot):
             "moderator:manage:guest_star"
         ]
         channels = [f"#{self.channel.name}"]
-        try:
-            super().__init__(token = self.config['twitch']['bot_token'], prefix = prefix, initial_channels = channels)
-        except Exception as e:
+        if self.config['twitch']['bot_token'] is None or self.config['twitch']['bot_token'] == "":
             bot_token = self.authorize(self.config['twitch']['client_id'], self.config['twitch']['client_secret'], self.config['twitch']['redirect_uri'], scopes)
-            super().__init__(token = bot_token, prefix = prefix, initial_channels = channels)
+        else:
+            # TODO: Add a check to see if the bot token is valid
+            bot_token = self.config['twitch']['bot_token']
+        super().__init__(token = bot_token, prefix = prefix, initial_channels = channels)
         
         self.pubsub = pubsub.PubSubPool(self)
         
