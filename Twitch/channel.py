@@ -1,6 +1,8 @@
 import logging
 import aiohttp
 
+from ValkyrieUtils.Tools import ValkyrieTools
+
 
 class Channel:
     """
@@ -30,7 +32,9 @@ class Channel:
         self.is_live = False
         self.emotes = []
         self.followers = []
+        self.follower_count = 0
         self.subscribers = []
+        self.subscriber_count = 0
         self.vips = []
         self.moderators = []
         self.stream = stream
@@ -51,17 +55,19 @@ class Channel:
         
         # get the followers of the channel
         followers = await self.get_followers(user_id)
+        self.follower_count = await self.get_followers(user_id, True)
         for follower in followers:
             if follower.get('user_name') not in self.followers:
                 self.followers.append(follower.get('user_name')) if follower.get('user_name').lower() != self.name.lower() else None
-        self.logger.info(f'Twitch Followers | {len(self.followers)}')
+        self.logger.info(f'Twitch Followers | {self.follower_count}')
         
         # get the subscribers of the channel
         subscribers = await self.get_subscribers(user_id)
+        self.subscriber_count = await self.get_subscribers(user_id, True)
         for subscriber in subscribers:
             if subscriber.get('user_name') not in self.subscribers:
                 self.subscribers.append(subscriber.get('user_name')) if subscriber.get('user_name').lower() != self.name.lower() else None
-        self.logger.info(f'Twitch Subscribers | {len(self.subscribers)}')
+        self.logger.info(f'Twitch Subscribers | {self.subscriber_count}')
         
         # get the VIPs of the channel
         vips = await self.get_vips(user_id)
@@ -128,8 +134,72 @@ class Channel:
             async with session.get(url, headers=headers) as resp:
                 response_data = await resp.json()
                 return response_data.get('data')[0]
+    
+    async def set_info(self, user_id: int = None, title: str = None, game_name: str = None, language: str = None, tags: list = None) -> bool:
+        """
+        Sets the information of a channel.
+        
+        Args:
+            user_id (int): The user id of the channel. Defaults to `self.id`
+            title (str): The title of the stream. Defaults to `self.stream.title`
+            game_name (str): The name of the game used to get the game id. Defaults to `self.stream.game.id`
+            language (str): The language of the stream. Defaults to `self.stream.language`
+            tags (list): A list of tags. Defaults to `self.stream.tags`
             
-    async def get_status(self, user_id: int) -> bool:
+        Returns:
+            bool: True if the information was set, False if the information was not set.
+        """
+        
+        if user_id is None:
+            user_id = self.id
+        else:
+            self.id = user_id
+            
+        if title is None:
+            title = self.stream.title
+        else:
+            self.stream.title = title
+            
+        if game_name is None:
+            game_id = self.stream.game.id
+        else:
+            game_id = await self.stream.game.get_id(game_name, self.config['twitch']['client_id'], self.config['twitch']['bot_token'])
+            if ValkyrieTools.isInteger(game_id):
+                game_id = int(game_id)
+                self.stream.game.id = game_id
+            else:
+                self.logger.error(f'Failed to get game id: {game_id}')
+                return False
+            
+        if language is None:
+            language = self.stream.language
+        else:
+            language = language.lower()
+            self.stream.language = language
+            
+        if tags is None:
+            tags = self.stream.tags
+        else:
+            self.stream.tags = tags
+        
+        async with aiohttp.ClientSession() as session:
+            url = f'{self.config["twitch"]["api_uri"]}/channels?broadcaster_id={str(user_id)}'
+            headers = {
+                'Client-ID': self.config['twitch']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+            }
+            data = {
+                'title': title,
+                'game_id': game_id,
+                'broadcaster_language': language,
+                'tags': tags
+            }
+            async with session.patch(url, headers=headers, data=data) as resp:
+                if resp.status == 204:
+                    return True
+                return False
+            
+    async def get_status(self, user_id: int = None) -> bool:
         """
         Gets the status of a channel.
         
@@ -139,6 +209,9 @@ class Channel:
         Returns:
             bool: True if the channel is live, False if the channel is offline.
         """
+        if user_id is None:
+            user_id = self.id
+            
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/streams?user_id={str(user_id)}'
             headers = {
@@ -171,12 +244,14 @@ class Channel:
                 response_data = await resp.json()
                 return response_data.get('data')
     
-    async def get_followers(self, user_id: int) -> list:
+    async def get_followers(self, user_id: int, total: bool = False) -> list:
         """
         Gets the followers of a channel.
         
         Args:
             user_id (int): The user id of the channel.
+            total (bool): True if the total number of followers should be returned, False if the list of followers
+                should be returned.
             
         Returns:
             list: A list of followers.
@@ -189,14 +264,18 @@ class Channel:
             }
             async with session.get(url, headers=headers) as resp:
                 response_data = await resp.json()
+                if total:
+                    return response_data.get('total')
                 return response_data.get('data')
     
-    async def get_subscribers(self, user_id: int) -> list:
+    async def get_subscribers(self, user_id: int, total: bool = False) -> list:
         """
         Gets the subscribers of a channel.
         
         Args:
             user_id (int): The user id of the channel.
+            total (bool): True if the total number of subscribers should be returned, False if the list of subscribers
+                should be returned.
             
         Returns:
             list: A list of subscribers.
@@ -209,6 +288,8 @@ class Channel:
             }
             async with session.get(url, headers=headers) as resp:
                 response_data = await resp.json()
+                if total:
+                    return response_data.get('total')
                 return response_data.get('data')
     
     async def get_vips(self, user_id: int) -> list:

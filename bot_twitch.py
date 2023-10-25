@@ -36,10 +36,10 @@ from twitchio.ext import commands, pubsub
 
 from Twitch.auth import Auth
 from Twitch.channel import Channel
+from Twitch.commands import Commands
+from Twitch.events import Event
 from Twitch.stream import Stream
 from luna import Luna
-
-LUNA: Luna = None
 
 
 class TwitchBot(commands.Bot):
@@ -57,6 +57,7 @@ class TwitchBot(commands.Bot):
         self.stream = Stream()
         self.channel = Channel(self.config, self.logger, self.stream)
         self.auth = Auth(self.config, self.logger)
+        self.luna = Luna(self.logger, self.config)
         prefix = self.config['twitch']['prefix']
         scopes = [
             "analytics:read:extensions",
@@ -123,110 +124,40 @@ class TwitchBot(commands.Bot):
             "moderator:manage:guest_star"
         ]
         channels = [f"#{self.channel.name}"]
-        if self.config['twitch']['bot_token'] is None or self.config['twitch']['bot_token'] == "":
-            bot_token = self.auth.authorize(self.config['twitch']['client_id'], self.config['twitch']['client_secret'], self.config['twitch']['redirect_uri'], scopes)
-        else:
-            # TODO: Add a check to see if the bot token is valid
-            bot_token = self.config['twitch']['bot_token']
+        bot_token = self.auth.authorize(self.config['twitch']['client_id'], self.config['twitch']['client_secret'], self.config['twitch']['redirect_uri'], scopes)
         super().__init__(token = bot_token, prefix = prefix, initial_channels = channels)
         
         self.pubsub = pubsub.PubSubPool(self)
-        
-        global LUNA
-        LUNA = Luna(self.logger, self.config)
+        self.event_handler = Event(self)
+        self.cmd_handler = Commands(self)
+
+    # ==================================================================================================================
+    # Events
+    # ==================================================================================================================
 
     async def event_ready(self):
         """
         This event is called once when the bot goes online.
         """
-        self.channel.id = self.user_id
-        self.logger.info(f'Twitch logged in as {self.channel.name}')
-        self.logger.info(f'Twitch account id is {self.channel.id}')
-        token = self.config['twitch']['bot_token']
-        
-        try:
-            await self.channel.setup(self.channel.id)
-        except Exception as e:
-            self.logger.error(f'Failed to populate channel: {str(e)}')
-            
-        try:
-            # subscribe to bits and channel points
-            topics = [
-                pubsub.channel_points(token)[self.channel.id],
-                pubsub.bits(token)[self.channel.id],
-                pubsub.channel_subscriptions(token)[self.channel.id],
-                # pubsub.moderation_user_action(token)[self.channel.id]
-            ]
-            await self.pubsub.subscribe_topics(topics)
-            self.logger.info(f'Twitch Topics | Bits, Channel Points, Subscriptions')
-            
-        except Exception as e:
-            self.logger.error(f'Failed to subscribe to topics: {str(e)}')
-        self.logger.info('=' * 103)
+        await self.event_handler.on_ready()
 
     async def event_pubsub_bits(self, event: pubsub.PubSubBitsMessage):
-        pass  # TODO: Implement this
+        """
+        This event is called when a user cheers bits in chat.
+        """
+        await self.event_handler.on_bits(event)
     
     async def event_pubsub_channel_points(self, event: pubsub.PubSubChannelPointsMessage):
-        # get the reward info
-        uuid = event.id
-        status = event.status
-        channel_id = event.channel_id
-        timestamp = event.timestamp
-        # get the user info
-        user_id = event.user.id
-        user_name = event.user.name
-        user_input = " | " + event.input if event.input else ""
-        # get the reward info
-        reward_name = event.reward.title
-        reward_uuid = event.reward.id
-        reward_cost = event.reward.cost
-        
-        self.logger.info(f'Twitch Channel Points | {user_name} | {reward_name} ({reward_cost}) | {user_input}')
-        
-        channel = self.get_channel(user_name)
-        if channel is not None:
-            random_emote = random.choice(self.channel.emotes)
-            await channel.send(f'[CHANNEL POINTS] {user_name} redeemed "{reward_name}"{user_input} {random_emote}')
+        """
+        This event is called when a user redeems a channel point reward in chat.
+        """
+        await self.event_handler.on_channel_points(event)
     
     async def event_pubsub_channel_subscriptions(self, event: pubsub.PubSubChannelSubscribe):
-        user_name = event.user.name if event.user.name else "Anonymous"
-        # user_id = event.user.id
-        # tier = event.sub_plan
-        tier_name = event.sub_plan_name
-        length = event.cumulative_months
-        months_multi = " | " + event.multi_month_duration if event.multi_month_duration else ""
-        message = " | " + event.message if event.message else ""
-        
-        is_gift = event.is_gift
-        recipient_name = event.recipient.name if is_gift else None
-        
-        if is_gift:
-            self.logger.info(f'Twitch Gift Subscriptions | {user_name} | {tier_name} | {length}{months_multi}{message}')
-        else:
-            self.logger.info(f'Twitch Subscriptions | {user_name} | {tier_name} | {length}{months_multi}{message}')
-        
-        channel = self.get_channel(user_name)
-        if channel is not None:
-            random_emote = random.choice(self.channel.emotes)
-            if is_gift:
-                await channel.send(f'[SUBSCRIPTION] {user_name} gifted a {tier_name} to {recipient_name} {random_emote}')
-            else:
-                await channel.send(f'[SUBSCRIPTION] {user_name} got a {tier_name}. They are subscribed for {length} month{"s" if int(length) > 1 else ""}{message} {random_emote}')
-
-    async def check_live(self, user_name: str) -> bool:
         """
-        Checks if a channel is live or not.
-        
-        Args:
-            user_name (str): The name of the channel.
-            
-        Returns:
-            bool: True if the channel is live, False if the channel is offline.
+        This event is called when a user subscribes to the channel.
         """
-        # user_id = await self.channel.get_id(user_name)
-        is_live = await self.channel.get_status(self.channel.id)
-        return is_live
+        await self.event_handler.on_subscriptions(event)
 
     # ==================================================================================================================
     # Commands
@@ -236,92 +167,47 @@ class TwitchBot(commands.Bot):
     async def tw_ping(self, ctx: commands.Context):
         """
         A command that can be used to check the latency of the bot.
-        
-        Args:
-            ctx (commands.Context): The context of the command.
         """
-        self.logger.info(f'Twitch Command | ping | {ctx.author.name}')
-        try:
-            response = await LUNA.lunaPing()
-        except Exception as e:
-            self.logger.error(f'Failed to make the request: {str(e)}')
-            response = {
-                "msg": "Command failed",
-                "Return": False,
-                "ReturnCode": 0,
-                "data": {
-                    "message": "Command failed"
-                }
-            }
-        
-        await ctx.send(f'[PING] Pong! | {response["data"]}ms')
+        await self.cmd_handler.do_ping(ctx)
 
     @commands.command(name = "discord")
     async def tw_discord(self, ctx: commands.Context):
         """
         A command that can be used to get the Discord invite link.
-        
-        Args:
-            ctx (commands.Context): The context of the command.
         """
-        self.logger.info(f'Twitch Command | discord | {ctx.author.name}')
-        await ctx.send(f'[DISCORD] Want to ask something specific? Want to know more about Valky? Join the Discord community! | https://discord.gg/vky')
+        await self.cmd_handler.do_discord(ctx)
         
     @commands.command(name = "exval")
     async def tw_exval(self, ctx: commands.Context):
         """
         A command that can be used to get the ExVal Limited link.
-        
-        Args:
-            ctx (commands.Context): The context of the command.
         """
-        self.logger.info(f'Twitch Command | exval | {ctx.author.name}')
-        await ctx.send(f'[EXVAL] Want to know more about ExVal Limited? Check out the official website of ExVal Ltd. | https://exv.al/en')
+        await self.cmd_handler.do_exval(ctx)
         
     @commands.command(name = "translate")
     async def tw_translate(self, ctx: commands.Context, *, text: str):
         """
         A command that can be used to translate text using Luna.
-        
-        Args:
-            ctx (commands.Context): The context of the command.
-            text (str): The text to translate.
         """
-        self.logger.info(f'Twitch Command | translate | {ctx.author.name}')
-        try:
-            response = await LUNA.lunaTranslate(text)
-        except Exception as e:
-            self.logger.error(f'Failed to make the request: {str(e)}')
-            response = {
-                "msg": "Command failed",
-                "Return": False,
-                "ReturnCode": 0,
-                "data": {
-                    "message": "Command failed"
-                }
-            }
-        await ctx.send(f'[LUNA] {response["data"]}')
+        await self.cmd_handler.do_translate(ctx, text)
         
     @commands.command(name = "ask")
     async def tw_ask(self, ctx: commands.Context, *, text: str):
         """
         A command that can be used to ask Luna a question.
-        
-        Args:
-            ctx (commands.Context): The context of the command.
-            text (str): The question to ask.
         """
-        self.logger.info(f'Twitch Command | ask | {ctx.author.name}')
-        try:
-            response = await LUNA.lunaAsk(text)
-        except Exception as e:
-            self.logger.error(f'Failed to make the request: {str(e)}')
-            response = {
-                "msg": "Command failed",
-                "Return": False,
-                "ReturnCode": 0,
-                "data": {
-                    "message": "Command failed"
-                }
-            }
-        await ctx.send(f'[LUNA] {response["data"]}')
+        await self.cmd_handler.do_ask(ctx, text)
+        
+    @commands.command(name = "set_title")
+    async def tw_set_title(self, ctx: commands.Context, *, title: str):
+        """
+        *Mod Only!* - A command that can be used to set the title of the stream.
+        """
+        await self.cmd_handler.do_set_title(ctx, title)
+    
+    @commands.command(name = "set_game")
+    async def tw_set_game(self, ctx: commands.Context, *, game: str):
+        """
+        *Mod Only!* - A command that can be used to set the game of the stream.
+        """
+        await self.cmd_handler.do_set_game(ctx, game)

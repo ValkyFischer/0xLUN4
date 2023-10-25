@@ -2,9 +2,6 @@
     "twitch": {
         "client_id": "",
         "client_secret": "",
-        "bot_token": "",
-        "bot_refresh_token": "",
-        "bot_token_expires": 0,
         "api_uri": "https://api.twitch.tv/helix",
         "redirect_uri": "http://localhost:8000",
         "channel": "",

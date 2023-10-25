@@ -45,9 +45,6 @@ class Auth:
         self.config['twitch']['bot_refresh_token'] = data.get('refresh_token')
         self.config['twitch']['bot_token_expires'] = data.get('expires_in')
         
-        with open('settings.json', 'w') as f:
-            json.dump(self.config, f, indent=4)
-        
         return self.config['twitch']['bot_token']
         
     def _get_auth_code(self, client_id: str, redirect_uri: str, scopes: list) -> str:

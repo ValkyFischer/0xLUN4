@@ -61,7 +61,7 @@ class DiscordBot:
         self.config = config
         self.token = self.config['discord']['bot_token']
         self.guild_id = self.config['discord']['guild_id']
-        self.activity = discord.Activity(name="Tests", type=5)
+        self.activity = discord.Activity(name="Artificial Tasks", type=5)
         self.intents = discord.Intents.all()
         self.client = discord.Client(intents=self.intents, activity=self.activity)
         self.tree = app_commands.CommandTree(self.client)
@@ -85,7 +85,7 @@ class DiscordBot:
         while True:
             start_time = datetime.datetime.now()
             channel = self.twitch_bot.channel.name
-            is_live = await self.twitch_bot.check_live(channel)
+            is_live = await self.twitch_bot.channel.get_status()
             old_status = self.twitch_bot.channel.is_live
             if old_status is None or old_status == "":
                 self.twitch_bot.channel.is_live = is_live
@@ -260,7 +260,7 @@ class LunaTranslate(discord.ui.Modal, title='L.U.N.A. Translator'):
                          
     async def on_submit(self, interaction: discord.Interaction):
         try:
-            data = LUNA.lunaTranslate(self.text_to_translate.value, "EN")
+            data = await LUNA.lunaTranslate(self.text_to_translate.value, "EN")
         except Exception as e:
             await interaction.response.send_message(content = f"An error occurred while translating your message: {str(e)}")
             return
@@ -298,5 +298,3 @@ class LunaAsk(discord.ui.Modal, title='L.U.N.A. Assistant'):
         embed_widget.set_author(name=f"{interaction.user.name}")
         
         await interaction.followup.send(embed = embed_widget)
-        
-# Why is the word "Banana" kind of a meme in javascript?
