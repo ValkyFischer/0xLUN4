@@ -1,6 +1,8 @@
 import random
 from twitchio.ext import pubsub
 
+from tasks import Task
+
 
 class Event:
     def __init__(self, bot):
@@ -43,21 +45,30 @@ class Event:
         pass  # TODO: Implement this
     
     async def on_channel_points(self, event: pubsub.PubSubChannelPointsMessage):
-        # get the reward info
-        uuid = event.id
-        status = event.status
-        channel_id = event.channel_id
-        timestamp = event.timestamp
-        # get the user info
-        user_id = event.user.id
+        # uuid = event.id
+        # status = event.status
+        # channel_id = event.channel_id
+        # timestamp = event.timestamp
+        # user_id = event.user.id
         user_name = event.user.name
         user_input = " | " + event.input if event.input else ""
-        # get the reward info
         reward_name = event.reward.title
-        reward_uuid = event.reward.id
+        # reward_uuid = event.reward.id
         reward_cost = event.reward.cost
         
         self.logger.info(f'Twitch Channel Points | {user_name} | {reward_name} ({reward_cost}){user_input}')
+        
+        for reward in self.config['twitch']['rewards']:
+            if reward['name'].lower() == reward_name.lower():
+                task_action = reward['task']
+                task_data = {
+                    "user_name": user_name,
+                    "reward_name": reward_name,
+                    "reward_cost": reward_cost,
+                    "user_input": event.input,
+                }
+                task = Task(task_action, task_data)
+                await self.bot.task_queue.add_task(task)
         
         channel = self.bot.get_channel(user_name)
         if channel is not None:

@@ -4,6 +4,8 @@ import socketserver
 import webbrowser
 import requests
 
+from ValkyrieUtils.Logger import ValkyrieLogger
+
 CODE = None
 
 
@@ -32,7 +34,10 @@ class OAuthCallbackHandler(http.server.SimpleHTTPRequestHandler):
         
 
 class Auth:
-    def __init__(self, config: dict, logger):
+    """
+    A class which handles the authorization of the Twitch bot.
+    """
+    def __init__(self, config: dict, logger: ValkyrieLogger):
         self.config = config
         self.logger = logger
         

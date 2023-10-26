@@ -1,5 +1,6 @@
 import aiohttp
 
+from ValkyrieUtils.Logger import ValkyrieLogger
 from ValkyrieUtils.Tools import ValkyrieTools
 
 
@@ -16,9 +17,9 @@ class Stream:
     
     Args:
         config (dict): The configuration dictionary.
-        logger (logging.Logger): The logger.
+        logger (ValkyrieLogger): The logger.
     """
-    def __init__(self, config: dict, logger):
+    def __init__(self, config: dict, logger: ValkyrieLogger):
         self.config = config
         self.logger = logger
         
@@ -115,8 +116,12 @@ class Game:
     Properties:
         - name (str): The name of the game.
         - id (int): The id of the game.
+        
+    Args:
+        config (dict): The configuration dictionary.
+        logger (ValkyrieLogger): The logger.
     """
-    def __init__(self, config: dict, logger):
+    def __init__(self, config: dict, logger: ValkyrieLogger):
         self.config = config
         self.logger = logger
         

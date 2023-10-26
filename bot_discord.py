@@ -35,11 +35,13 @@ Example:
 """
 
 import datetime
-import logging
 import discord
 
 from discord import app_commands, ui
+
+from ValkyrieUtils.Logger import ValkyrieLogger
 from luna import Luna
+from tasks import TaskQueue
 
 LUNA: Luna = None
 
@@ -51,12 +53,14 @@ class DiscordBot:
     
     Args:
         config (dict): The configuration dictionary.
-        logger (logging.Logger): The logger.
+        logger (ValkyrieLogger): The logger.
+        task_queue (TaskQueue): The queue.
     """
-    def __init__(self, config: dict, logger: logging.Logger):
+    def __init__(self, config: dict, logger: ValkyrieLogger, task_queue: TaskQueue):
         self.loaded = False
         self.logger = logger
         self.config = config
+        self.task_queue = task_queue
         self.token = self.config['discord']['bot_token']
         self.guild_id = self.config['discord']['guild_id']
         self.activity = discord.Activity(name="Artificial Tasks", type=5)

@@ -5,7 +5,25 @@
         "api_uri": "https://api.twitch.tv/helix",
         "redirect_uri": "http://localhost:8000",
         "channel": "",
-        "prefix": "!"
+        "prefix": "!",
+        "rewards": [
+            {
+                "name": "timeout for 5 minutes",
+                "task": "twitch_timeout"
+            },{
+                "name": "moderator for 1 week",
+                "task": "twitch_moderator"
+            },{
+                "name": "wasted discord role",
+                "task": "discord_role"
+            },{
+                "name": "vip badge",
+                "task": "twitch_vip"
+            },{
+                "name": "celestial power",
+                "task": "special"
+            }
+        ]
     },
     "discord": {
         "bot_token": "",

@@ -1,6 +1,11 @@
 import asyncio
 import datetime
 
+from ValkyrieUtils.Logger import ValkyrieLogger
+from bot_discord import DiscordBot
+from bot_twitch import TwitchBot
+from tasks import TaskQueue
+
 
 class ValkyrieBot:
     """
@@ -12,13 +17,16 @@ class ValkyrieBot:
         discord_bot (DiscordBot): The Discord bot instance.
         config (dict): The configuration file.
         logger (ValkyrieLogger): The logger instance.
+        task_queue (TaskQueue): The queue instance.
     """
-    def __init__(self, twitch_bot, discord_bot, config, logger):
+    def __init__(self, twitch_bot: TwitchBot, discord_bot: DiscordBot, config: dict, logger: ValkyrieLogger, task_queue: TaskQueue):
         self.ready = False
+        self.empty = False
         self.twitch_bot = twitch_bot
         self.discord_bot = discord_bot
         self.config = config
         self.logger = logger
+        self.task_queue = task_queue
     
     async def check_live(self):
         """
@@ -46,6 +54,19 @@ class ValkyrieBot:
                     self.logger.info(f'Channel went offline | {channel}')
                 self.twitch_bot.channel.is_live = is_live
     
+    async def check_queue(self):
+        """
+        A method which checks the queue for tasks. If a task is found, it will be executed.
+        """
+        if self.task_queue.tasks.empty():
+            if not self.empty:
+                self.empty = True
+                self.logger.info(f'Observing task queue is empty')
+        else:
+            self.empty = False
+            task = await self.task_queue.get_task()
+            self.logger.info(f'Executing task from queue | {task.action} | {task.data}')
+    
     async def run(self):
         """
         A loop which runs the main bot methods every N seconds. The N seconds interval is defined in the configuration
@@ -53,7 +74,8 @@ class ValkyrieBot:
         """
         while True:
             start_time = datetime.datetime.now()
-            
+
+            await self.check_queue()
             await self.check_live()
 
             interval_miliseconds = self.config['interval'] * 1000 if self.ready else 10000

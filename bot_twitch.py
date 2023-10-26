@@ -29,8 +29,6 @@ Example:
 
 """
 
-import logging
-
 from twitchio.ext import commands, pubsub
 
 from Twitch.auth import Auth
@@ -38,7 +36,9 @@ from Twitch.channel import Channel
 from Twitch.commands import Commands
 from Twitch.events import Event
 from Twitch.stream import Stream
+from ValkyrieUtils.Logger import ValkyrieLogger
 from luna import Luna
+from tasks import TaskQueue
 
 
 class TwitchBot(commands.Bot):
@@ -48,12 +48,14 @@ class TwitchBot(commands.Bot):
     
     Args:
         config (dict): The configuration dictionary.
-        logger (logging.Logger): The logger.
+        logger (ValkyrieLogger): The logger.
+        task_queue (TaskQueue): The queue instance.
     """
-    def __init__(self, config: dict, logger: logging.Logger):
+    def __init__(self, config: dict, logger: ValkyrieLogger, task_queue: TaskQueue):
         self.loaded = False
         self.logger = logger
         self.config = config
+        self.task_queue = task_queue
         self.stream = Stream(self.config, self.logger)
         self.channel = Channel(self.config, self.logger, self.stream)
         self.auth = Auth(self.config, self.logger)

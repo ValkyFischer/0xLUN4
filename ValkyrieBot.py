@@ -38,6 +38,7 @@ from ValkyrieUtils.Exceptions import *
 from bot_twitch import TwitchBot
 from bot_discord import DiscordBot
 from bot_valkyrie import ValkyrieBot
+from tasks import TaskQueue
 
 
 class Valkyrie:
@@ -60,9 +61,10 @@ class Valkyrie:
         else:
             raise ConfigError(f"Configuration file not found: {config_path}")
         self.config = self._cfg.get_config()
-        self.tw_bot = TwitchBot(self.config, self.logger)
-        self.dc_bot = DiscordBot(self.config, self.logger)
-        self.vk_bot = ValkyrieBot(self.tw_bot, self.dc_bot, self.config, self.logger)
+        self.task_queue = TaskQueue(self.config, self.logger)
+        self.tw_bot = TwitchBot(self.config, self.logger, self.task_queue)
+        self.dc_bot = DiscordBot(self.config, self.logger, self.task_queue)
+        self.vk_bot = ValkyrieBot(self.tw_bot, self.dc_bot, self.config, self.logger, self.task_queue)
     
     def run(self):
         """
