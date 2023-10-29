@@ -36,7 +36,9 @@ from Twitch.channel import Channel
 from Twitch.commands import Commands
 from Twitch.events import Event
 from Twitch.stream import Stream
+
 from ValkyrieUtils.Logger import ValkyrieLogger
+
 from Modules.luna import Luna
 from Modules.tasks import TaskQueue
 

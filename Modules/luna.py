@@ -1,4 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Created on Oct 23, 2023
+@author: v_lky
 
+--------
+
+About:
+    This script provides a class for Luna API requests. The Luna API is used to translate text and answer questions.
+
+"""
 import requests
 
 

@@ -1,9 +1,25 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Created on Oct 23, 2023
+@author: v_lky
+
+--------
+
+About:
+    This script is the main bot script that will run the Valkyrie Bot. This bot is used to connect the functionality of
+    both, the Discord bot and the Twitch bot. This bot will also handle and work through the task queue. The task queue
+    is used to queue tasks that are related to both, Discord or Twitch.
+
+"""
 import asyncio
 import datetime
 
 from ValkyrieUtils.Logger import ValkyrieLogger
+
 from bot_discord import DiscordBot
 from bot_twitch import TwitchBot
+
 from Modules.tasks import TaskQueue
 
 

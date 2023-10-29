@@ -1,8 +1,24 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Created on Oct 23, 2023
+@author: v_lky
+
+--------
+
+About:
+    This script provides a class to handle tasks. The task queue is used to queue tasks that are related to both,
+    Discord or Twitch. The task queue is based on asyncio.Queue and can be used to add and get tasks concurrently.
+
+"""
 import asyncio
 import logging
 
 
 class Task:
+    """
+    A class to handle tasks. The task can be any object.
+    """
     _task_id_counter = 0
 
     def __init__(self, action, data):

@@ -1,3 +1,15 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Created on Oct 23, 2023
+@author: v_lky
+
+--------
+
+About:
+    This script provides the functionality to authorize the bot to use the Twitch API.
+
+"""
 import json
 import http.server
 import socketserver

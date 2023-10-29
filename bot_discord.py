@@ -40,6 +40,7 @@ import discord
 from discord import app_commands, ui
 
 from ValkyrieUtils.Logger import ValkyrieLogger
+
 from Modules.luna import Luna
 from Modules.tasks import TaskQueue
 
