@@ -14,7 +14,13 @@ import requests
 
 
 class Luna:
+    """
+    A class for Luna API requests. The Luna API is used to translate text and answer questions.
     
+    Args:
+        logger (ValkyrieLogger): The logger.
+        config (dict): The configuration dictionary.
+    """
     def __init__(self, logger, config):
         self.config = config
         self.logger = logger
@@ -26,15 +32,39 @@ class Luna:
         self.response = {"msg": "API Error!", "Return": False, "ReturnCode": 3}
     
     def _pingUrl(self) -> str:
+        """
+        Returns the ping url.
+        
+        Returns:
+            str: The ping url.
+        """
         return f'{self.luna_rest_url}/ping'
     
     def _translateUrl(self) -> str:
+        """
+        Returns the translation url.
+        
+        Returns:
+            str: The translation url.
+        """
         return f'{self.luna_rest_url}/translate'
     
     def _askUrl(self) -> str:
+        """
+        Returns the ask url.
+        
+        Returns:
+            str: The ask url.
+        """
         return f'{self.luna_rest_url}/ask'
     
     async def lunaPing(self) -> dict:
+        """
+        Pings the Luna API.
+        
+        Returns:
+            dict: A dictionary of information.
+        """
         response = self.response
         
         try:
@@ -55,6 +85,16 @@ class Luna:
         return response
     
     async def lunaTranslate(self, text: str, lang: str = "en") -> dict:
+        """
+        Translates text using the Luna API.
+        
+        Args:
+            text (str): The text to translate.
+            lang (str): The language to translate to. Defaults to `en`.
+            
+        Returns:
+            dict: A dictionary of information.
+        """
         response = self.response
         request_data = {
             "message": text,
@@ -80,6 +120,15 @@ class Luna:
         return response
     
     async def lunaAsk(self, text: str) -> dict:
+        """
+        Asks Luna a question using the Luna API.
+        
+        Args:
+            text (str): The question to ask.
+            
+        Returns:
+            dict: A dictionary of information.
+        """
         response = self.response
         request_data = {
             "message": text

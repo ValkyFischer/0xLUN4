@@ -196,6 +196,9 @@ class DiscordBot:
             await interaction.response.send_modal(LunaAsk())
 
 class LunaTranslate(discord.ui.Modal, title='L.U.N.A. Translator'):
+    """
+    A modal which allows you to translate text into english.
+    """
     # language = ui.Select(placeholder='Select a language', max_values = 1, min_values = 1, options=[
     #     discord.SelectOption(label='Bulgarian', description='Bulgarian', value='BG'),
     #     discord.SelectOption(label='Czech', description='Czech', value='CS'),
@@ -230,6 +233,12 @@ class LunaTranslate(discord.ui.Modal, title='L.U.N.A. Translator'):
     text_to_translate = ui.TextInput(label='Please type in your message to translate.', style=discord.TextStyle.paragraph, min_length=13, max_length=420)
     
     async def on_submit(self, interaction: discord):
+        """
+        This event is called when the user submits the modal form.
+        
+        Args:
+            interaction (discord): The interaction object.
+        """
         try:
             data = await LUNA.lunaTranslate(self.text_to_translate.value, "EN")
         except Exception as e:
@@ -247,10 +256,19 @@ class LunaTranslate(discord.ui.Modal, title='L.U.N.A. Translator'):
 
 
 class LunaAsk(discord.ui.Modal, title='L.U.N.A. Assistant'):
+    """
+    A modal which allows you to ask L.U.N.A. a question.
+    """
     question = ui.TextInput(label='Please type in your question.', style=discord.TextStyle.paragraph,
                               min_length=13, max_length=420)
                          
     async def on_submit(self, interaction: discord):
+        """
+        This event is called when the user submits the modal form.
+        
+        Args:
+            interaction (discord): The interaction object.
+        """
         await interaction.response.send_message(f"Processing your question, please wait...")
         
         try:

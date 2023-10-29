@@ -27,13 +27,20 @@ class NullOutput:
 
 
 class OAuthCallbackHandler(http.server.SimpleHTTPRequestHandler):
+    """
+    A class which handles the OAuth callback.
+    """
     
     def log_message(self, format, *args):
-        # Suppress the default console output
+        """
+        Disables the logging of the web server.
+        """
         pass
     
     def do_GET(self):
-        # Extract the OAuth code from the query parameters
+        """
+        Handles the GET request. This method will get the OAuth code from the URL.
+        """
         global CODE
         try:
             CODE = self.path.split('?code=')[1].split("&scope")[0]

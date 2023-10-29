@@ -16,6 +16,9 @@ from twitchio.ext import commands
 
 
 class Commands:
+    """
+    A class to serve commands to the Twitch bot.
+    """
     def __init__(self, bot):
         self.bot = bot
         self.config = bot.config

@@ -17,6 +17,9 @@ from Modules.tasks import Task
 
 
 class Event:
+    """
+    A class to handle events. The event can be any object that is received from Twitch and the Twitch PubSub system.
+    """
     def __init__(self, bot):
         self.bot = bot
         self.config = bot.config
@@ -26,7 +29,7 @@ class Event:
     
     async def on_ready(self):
         """
-        This event is called once when the bot goes online.
+        This event is called once when the bot goes online. It is used to setup the bot and to subscribe to topics.
         """
         self.channel.id = self.bot.user_id
         self.logger.info(f'Twitch logged in as {self.channel.name}')
@@ -54,9 +57,22 @@ class Event:
         self.bot.loaded = True
     
     async def on_bits(self, event: pubsub.PubSubBitsMessage):
+        """
+        This event is called when a user cheers bits.
+        
+        Args:
+            event (pubsub.PubSubBitsMessage): The event.
+        """
         pass  # TODO: Implement this
     
     async def on_channel_points(self, event: pubsub.PubSubChannelPointsMessage):
+        """
+        This event is called when a user redeems a channel point reward. It creates and puts a new task into the
+        task queue. The task queue is used to queue tasks that are related to both, Discord or Twitch.
+        
+        Args:
+            event (pubsub.PubSubChannelPointsMessage): The event.
+        """
         # uuid = event.id
         # status = event.status
         # channel_id = event.channel_id
@@ -88,6 +104,12 @@ class Event:
             await channel.send(f'[CHANNEL POINTS] {user_name} redeemed "{reward_name}"{user_input} {random_emote}')
     
     async def on_subscriptions(self, event: pubsub.PubSubChannelSubscribe):
+        """
+        This event is called when a user subscribes to the channel.
+        
+        Args:
+            event (pubsub.PubSubChannelSubscribe): The event.
+        """
         user_name = event.user.name if event.user.name else "Anonymous"
         # user_id = event.user.id
         # tier = event.sub_plan
