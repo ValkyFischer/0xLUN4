@@ -37,8 +37,8 @@ from Twitch.commands import Commands
 from Twitch.events import Event
 from Twitch.stream import Stream
 from ValkyrieUtils.Logger import ValkyrieLogger
-from luna import Luna
-from tasks import TaskQueue
+from Modules.luna import Luna
+from Modules.tasks import TaskQueue
 
 
 class TwitchBot(commands.Bot):
@@ -213,3 +213,17 @@ class TwitchBot(commands.Bot):
         *Mod Only!* - A command that can be used to set the game of the stream.
         """
         await self.cmd_handler.do_set_game(ctx, game)
+        
+    @commands.command(name = "design_doc")
+    async def tw_design_doc(self, ctx: commands.Context):
+        """
+        A command that can be used to get the game design document.
+        """
+        await self.cmd_handler.do_design_doc(ctx)
+    
+    @commands.command(name = "manual_doc")
+    async def tw_manual_doc(self, ctx: commands.Context):
+        """
+        A command that can be used to get the game manual document.
+        """
+        await self.cmd_handler.do_manual_doc(ctx)

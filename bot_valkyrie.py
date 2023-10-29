@@ -4,7 +4,7 @@ import datetime
 from ValkyrieUtils.Logger import ValkyrieLogger
 from bot_discord import DiscordBot
 from bot_twitch import TwitchBot
-from tasks import TaskQueue
+from Modules.tasks import TaskQueue
 
 
 class ValkyrieBot:

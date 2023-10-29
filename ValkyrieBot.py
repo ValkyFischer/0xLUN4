@@ -38,7 +38,8 @@ from ValkyrieUtils.Exceptions import *
 from bot_twitch import TwitchBot
 from bot_discord import DiscordBot
 from bot_valkyrie import ValkyrieBot
-from tasks import TaskQueue
+
+from Modules.tasks import TaskQueue
 
 
 class Valkyrie:

@@ -40,8 +40,8 @@ import discord
 from discord import app_commands, ui
 
 from ValkyrieUtils.Logger import ValkyrieLogger
-from luna import Luna
-from tasks import TaskQueue
+from Modules.luna import Luna
+from Modules.tasks import TaskQueue
 
 LUNA: Luna = None
 
@@ -226,10 +226,9 @@ class LunaTranslate(discord.ui.Modal, title='L.U.N.A. Translator'):
     #     discord.SelectOption(label='Ukrainian', description='Ukrainian', value='UK'),
     #     discord.SelectOption(label='Chinese', description='Chinese', value='ZH')
     # ])
-    text_to_translate = ui.TextInput(label='Please type in your message to translate.', style=discord.TextStyle.paragraph,
-                              min_length=13, max_length=420)
-                         
-    async def on_submit(self, interaction: discord.Interaction):
+    text_to_translate = ui.TextInput(label='Please type in your message to translate.', style=discord.TextStyle.paragraph, min_length=13, max_length=420)
+    
+    async def on_submit(self, interaction: discord):
         try:
             data = await LUNA.lunaTranslate(self.text_to_translate.value, "EN")
         except Exception as e:
@@ -250,7 +249,7 @@ class LunaAsk(discord.ui.Modal, title='L.U.N.A. Assistant'):
     question = ui.TextInput(label='Please type in your question.', style=discord.TextStyle.paragraph,
                               min_length=13, max_length=420)
                          
-    async def on_submit(self, interaction: discord.Interaction):
+    async def on_submit(self, interaction: discord):
         await interaction.response.send_message(f"Processing your question, please wait...")
         
         try:

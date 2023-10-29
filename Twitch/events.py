@@ -1,7 +1,7 @@
 import random
 from twitchio.ext import pubsub
 
-from tasks import Task
+from Modules.tasks import Task
 
 
 class Event:

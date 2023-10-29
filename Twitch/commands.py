@@ -135,3 +135,23 @@ class Commands:
             await ctx.send(f'[GAME] {game} | {ctx.author.name} {random_emote}')
         else:
             await ctx.send(f'[GAME] You do not have permission to use this command! | {ctx.author.name} {random_emote}')
+            
+    async def do_design_doc(self, ctx: commands.Context):
+        """
+        A command that can be used to get the design document.
+
+        Args:
+            ctx (commands.Context): The context of the command.
+        """
+        self.logger.info(f'Twitch Command | design_doc | {ctx.author.name}')
+        await ctx.send(f'[ARIA: Live] Find the game design document here: https://1drv.ms/w/s!AjIdyV70_rGwhYBcTzLniJqWQxXcNw')
+    
+    async def do_manual_doc(self, ctx: commands.Context):
+        """
+        A command that can be used to get the manual document.
+        
+        Args:
+            ctx (commands.Context): The context of the command.
+        """
+        self.logger.info(f'Twitch Command | manual_doc | {ctx.author.name}')
+        await ctx.send(f'[ARIA: Live] Find the game manual document here: https://1drv.ms/w/s!AjIdyV70_rGwhYBfM6N-W2l4tuoneQ')
