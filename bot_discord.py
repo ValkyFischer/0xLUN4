@@ -64,7 +64,7 @@ class DiscordBot:
         self.task_queue = task_queue
         self.token = self.config['discord']['bot_token']
         self.guild_id = self.config['discord']['guild_id']
-        self.activity = discord.Activity(name="Artificial Tasks", type=5)
+        self.activity = discord.Activity(name="Artificial Tasks", type=4, state='Working on 𝗔𝗿𝘁𝗶𝗳𝗶𝗰𝗶𝗮𝗹 𝗧𝗮𝘀𝗸𝘀')
         self.intents = discord.Intents.all()
         self.client = discord.Client(intents=self.intents, activity=self.activity)
         self.tree = app_commands.CommandTree(self.client)

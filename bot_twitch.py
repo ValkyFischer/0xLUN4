@@ -216,14 +216,14 @@ class TwitchBot(commands.Bot):
         """
         await self.cmd_handler.do_set_game(ctx, game)
         
-    @commands.command(name = "design_doc")
+    @commands.command(name = "design")
     async def tw_design_doc(self, ctx: commands.Context):
         """
         A command that can be used to get the game design document.
         """
         await self.cmd_handler.do_design_doc(ctx)
     
-    @commands.command(name = "manual_doc")
+    @commands.command(name = "manual")
     async def tw_manual_doc(self, ctx: commands.Context):
         """
         A command that can be used to get the game manual document.

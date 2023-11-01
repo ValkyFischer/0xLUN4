@@ -158,8 +158,8 @@ class Commands:
         Args:
             ctx (commands.Context): The context of the command.
         """
-        self.logger.info(f'Twitch Command | design_doc | {ctx.author.name}')
-        await ctx.send(f'[ARIA: Live] Find the game design document here: https://1drv.ms/w/s!AjIdyV70_rGwhYBcTzLniJqWQxXcNw')
+        self.logger.info(f'Twitch Command | design | {ctx.author.name}')
+        await ctx.send(f'[ARIA: Live] You can find the game design document here: https://valky.dev/docs/design')
     
     async def do_manual_doc(self, ctx: commands.Context):
         """
@@ -168,5 +168,5 @@ class Commands:
         Args:
             ctx (commands.Context): The context of the command.
         """
-        self.logger.info(f'Twitch Command | manual_doc | {ctx.author.name}')
-        await ctx.send(f'[ARIA: Live] Find the game manual document here: https://1drv.ms/w/s!AjIdyV70_rGwhYBfM6N-W2l4tuoneQ')
+        self.logger.info(f'Twitch Command | manual | {ctx.author.name}')
+        await ctx.send(f'[ARIA: Live] You can find the game manual document here: https://valky.dev/docs/manual')
