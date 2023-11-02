@@ -229,3 +229,24 @@ class TwitchBot(commands.Bot):
         A command that can be used to get the game manual document.
         """
         await self.cmd_handler.do_manual_doc(ctx)
+        
+    # @commands.command(name = "timeout")
+    # async def tw_timeout(self, ctx: commands.Context, user: str, duration: int, *, reason: str):
+    #     """
+    #     *Mod Only!* - A command that can be used to timeout a user.
+    #     """
+    #     await self.cmd_handler.do_timeout(ctx, user, duration, reason)
+    #
+    # @commands.command(name = "ban")
+    # async def tw_ban(self, ctx: commands.Context, user: str, *, reason: str):
+    #     """
+    #     *Mod Only!* - A command that can be used to ban a user.
+    #     """
+    #     await self.cmd_handler.do_ban(ctx, user, reason)
+    #
+    # @commands.command(name = "unban", aliases = ["untimeout"])
+    # async def tw_unban(self, ctx: commands.Context, user: str):
+    #     """
+    #     *Mod Only!* - A command that can be used to unban a user.
+    #     """
+    #     await self.cmd_handler.do_unban(ctx, user)

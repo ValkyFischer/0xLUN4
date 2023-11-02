@@ -37,7 +37,7 @@ class Event:
         token = self.config['twitch']['bot_token']
         
         try:
-            await self.channel.setup(self.channel.id)
+            await self.channel.setup()
         except Exception as e:
             self.logger.error(f'Failed to populate channel: {str(e)}')
         
@@ -135,4 +135,3 @@ class Event:
             else:
                 await channel.send(
                     f'[SUBSCRIPTION] {user_name} got a {tier_name}. They are subscribed for {length} month{"s" if int(length) > 1 else ""}{message} {random_emote}')
-

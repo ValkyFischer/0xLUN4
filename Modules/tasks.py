@@ -42,6 +42,12 @@ class TaskQueue:
         self.config = config
         self.logger = logger
         self.tasks = asyncio.Queue()
+        
+        self.TASK_TW_TIMEOUT = "twitch_timeout"
+        self.TASK_TW_ADD_MODERATOR = "twitch_moderator"
+        self.TASK_TW_ADD_VIP = "twitch_vip"
+        self.TASK_DC_ADD_ROLE = "discord_role"
+        self.TASK_SPECIAL = "special"
 
     async def add_task(self, task) -> None:
         """

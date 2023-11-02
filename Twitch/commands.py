@@ -170,3 +170,54 @@ class Commands:
         """
         self.logger.info(f'Twitch Command | manual | {ctx.author.name}')
         await ctx.send(f'[ARIA: Live] You can find the game manual document here: https://valky.dev/docs/manual')
+        
+    # async def do_timeout(self, ctx: commands.Context, user: str, duration: int, reason: str):
+    #     """
+    #     *Mod Only!* - A command that can be used to timeout a user.
+    #
+    #     Args:
+    #         ctx (commands.Context): The context of the command.
+    #         user (str): The user to timeout.
+    #         duration (int): The duration of the timeout.
+    #         reason (str): The reason for the timeout.
+    #     """
+    #     self.logger.info(f'Twitch Command | timeout | {ctx.author.name} | {user} | {duration} | {reason}')
+    #     random_emote = random.choice(self.channel.emotes)
+    #     if ctx.author.is_mod:
+    #         await self.channel.timeout(user, duration, reason)
+    #         await ctx.send(f'[TIMEOUT] {user} has been timed out for {duration} seconds | {ctx.author.name} {random_emote}')
+    #     else:
+    #         await ctx.send(f'[TIMEOUT] You do not have permission to use this command! | {ctx.author.name} {random_emote}')
+    #
+    # async def do_ban(self, ctx: commands.Context, user: str, reason: str):
+    #     """
+    #     *Mod Only!* - A command that can be used to ban a user.
+    #
+    #     Args:
+    #         ctx (commands.Context): The context of the command.
+    #         user (str): The user to ban.
+    #         reason (str): The reason for the ban.
+    #     """
+    #     self.logger.info(f'Twitch Command | ban | {ctx.author.name} | {user} | {reason}')
+    #     random_emote = random.choice(self.channel.emotes)
+    #     if ctx.author.is_mod:
+    #         await self.channel.ban(user, reason)
+    #         await ctx.send(f'[BAN] {user} has been banned | {ctx.author.name} {random_emote}')
+    #     else:
+    #         await ctx.send(f'[BAN] You do not have permission to use this command! | {ctx.author.name} {random_emote}')
+    #
+    # async def do_unban(self, ctx: commands.Context, user: str):
+    #     """
+    #     *Mod Only!* - A command that can be used to unban a user.
+    #
+    #     Args:
+    #         ctx (commands.Context): The context of the command.
+    #         user (str): The user to unban.
+    #     """
+    #     self.logger.info(f'Twitch Command | unban | {ctx.author.name} | {user}')
+    #     random_emote = random.choice(self.channel.emotes)
+    #     if ctx.author.is_mod:
+    #         await self.channel.unban(user)
+    #         await ctx.send(f'[UNBAN] {user} has been unbanned | {ctx.author.name} {random_emote}')
+    #     else:
+    #         await ctx.send(f'[UNBAN] You do not have permission to use this command! | {ctx.author.name} {random_emote}')
