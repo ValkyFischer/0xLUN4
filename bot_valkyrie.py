@@ -115,17 +115,20 @@ class ValkyrieBot:
                 task = await self.task_queue.get_task()
                 
                 if task.action == self.task_queue.TASK_DC_ADD_ROLE:
-                    # await self.discord_bot.add_role(task.data)
-                    self.logger.warning(f'Not implemented: {task.action}')
+                    await self.discord_bot.assign_role(task.data['user_input'] if 'user_input' in task.data else task.data['user_name'])
+                    await self.discord_bot.send_log(f"Assigned Discord Role | {task.data['user_input'] if 'user_input' in task.data else task.data['user_name']}")
+                    self.logger.info(f'Assigning role | {task.data["user_name"]}')
                     
                 elif task.action == self.task_queue.TASK_TW_ADD_MODERATOR:
                     await self.twitch_bot.channel.mod(task.data['user_name'])
+                    await self.discord_bot.send_log(f"Added Twitch Moderator | {task.data['user_input'] if 'user_input' in task.data else task.data['user_name']}")
                     time_now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     with open('Twitch/data/rewards/moderators.txt', 'a+') as f:
                         f.write(f'{time_now}|{task.data["user_name"]}\n')
                     
                 elif task.action == self.task_queue.TASK_TW_ADD_VIP:
                     await self.twitch_bot.channel.vip(task.data['user_name'])
+                    await self.discord_bot.send_log(f"Added Twitch VIP | {task.data['user_input'] if 'user_input' in task.data else task.data['user_name']}")
                     time_now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
                     with open('Twitch/data/rewards/vips.txt', 'a+') as f:
                         f.write(f'{time_now}|{task.data["user_name"]}\n')
@@ -139,16 +142,20 @@ class ValkyrieBot:
                                 duration = duration,
                                 reason = f'ValkyrieBot | {task.data["user_name"]} has timed you out for {task.data["reward_cost"]} Divine Potions!'
                             )
+                            await self.discord_bot.send_log(f"Timed out Twitch User | {task.data['user_input'] if 'user_input' in task.data else task.data['user_name']} | {duration} seconds")
                             break
                     else:
-                        self.logger.warning(f'Unknown reward: {task.data["reward_name"]}')
+                        self.logger.warning(f'Unknown Reward Redemption | {task.data["reward_name"]}')
+                        await self.discord_bot.send_log(f"Unknown Reward Redemption | {task.data['reward_name']}")
                     
                 elif task.action == self.task_queue.TASK_SPECIAL:
                     # await self.discord_bot.send_special(task.data)
                     self.logger.warning(f'Not implemented: {task.action}')
+                    await self.discord_bot.send_log(f"Not implemented: {task.action}")
                 
                 else:
                     self.logger.warning(f'Unknown task action: {task.action}')
+                    await self.discord_bot.send_log(f"Unknown task action: {task.action}")
                     
                 self.logger.info(f'Executing task from queue | {i+1}/{q} | {task.action} | {task.data}')
     

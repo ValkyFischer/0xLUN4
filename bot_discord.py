@@ -97,6 +97,23 @@ class DiscordBot:
         await self.send_log(f'{channel} went live')
         # TODO: Proper embedded message
         #       await self.ch_stream.send(message)
+    
+    async def assign_role(self, user_id: int | str):
+        """
+        Assigns a role to a user.
+        
+        Args:
+            user_id (int | str): The user to assign the role to.
+        """
+        for user in self.client.users:
+            if user.name == user_id or user.id == user_id:
+                guild = await self.client.fetch_guild(self.guild_id)
+                user = await guild.fetch_member(user.id)
+                for rwd in self.config['twitch']['rewards']:
+                    if rwd['task'] == "discord_role":
+                        role = discord.utils.get(guild.roles, name=rwd['role'])
+                        await user.add_roles(role)
+                        return
 
     def setup(self):
         """
@@ -122,6 +139,7 @@ class DiscordBot:
             self.ch_admin = self.client.get_channel(int(self.config['discord']['channels'].get("admin")))
             self.ch_cmd = self.client.get_channel(int(self.config['discord']['channels'].get("commands")))
             self.ch_stream = self.client.get_channel(int(self.config['discord']['channels'].get("stream")))
+            self.logger.info(f'Discord Members | {len(self.client.users)}')
             
             self.loaded = True
         
