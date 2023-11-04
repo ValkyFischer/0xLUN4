@@ -31,13 +31,11 @@ class Event:
         """
         This event is called once when the bot goes online. It is used to setup the bot and to subscribe to topics.
         """
-        self.channel.id = self.bot.user_id
-        self.logger.info(f'Twitch logged in as {self.channel.name}')
-        self.logger.info(f'Twitch account id is {self.channel.id}')
-        token = self.config['twitch']['bot_token']
+        token = self.config['twitch']['user']['token']
         
         try:
             await self.channel.setup()
+            
         except Exception as e:
             self.logger.error(f'Failed to populate channel: {str(e)}')
         
@@ -54,6 +52,8 @@ class Event:
         except Exception as e:
             self.logger.error(f'Failed to subscribe to topics: {str(e)}')
         
+        self.logger.info(f'Twitch logged in as {self.channel.name}')
+        self.logger.info(f'Twitch account id is {self.channel.id}')
         self.bot.loaded = True
     
     async def on_bits(self, event: pubsub.PubSubBitsMessage):

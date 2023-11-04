@@ -28,6 +28,7 @@ Example:
        This command will provide you with a link to the official website of ExVal Ltd.
 
 """
+import time
 
 from twitchio.ext import commands, pubsub
 
@@ -128,8 +129,10 @@ class TwitchBot(commands.Bot):
             "moderator:manage:guest_star"
         ]
         channels = [f"#{self.channel.name}"]
-        bot_token = self.auth.authorize(self.config['twitch']['client_id'], self.config['twitch']['client_secret'], self.config['twitch']['redirect_uri'], scopes)
-        super().__init__(token = bot_token, prefix = prefix, initial_channels = channels)
+        self.user_token = self.auth.authorize(self.config['twitch']['user']['client_id'], self.config['twitch']['user']['client_secret'], self.config['twitch']['redirect_uri'], scopes, "user")
+        time.sleep(1)  # Wait for 1 second to avoid rate limit
+        self.bot_token = self.auth.authorize(self.config['twitch']['bot']['client_id'], self.config['twitch']['bot']['client_secret'], self.config['twitch']['redirect_uri'], scopes, "bot")
+        super().__init__(token = self.bot_token, prefix = prefix, initial_channels = channels)
         
         self.pubsub = pubsub.PubSubPool(self)
         self.event_handler = Event(self)

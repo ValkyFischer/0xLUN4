@@ -12,11 +12,13 @@ About:
 """
 import json
 import http.server
+import os
 import socketserver
 import webbrowser
 import requests
 
 from ValkyrieUtils.Logger import ValkyrieLogger
+from ValkyrieUtils.Config import ValkyrieConfig
 
 CODE = None
 
@@ -60,7 +62,7 @@ class Auth:
         self.config = config
         self.logger = logger
         
-    def authorize(self, client_id: str, client_secret: str, redirect_uri: str, scopes: list):
+    def authorize(self, client_id: str, client_secret: str, redirect_uri: str, scopes: list, kind: str = "user") -> str:
         """
         Authorizes the bot to use the Twitch API.
         
@@ -69,16 +71,40 @@ class Auth:
             client_secret (str): The client secret of the bot.
             redirect_uri (str): The redirect uri of the bot.
             scopes (list): The scopes of the bot.
+            kind (str): The kind of authorization. Can be either "user" or "bot".
         """
-        self.logger.info('Authorizing Twitch Account')
-        code = self._get_auth_code(client_id, redirect_uri, scopes)
-        data = self._get_auth_token(client_id, client_secret, code, redirect_uri)
+        refresh = False
+        if kind == "user":
+            self.logger.info('Authorizing Twitch Account')
+            path = 'Twitch/data/bot/user.vcf'
+        elif kind == "bot":
+            self.logger.info('Authorizing Twitch Bot')
+            path = 'Twitch/data/bot/bot.vcf'
+        else:
+            raise Exception(f'Invalid kind: {kind}')
         
-        self.config['twitch']['bot_token'] = data.get('access_token')
-        self.config['twitch']['bot_refresh_token'] = data.get('refresh_token')
-        self.config['twitch']['bot_token_expires'] = data.get('expires_in')
+        if os.path.exists(path):
+            cfg = ValkyrieConfig(path, self.logger, False).get_config()
+            if cfg.get('token') is not None:
+                self.config['twitch'][kind]['token'] = cfg.get('token')
+                self.config['twitch'][kind]['refresh_token'] = cfg.get('refresh_token')
+                self.config['twitch'][kind]['token_expires'] = cfg.get('token_expires')
+                refresh = True
         
-        return self.config['twitch']['bot_token']
+        if refresh:
+            data = self._refresh_token(client_id, client_secret, self.config['twitch'][kind]['refresh_token'])
+        else:
+            code = self._get_auth_code(client_id, redirect_uri, scopes)
+            data = self._get_auth_token(client_id, client_secret, code, redirect_uri)
+        
+        self.config['twitch'][kind]['token'] = data.get('access_token')
+        self.config['twitch'][kind]['refresh_token'] = data.get('refresh_token')
+        self.config['twitch'][kind]['token_expires'] = data.get('expires_in')
+        
+        cfg = ValkyrieConfig(path, self.logger, False)
+        cfg.save(self.config['twitch'][kind], path)
+        
+        return self.config['twitch'][kind]['token']
         
     def _get_auth_code(self, client_id: str, redirect_uri: str, scopes: list) -> str:
         """
@@ -135,3 +161,27 @@ class Auth:
             response_data = json.loads(response.text)
             self.logger.info(f'Twitch OAuth token received')
             return response_data
+        
+    def _refresh_token(self, client_id: str, client_secret: str, refresh_token: str) -> dict:
+        """
+        Refreshes the OAuth token for the bot.
+        
+        Args:
+            client_id (str): The client id of the bot.
+            client_secret (str): The client secret of the bot.
+            refresh_token (str): The refresh token for the bot.
+            
+        Returns:
+            str: The OAuth dict for the bot.
+        """
+        url = f'https://id.twitch.tv/oauth2/token?client_id={client_id}&client_secret={client_secret}&grant_type=refresh_token&refresh_token={refresh_token}'
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        response = requests.post(url, headers=headers)
+        if response.status_code == 200:
+            response_data = json.loads(response.text)
+            self.logger.info(f'Twitch OAuth token refreshed')
+            return response_data
+        else:
+            raise Exception(f'Failed to refresh OAuth token: {response.text}')

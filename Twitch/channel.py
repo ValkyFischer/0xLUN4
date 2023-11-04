@@ -62,7 +62,8 @@ class Channel:
         emotes = await self.get_emotes()
         for emote in emotes:
             if emote.get('name') not in self.emotes:
-                self.emotes.append(emote.get('name'))
+                if emote.get('tier') == '1000':
+                    self.emotes.append(emote.get('name'))
         self.logger.info(f'Twitch Emotes | {len(self.emotes)}')
         
         # get the followers of the channel
@@ -131,8 +132,8 @@ class Channel:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/users?login={username}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.get(url, headers=headers) as resp:
                 response_data = await resp.json()
@@ -148,8 +149,8 @@ class Channel:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/streams?user_id={str(self.id)}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.get(url, headers=headers) as resp:
                 response_data = await resp.json()
@@ -167,8 +168,8 @@ class Channel:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/chat/emotes?broadcaster_id={str(self.id)}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.get(url, headers=headers) as resp:
                 response_data = await resp.json()
@@ -187,8 +188,8 @@ class Channel:
         """
         async with aiohttp.ClientSession() as session:
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             if total:
                 url = f'{self.config["twitch"]["api_uri"]}/channels/followers?broadcaster_id={str(self.id)}'
@@ -222,8 +223,8 @@ class Channel:
         """
         async with aiohttp.ClientSession() as session:
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             if total:
                 url = f'{self.config["twitch"]["api_uri"]}/subscriptions?broadcaster_id={str(self.id)}'
@@ -254,8 +255,8 @@ class Channel:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/moderation/moderators?broadcaster_id={str(self.id)}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.get(url, headers=headers) as resp:
                 response_data = await resp.json()
@@ -271,8 +272,8 @@ class Channel:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/channels/vips?broadcaster_id={str(self.id)}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.get(url, headers=headers) as resp:
                 response_data = await resp.json()
@@ -288,8 +289,8 @@ class Channel:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/moderation/banned?broadcaster_id={str(self.id)}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.get(url, headers=headers) as resp:
                 response_data = await resp.json()
@@ -312,8 +313,8 @@ class Channel:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/moderation/moderators?broadcaster_id={str(self.id)}&user_id={mod_id}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.post(url, headers=headers) as resp:
                 response_data = await resp.json()
@@ -332,8 +333,8 @@ class Channel:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/moderation/moderators?broadcaster_id={str(self.id)}&user_id={mod_id}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.delete(url, headers=headers) as resp:
                 response_data = await resp.json()
@@ -352,8 +353,8 @@ class Channel:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/channels/vips?broadcaster_id={str(self.id)}&user_id={vip_id}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.post(url, headers=headers) as resp:
                 response_data = await resp.json()
@@ -372,8 +373,8 @@ class Channel:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/channels/vips?broadcaster_id={str(self.id)}&user_id={vip_id}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.delete(url, headers=headers) as resp:
                 response_data = await resp.json()
@@ -401,8 +402,8 @@ class Channel:
                 }
             }
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}',
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}',
                 'Content-Type': 'application/json'
             }
             async with session.post(url, headers=headers, json=data) as resp:
@@ -441,8 +442,8 @@ class Channel:
                 }
             }
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}',
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}',
                 'Content-Type': 'application/json'
             }
             async with session.post(url, headers=headers, json=data) as resp:
@@ -462,8 +463,8 @@ class Channel:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/moderation/bans?broadcaster_id={str(self.id)}&moderator_id={str(self.id)}&user_id={ban_id}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.delete(url, headers=headers) as resp:
                 pass
@@ -484,8 +485,8 @@ class Channel:
                 'color': color if color in colors else "primary"
             }
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}',
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}',
                 'Content-Type': 'application/json'
             }
             async with session.post(url, headers=headers, json=data) as resp:
@@ -514,8 +515,8 @@ class Channel:
                 'message': message
             }
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}',
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}',
                 'Content-Type': 'application/json'
             }
             async with session.post(url, headers=headers, json=data) as resp:
