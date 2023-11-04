@@ -64,7 +64,7 @@ class TwitchBot(commands.Bot):
         self.auth = Auth(self.config, self.logger)
         self.luna = Luna(self.logger, self.config)
         prefix = self.config['twitch']['prefix']
-        scopes = [
+        self.scopes = [
             "analytics:read:extensions",
             "user:edit",
             "user:read:email",
@@ -129,9 +129,9 @@ class TwitchBot(commands.Bot):
             "moderator:manage:guest_star"
         ]
         channels = [f"#{self.channel.name}"]
-        self.user_token = self.auth.authorize(self.config['twitch']['user']['client_id'], self.config['twitch']['user']['client_secret'], self.config['twitch']['redirect_uri'], scopes, "user")
+        self.user_token = self.auth.authorize(self.config['twitch']['user']['client_id'], self.config['twitch']['user']['client_secret'], self.config['twitch']['redirect_uri'], self.scopes, "user")
         time.sleep(1)  # Wait for 1 second to avoid rate limit
-        self.bot_token = self.auth.authorize(self.config['twitch']['bot']['client_id'], self.config['twitch']['bot']['client_secret'], self.config['twitch']['redirect_uri'], scopes, "bot")
+        self.bot_token = self.auth.authorize(self.config['twitch']['bot']['client_id'], self.config['twitch']['bot']['client_secret'], self.config['twitch']['redirect_uri'], self.scopes, "bot")
         super().__init__(token = self.bot_token, prefix = prefix, initial_channels = channels)
         
         self.pubsub = pubsub.PubSubPool(self)

@@ -31,6 +31,10 @@ class Luna:
         self.luna_version = f'v{self.config["luna"]["version"]}'
         self.luna_rest_url = f'{self.luna_origin}/rest/{self.luna_version}'
         
+        if self.config["luna"]["token"] == "":
+            self.logger.error(f'Luna | No token provided!')
+            raise ValueError('No token provided!')
+        
         self.bearer = base64.b64encode(f'{self.config["luna"]["token"]}'.encode('utf-8')).decode('utf-8')
         self.response = {"msg": "API Error!", "Return": False, "ReturnCode": 3}
     

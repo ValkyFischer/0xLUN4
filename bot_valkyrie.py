@@ -15,6 +15,7 @@ About:
 import asyncio
 import datetime
 import os
+import time
 
 from ValkyrieUtils.Logger import ValkyrieLogger
 
@@ -44,6 +45,34 @@ class ValkyrieBot:
         self.config = config
         self.logger = logger
         self.task_queue = task_queue
+        self.refresh_time = datetime.datetime.now()
+        self.refresh_interval = 10800
+    
+    async def check_refresh(self):
+        """
+        A method which checks if the Twitch API token needs to be refreshed. The Twitch API token will be refreshed
+        every N seconds. The N seconds interval is defined in the configuration file.
+        """
+        if self.discord_bot.loaded and self.twitch_bot.loaded and self.ready:
+            if (datetime.datetime.now() - self.refresh_time).total_seconds() > self.refresh_interval:
+                self.logger.info(f'Refreshing Twitch API token')
+                self.twitch_bot.user_token = self.twitch_bot.auth.authorize(
+                    self.config['twitch']['user']['client_id'],
+                    self.config['twitch']['user']['client_secret'],
+                    self.config['twitch']['redirect_uri'],
+                    self.twitch_bot.scopes,
+                    "user"
+                )
+                await self.discord_bot.send_log(f"Refreshed User Twitch API token")
+                self.twitch_bot.bot_token = self.twitch_bot.auth.authorize(
+                    self.config['twitch']['bot']['client_id'],
+                    self.config['twitch']['bot']['client_secret'],
+                    self.config['twitch']['redirect_uri'],
+                    self.twitch_bot.scopes,
+                    "bot"
+                )
+                await self.discord_bot.send_log(f"Refreshed Bot Twitch API token")
+                self.refresh_time = datetime.datetime.now()
     
     async def check_live(self):
         """
@@ -169,8 +198,9 @@ class ValkyrieBot:
             
             await self.check_unmod()
             await self.check_queue()
+            await self.check_refresh()
             await self.check_live()
-
+            
             interval_miliseconds = self.config['interval'] * 1000 if self.ready else 10000
             time_microseconds = (datetime.datetime.now() - start_time).microseconds
             await asyncio.sleep((interval_miliseconds - time_microseconds) / 1000000)
