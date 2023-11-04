@@ -9,16 +9,19 @@
         "rewards": [
             {
                 "name": "timeout for 5 minutes",
-                "task": "twitch_timeout"
+                "task": "twitch_timeout",
+                "time": 300
             },{
                 "name": "moderator for 1 week",
-                "task": "twitch_moderator"
-            },{
-                "name": "wasted discord role",
-                "task": "discord_role"
+                "task": "twitch_moderator",
+                "time": 604800
             },{
                 "name": "vip badge",
                 "task": "twitch_vip"
+            },{
+                "name": "wasted discord role",
+                "task": "discord_role",
+                "role": "WASTED"
             },{
                 "name": "celestial power",
                 "task": "special"
@@ -36,8 +39,9 @@
     },
     "interval": 60000,
     "luna": {
-        "host": "example.com",
+        "host": "valky.dev",
         "port": 443,
-        "version": 1
+        "version": 2,
+        "token": ""
     }
 }

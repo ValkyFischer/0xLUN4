@@ -10,6 +10,8 @@ About:
     This script provides a class for Luna API requests. The Luna API is used to translate text and answer questions.
 
 """
+import base64
+
 import requests
 
 
@@ -29,6 +31,7 @@ class Luna:
         self.luna_version = f'v{self.config["luna"]["version"]}'
         self.luna_rest_url = f'{self.luna_origin}/rest/{self.luna_version}'
         
+        self.bearer = base64.b64encode(f'{self.config["luna"]["token"]}'.encode('utf-8')).decode('utf-8')
         self.response = {"msg": "API Error!", "Return": False, "ReturnCode": 3}
     
     def _pingUrl(self) -> str:
@@ -47,7 +50,7 @@ class Luna:
         Returns:
             str: The translation url.
         """
-        return f'{self.luna_rest_url}/translate'
+        return f'{self.luna_rest_url}/luna/translate'
     
     def _askUrl(self) -> str:
         """
@@ -56,7 +59,7 @@ class Luna:
         Returns:
             str: The ask url.
         """
-        return f'{self.luna_rest_url}/ask'
+        return f'{self.luna_rest_url}/luna/ask'
     
     async def lunaPing(self) -> dict:
         """
@@ -100,7 +103,7 @@ class Luna:
             "message": text,
             "language": lang
         }
-        headers = {"Content-Type": "application/json"}
+        headers = {"Content-Type": "application/json", "Authorization": f'Bearer {self.bearer}'}
         self.logger.info(f'Luna Translate | Text: {text}')
         try:
             x = requests.request(method="POST", url=self._translateUrl(), json=request_data, headers=headers)
@@ -133,7 +136,7 @@ class Luna:
         request_data = {
             "message": text
         }
-        headers = {"Content-Type": "application/json"}
+        headers = {"Content-Type": "application/json", "Authorization": f'Bearer {self.bearer}'}
         try:
             x = requests.request(method="POST", url=self._askUrl(), json=request_data, headers=headers)
             data = x.json()
