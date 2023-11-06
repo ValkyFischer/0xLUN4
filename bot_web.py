@@ -71,7 +71,7 @@ class WebServer:
                 stringtable=ST[lang],
                 vk_status=self.vk_bot.ready,
                 dc_status=self.dc_bot.loaded,
-                tw_status=False,
+                tw_status=self.tw_bot.loaded,
                 logs=latest_5,
                 l4_status=l4_status,
                 ping=ping,
