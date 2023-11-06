@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="EN">
+
+    <head>
+        <meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+		<meta http-equiv="x-ua-compatible" content="ie=edge">
+		<meta name="description" content="{{ stringtable['desc'] }}" />
+		<meta name="keywords" content="{{ meta }}" />
+		<meta property="og:type" content="website">
+		<meta property="og:title" content="{{ stringtable['title'] }}" />
+		<meta property="og:image" content="https://exv.al/static/img/dev.webp" />
+		<meta property="og:description" content="{{ stringtable['desc'] }}" />
+        <title>{{ stringtable['title'] }}</title>
+		<!-- MDB icon -->
+		<link rel="icon" href="https://exv.al/static/img/dev.webp">
+        <!-- STYLESHEET -->
+		<!-- Font Awesome -->
+		<link rel="stylesheet" href="https://exv.al/static/vendor/fontawesome/css/all.css" crossorigin="anonymous">
+		<!-- Bootstrap core CSS -->
+		<link rel="stylesheet" href="https://exv.al/static/vendor/mdb/css/bootstrap.min.css">
+		<!-- Material Design Bootstrap -->
+		<link rel="stylesheet" href="https://exv.al/static/vendor/mdb/css/mdb.min.css">
+		<!-- Bootstrap flag icon CSS -->
+		<link rel="stylesheet" href="https://exv.al/static/vendor/mdb/css/addons/flag.min.css">
+		<!-- Basic minified styles -->
+		<link rel="stylesheet" href="https://exv.al/static/vendor/mdb/css/style.min.css">
+		<!-- VTEQ Fonts -->
+		<link rel="stylesheet" href="https://exv.al/static/vendor/valkyteq/fonts/fonts.css">
+		<!-- VTEQ Icons -->
+		<link rel="stylesheet" href="https://exv.al/static/vendor/valkyteq/css/icons.css">
+        <!-- ExVal -->
+        <link rel="stylesheet" id="twentynineteen-style-css" href="https://exv.al/static/vendor/exval/css/style_game.css" media="all">
+        <link rel="stylesheet" type="text/css" href="https://exv.al/static/vendor/exval/css/header.css">
+        <link rel="stylesheet" type="text/css" href="https://exv.al/static/vendor/exval/css/component.css">
+        <link rel="stylesheet" type="text/css" href="https://exv.al/static/vendor/exval/css/pattern.css">
+        <link rel="stylesheet" type="text/css" href="https://exv.al/static/vendor/exval/css/page.css">
+        <style>
+        body {
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-attachment: fixed;
+            background-size: cover;
+            background-color: rgba(22, 22, 22, 1) !important;
+            background-image: url("https://exv.al/static/vendor/exval/images/bg-game-valky.webp")!important;
+        }
+        .footer-logo {
+            height: 50px !important;
+            opacity: 0.6;
+        }
+        .sm {
+            height: 40px !important;
+        }
+        hr {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
+        }
+        </style>
+		{% block custom_css %}{% endblock %}
+    </head>
+
+	<body class="loggedin Bg-black">
+		<!-- VIEWS -->
+
+        <div id="page" class="site">
+            <!-- Navbar -->
+            {% include 'parts/navbar.html' %}
+            <!-- Content -->
+
+            <section class="container-fluid pt-5">
+                <div class="row py-5">
+                    <div class="col-12 py-5">
+                        {% if 'loggedin' in session %}
+                            {# Content View #}
+                            <div class="container py-5 text-white">
+                                {% block content %}{% endblock %}
+                            </div>
+                        {% else %}
+                            {# Login View #}
+                            <div class="container py-5">
+                                <div class="row">
+                                    <div class="text-right col-4">
+                                        <h1 class='u-margin-bottom-md ml-3 mr-3 pt-3'>
+                                            <span class="text-warning">LOGIN</span>
+                                        </h1>
+                                        <hl><div></div></hl>
+                                    </div>
+                                    <div class="text-left col-8">
+                                        <form method="POST" action="/login">
+                                            <div class="md-form form-sm">
+                                                <i class="fas fa-user-ninja prefix"></i>
+                                                <input type="text" name="login" id="email_login" class="form-control form-control-sm validate text-white" required />
+                                                <label data-error="wrong" data-success="right" for="email_login">Email or Username</label>
+                                            </div>
+                                            <div class="md-form form-sm">
+                                                <i class="fas fa-lock prefix"></i>
+                                                <input type="password" name="pass" id="pass" class="form-control form-control-sm validate text-white" required />
+                                                <label data-error="wrong" data-success="right" for="pass">Your Password</label>
+                                            </div>
+                                            <p class="my-4"><small>
+                                                <i class="fas fa-exclamation-triangle mr-1"></i> On login, you accept my <a class="text-warning" href="https://valky.dev/{{ stringtable['lang'] }}/legal/tos">Terms of Service</a> and <a class="text-warning" href="https://valky.dev/{{ stringtable['lang'] }}/legal/cup">Content Usage Policy</a>.
+                                            </small></p>
+                                            <div class="text-right mt-2">
+                                                <button name="submit" type="submit" class="btn btn-outline-warning">Login <i class="fas fa-sign-in ml-1"></i></button>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </section>
+            <!-- Footer -->
+            {% include 'parts/footer.html' %}
+        </div>
+
+		<!-- SCRIPTS -->
+		<!-- JQuery -->
+		<script type="text/javascript" src="https://exv.al/static/vendor/mdb/js/jquery-3.4.1.min.js"></script>
+		<!-- Bootstrap tooltips -->
+		<script type="text/javascript" src="https://exv.al/static/vendor/mdb/js/popper.min.js"></script>
+		<!-- Bootstrap core JavaScript -->
+		<script type="text/javascript" src="https://exv.al/static/vendor/mdb/js/bootstrap.min.js"></script>
+		<!-- MDB core JavaScript -->
+		<script type="text/javascript" src="https://exv.al/static/vendor/mdb/js/mdb.min.js"></script>
+        <!-- Exval -->
+        <script src="https://exv.al/static/vendor/exval/js/LazyLoading.js.download" id="lazy-js-js"></script>
+        <script src="https://exv.al/static/vendor/exval/js/ScrollMagic.min.js.download" id="scrollmasic-js-js"></script>
+        <script src="https://exv.al/static/vendor/exval/js/TweenMax.min.js.download" id="tweenmax-js-js"></script>
+        <script src="https://exv.al/static/vendor/exval/js/animation.gsap.js.download" id="gsap-js-js"></script>
+        <script src="https://exv.al/static/vendor/exval/js/swiper-4.5.0.min.js.download" id="swiper-js-js"></script>
+        <script src="https://exv.al/static/vendor/exval/js/common.js.download" id="custom-js-js"></script>
+		<!-- customJs -->
+		{% block custom_js %}{% endblock %}
+		<!-- Notice -->
+		{% include 'parts/notice.html' %}
+	</body>
+
+</html>

@@ -40,6 +40,7 @@ class ValkyrieBot:
     def __init__(self, twitch_bot: TwitchBot, discord_bot: DiscordBot, config: dict, logger: ValkyrieLogger, task_queue: TaskQueue):
         self.ready = False
         self.empty = False
+        self.running = True
         self.twitch_bot = twitch_bot
         self.discord_bot = discord_bot
         self.config = config
@@ -193,7 +194,7 @@ class ValkyrieBot:
         A loop which runs the main bot methods every N seconds. The N seconds interval is defined in the configuration
         file.
         """
-        while True:
+        while self.running:
             start_time = datetime.datetime.now()
             
             await self.check_unmod()
@@ -204,3 +205,10 @@ class ValkyrieBot:
             interval_miliseconds = self.config['interval'] * 1000 if self.ready else 10000
             time_microseconds = (datetime.datetime.now() - start_time).microseconds
             await asyncio.sleep((interval_miliseconds - time_microseconds) / 1000000)
+    
+    async def stop(self):
+        """
+        A method which stops the bot.
+        """
+        self.running = False
+        self.logger.info(f'ValkyrieBot stopped')

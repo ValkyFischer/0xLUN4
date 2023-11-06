@@ -1,0 +1,43 @@
+
+    {# FOOTER #}
+    <footer class="container-fluid p-5">
+
+        <div class="row">
+
+            <div class="col-md-5 col-sm-12 text-left">
+                <p class="p-2">
+                    {{ stringtable['foot-1'] }}
+                </p>
+                <p class="p-2">
+                    <i class="fal fa-grip-lines-vertical mr-1 text-warning"></i>
+                    <a href="/{{ stringtable['lang'] }}/legal" class="text-white">{{ stringtable['foot-2'] }}</a>
+                    <i class="fal fa-grip-lines-vertical mx-1 text-warning"></i>
+                    <a href="/{{ stringtable['lang'] }}/legal" class="text-white">{{ stringtable['foot-3'] }}</a>
+                    <i class="fal fa-grip-lines-vertical mx-1 text-warning"></i>
+                    <a href="/{{ stringtable['lang'] }}/legal" class="text-white">{{ stringtable['foot-4'] }}</a>
+                </p>
+
+                <p class="p-2 py-5">
+                    <a href="/{{ stringtable['lang'] }}"><img src="https://exv.al/static/img/dev_l_white.webp" alt="ExVal Ltd." class="ml-2 pl-1 footer-logo sm"></a><br>
+                    <a href="https://exv.al/{{ stringtable['lang'] }}"><img src="https://exv.al/static/vendor/exval/images/footer/exval.webp" alt="ExVal Ltd." class="footer-logo"></a>
+                </p>
+            </div>
+            <div class="col-md-7 col-sm-12 text-right">
+                <p class="p-2">
+                    <a class="btn btn-outline-warning" href="mailto:contact@valky.dev" title="Contact me!"><span class="text-white">{{ stringtable['foot-5'] }}</span></a>
+                </p>
+                <p class="p-2">
+                    <a class="btn btn-sm btn-outline-white" href="javascript:void(0)" onclick="toTop()" title="Back to Top">{{ stringtable['foot-6'] }} <i class="fas fa-angle-up"></i></a>
+                </p>
+            </div>
+
+        </div>
+
+    </footer>
+    <script>
+        function toTop() {
+            document.body.scrollTop = 0;
+            document.documentElement.scrollTop = 0;
+        }
+    </script>
+    {# /FOOTER #}

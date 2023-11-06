@@ -1,0 +1,10 @@
+
+{% with messages = get_flashed_messages() %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+			{% if messages %}
+	            toastr.info('{{ messages[0]|safe }}');
+            {% endif %}
+        });
+    </script>
+{% endwith %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block custom_css %}
+{% endblock %}
+
+{% block content %}
+	<section>
+		<div class="d-flex justify-content-center pt-4 text-white">
+			<div class="container-fluid pt-5">
+				<div class="row d-flex align-items-center flex-center pt-5">
+
+					<!--Grid column-->
+					<div class="col-md-4 text-center">
+                        <video autoplay muted loop width="100%">
+                            <source src="https://exv.al/static/vid/valky_char.webm" type="video/webm">
+                        </video>
+					</div>
+					<!--Grid column-->
+
+
+					<!--Grid column-->
+					<div class="col-md-7 mr-5">
+						<h1 class='u-margin-bottom-md ml-3 mr-3'><span class="text-warning">{{ error_id }}</span> <small> {{ error }}</small></h1>
+						<hl><div></div></hl>
+						<p class="mt-5 ml-5 mr-5">{{ stringtable['error']['error-1'] }}</p>
+						<p class="mt-2 ml-5 mr-5">{{ stringtable['error']['error-2'] }} <a class="text-warning" href="https://exv.al/{{ stringtable['lang'] }}/support">{{ stringtable['error']['error-3'] }}</a>.</p>
+					</div>
+					<!--Grid column-->
+
+				</div>
+			</div>
+		</div>
+	</section>
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}

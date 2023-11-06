@@ -1,0 +1,196 @@
+{% extends "base.html" %}
+
+{% block custom_css %}
+    <style>
+    tbody {
+        font-family: "monospace", monospace;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="text-right col-4">
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>The Valkyrie Bot</h1>
+        <hl><div></div></hl>
+    </div>
+    <div class="text-left col-8">
+        <div class="row">
+            <div class="col-12">
+                <p class="">The Valkyrie Bot is a project created by <a class="text-warning" href="https://valky.dev/en">Valky Fischer</a>, designed to provide functionality for Discord and Twitch communities. The project includes:</p>
+                <ul class="pl-3 py-2">
+                    <li><b>Main Bot</b>: The main bot that runs Discord and Twitch bots concurrently. It handles configuration files and logs events.</li>
+                    <li><b>Discord Bot</b>: A Discord bot that sends notifications and utilizes slash commands.</li>
+                    <li><b>Twitch Bot</b>: A Twitch bot that checks the status of Twitch channels and responds to chat commands.</li>
+                </ul>
+                <p class="">The Valkyrie Bot is designed to be versatile and user-friendly, suitable for various communities and content creators.</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row pt-5">
+    <div class="text-right col-4">
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Status Overview</h1>
+        <hl><div></div></hl>
+    </div>
+    <div class="text-left col-8">
+        <div class="row">
+            <div class="col-4 pt-2">
+                Main Bot
+            </div>
+            <div class="col-4 pt-2 {{ 'text-success' if vk_status else 'text-warning' }}">
+                {{ 'ONLINE' if vk_status else 'OFFLINE' }}
+            </div>
+            <div class="col-4">
+                <button class="btn btn-outline-warning btn-sm" type="button" data-toggle="collapse" data-target="#collapseMain" aria-expanded="false" aria-controls="collapseMain">
+                    <i class="fas fa-info-circle"></i> Info
+                </button>
+            </div>
+            <div class="col-12 collapse pb-2" id="collapseMain">
+                <div class="card card-body bg-dark text-white">
+                    <p class="mb-0">The Main Bot is the core of the Valkyrie Bot project. It handles configuration files and logs events.</p>
+                    <div class="row pt-2">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Controls</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="col-6 pt-2">Start the bot:</div>
+                                <div class="col-6"><a href="/start/vk" class="btn btn-outline-info btn-sm mt-2 w-100">Start</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 pt-2">View Tasks, Queued</div>
+                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/valky/tasks/queued" class="btn btn-outline-white btn-sm mt-2 w-100">Tasks, Queued</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 pt-2">View Tasks, Finished</div>
+                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/valky/tasks/finished" class="btn btn-outline-white btn-sm mt-2 w-100">Tasks, Finished</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 pt-2">Open Settings, Basic</div>
+                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/valky/settings" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Basic</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 pt-2">Open Settings, Luna</div>
+                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/valky/luna" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Luna</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4 pt-2">
+                Twitch Bot
+            </div>
+            <div class="col-4 pt-2 {{ 'text-success' if tw_status else 'text-warning' }}">
+                {{ 'ONLINE' if tw_status else 'OFFLINE' }}
+            </div>
+            <div class="col-4">
+                <button class="btn btn-outline-warning btn-sm" type="button" data-toggle="collapse" data-target="#collapseTwitch" aria-expanded="false" aria-controls="collapseTwitch">
+                    <i class="fas fa-info-circle"></i> Info
+                </button>
+            </div>
+            <div class="col-12 collapse pb-2" id="collapseTwitch">
+                <div class="card card-body bg-dark text-white">
+                    <p class="mb-0">The Twitch Bot is a bot that checks the status of Twitch channels and responds to chat commands.</p>
+                    <div class="row pt-2">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Controls</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="col-6 pt-2">Start the bot:</div>
+                                <div class="col-6"><a href="/start/tw" class="btn btn-outline-info btn-sm mt-2 w-100">Start</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 pt-2">Open Settings, Basic</div>
+                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/twitch/settings" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Basic</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 pt-2">Open Settings, Scopes</div>
+                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/twitch/scopes" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Scopes</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 pt-2">Open Settings, Rewards</div>
+                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/twitch/rewards" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Rewards</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4 pt-2">
+                Discord Bot
+            </div>
+            <div class="col-4 pt-2 {{ 'text-success' if dc_status else 'text-warning' }}">
+                {{ 'ONLINE' if dc_status else 'OFFLINE' }}
+            </div>
+            <div class="col-4">
+                <button class="btn btn-outline-warning btn-sm" type="button" data-toggle="collapse" data-target="#collapseDiscord" aria-expanded="false" aria-controls="collapseDiscord">
+                    <i class="fas fa-info-circle"></i> Info
+                </button>
+            </div>
+            <div class="col-12 collapse pb-2" id="collapseDiscord">
+                <div class="card card-body bg-dark text-white">
+                    <p class="mb-0">The Discord Bot is a bot that sends notifications and utilizes slash commands.</p>
+                    <div class="row pt-2">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Controls</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="col-6 pt-2">Start the bot:</div>
+                                <div class="col-6"><a href="/start/dc" class="btn btn-outline-info btn-sm mt-2 w-100">Start</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 pt-2">Open Settings, Basic</div>
+                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/discord/settings" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Basic</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="row pt-5">
+    <div class="text-right col-4">
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Latest Logs</h1>
+        <hl><div></div></hl>
+    </div>
+    <div class="text-left col-8">
+        <div class="row">
+            <div class="col-12">
+                <table class="table table-dark table-striped table-hover table-sm">
+                    <thead>
+                        <tr>
+                            <th scope="col">Time</th>
+                            <th scope="col">Level</th>
+                            <th scope="col">Message</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in logs %}
+                        <tr class="{{ 'text-warning' if log['level']|lower == 'warning' else ('text-danger' if log['level']|lower == 'error' else '') }}">
+                            <td>{{ log['time'] }}</td>
+                            <td>{{ log['level'] }}</td>
+                            <td>{{ log['message'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}

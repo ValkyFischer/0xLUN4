@@ -40,6 +40,7 @@ from bot_discord import DiscordBot
 from bot_valkyrie import ValkyrieBot
 
 from Modules.tasks import TaskQueue
+from bot_web import WebServer
 
 
 class Valkyrie:
@@ -66,6 +67,7 @@ class Valkyrie:
         self.tw_bot = TwitchBot(self.config, self.logger, self.task_queue)
         self.dc_bot = DiscordBot(self.config, self.logger, self.task_queue)
         self.vk_bot = ValkyrieBot(self.tw_bot, self.dc_bot, self.config, self.logger, self.task_queue)
+        self.web = WebServer(self.tw_bot, self.dc_bot, self.vk_bot, self.logger, self.config, valky)
     
     def run(self):
         """
@@ -75,14 +77,18 @@ class Valkyrie:
         loop = asyncio.get_event_loop()
         
         # valkyrie
-        loop.create_task(self.vk_bot.run())
-        
+        # loop.create_task(self.vk_bot.run())
+
         # discord
         self.dc_bot.setup()
-        loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
+        # loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
+        #
+        # # twitch
+        # loop.create_task(self.tw_bot.run())
+
+        # web
+        loop.create_task(self.web.run())
         
-        # twitch
-        loop.create_task(self.tw_bot.run())
         
         try:
             # run until CTRL+C
@@ -119,7 +125,7 @@ if __name__ == "__main__":
         r"        \   /     |  | |  | |      | |  |\   \  `-./  /.__)        |  '--'  / |  `---.    \   /        ",
         r"         `-'      `--' `--' `------' `--' '--'    `--'             `-------'  `------'     `-'         ",
         r"                                                                                                       ",
-        r"======================================================================================================="
+        r"==v=================================================================================================v=="
     ]
 
     try:

@@ -113,5 +113,12 @@
         "port": 443,
         "version": 2,
         "token": ""
+    },
+    "web": {
+        "host": "0.0.0.0",
+        "port": 5000,
+        "user": "",
+        "pass": "",
+        "token": ""
     }
 }
