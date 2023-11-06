@@ -36,6 +36,40 @@
     <div class="text-left col-8">
         <div class="row">
             <div class="col-4 pt-2">
+                L.U.N.A. API
+            </div>
+            <div class="col-4 pt-2 {{ 'text-success' if l4_status else 'text-warning' }}">
+                {{ 'ONLINE' if l4_status else 'OFFLINE' }}
+            </div>
+            <div class="col-4">
+                <button class="btn btn-outline-warning btn-sm" type="button" data-toggle="collapse" data-target="#collapseLuna" aria-expanded="false" aria-controls="collapseLuna">
+                    <i class="fas fa-info-circle"></i> Info
+                </button>
+            </div>
+            <div class="col-12 collapse pb-2" id="collapseLuna">
+                <div class="card card-body bg-dark text-white">
+                    <p class="mb-0">L.U.N.A. represents a remarkable leap forward in AI technology, driven by the power of Microsoft's GPT-4 language model. I've trained this AI using data collected over the past several years from private Discord channels, Twitch streams, and various other public platforms.</p>
+                    <div class="row pt-2">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Info</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="col-6 pt-2">API Latency:</div>
+                                <div class="col-6 pt-2 text-warning">{{ ping }} ms</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-6 pt-2">Server Time:</div>
+                                <div class="col-6 pt-2 text-warning">{{ server_time }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4 pt-2">
                 Main Bot
             </div>
             <div class="col-4 pt-2 {{ 'text-success' if vk_status else 'text-warning' }}">
@@ -161,8 +195,9 @@
 </div>
 <div class="row pt-5">
     <div class="text-right col-4">
-        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Latest Logs</h1>
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Latest 5 Logs</h1>
         <hl><div></div></hl>
+        <p>View all logs <a class="text-warning" href="/{{ stringtable['lang'] }}/logs">here...</a></p>
     </div>
     <div class="text-left col-8">
         <div class="row">

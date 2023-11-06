@@ -6,12 +6,15 @@ Created on Oct 23, 2023
 """
 import asyncio
 import logging
+import time
 from threading import Thread
 
+import requests
 from waitress import serve
 from flask import Flask, request, jsonify, render_template, session, redirect, flash
 
 from Web.stringtable import ST
+from Modules.luna import Luna
 
 
 class WebServer:
@@ -22,6 +25,7 @@ class WebServer:
         self.config = config
         self.logger = logger
         self.valky = valky
+        self.luna = Luna(self.logger, self.config)
         
         self.tw_bot = twitch_b
         self.dc_bot = discord_b
@@ -33,6 +37,8 @@ class WebServer:
         self.app.add_url_rule('/', 'index', self.index)
         self.app.add_url_rule('/<lang>', 'index', self.index)
         self.app.add_url_rule('/<lang>/', 'index', self.index)
+        self.app.add_url_rule('/<lang>/logs', 'logs', self.logs)
+        self.app.add_url_rule('/<lang>/logs/', 'logs', self.logs)
         self.app.add_url_rule('/login', 'login', self.login, methods=['POST'])
         self.app.add_url_rule('/logout', 'logout', self.logout)
         self.app.add_url_rule('/start/<bot>', 'start_bot', self.start_bot)
@@ -45,35 +51,74 @@ class WebServer:
             lang = 'en'
         
         if 'loggedin' in session:
-            logs = []
-            path = self.logger.PATH
-            start_string = self.valky[-1]+"'"
-            with open(path, 'r') as f:
-                last_part = f.read().split(start_string)[-1]
-            for l in last_part.split('\n'):
-                if l == '':
-                    continue
-                log_data = l[:-1].replace("b'", '').replace('b"', '').split(' | ', 5)
+            logs = self.getLogs()
+            latest_5 = logs[-5:]
+
+            try:
+                x = requests.post(url = f"{self.luna.luna_rest_url}/ping", json = {})
+                ping = int(x.elapsed.microseconds / 1000)
+                data = x.json()
+                server_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['Timestamp']))
+            except requests.RequestException as e:
+                self.logger.error(f'Failed to make the request: {str(e)}')
+                ping = 0
+                server_time = 'N/A'
                 
-                if log_data[5] != self.valky[0]:
-                    logs.append({
-                        'time': log_data[0],
-                        'level': log_data[1],
-                        'file': log_data[2],
-                        'line': log_data[3],
-                        'method': log_data[4],
-                        'message': log_data[5]
-                    })
+            l4_status = 'OFFLINE' if ping == 0 else 'ONLINE'
             
             return render_template(
                 template_name_or_list='index.html',
                 stringtable=ST[lang],
                 vk_status=self.vk_bot.ready,
                 dc_status=self.dc_bot.loaded,
-                tw_status=self.tw_bot.loaded,
-                logs=logs
+                tw_status=False,
+                logs=latest_5,
+                l4_status=l4_status,
+                ping=ping,
+                server_time=server_time
             )
         return render_template('index.html', stringtable=ST[lang])
+    
+    def logs(self, lang='en'):
+        """
+        The logs page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' in session:
+            logs = self.getLogs()
+            return render_template(
+                template_name_or_list='logs.html',
+                stringtable=ST[lang],
+                logs=logs
+            )
+        return redirect('/')
+    
+    def getLogs(self):
+        """
+        Returns the logs.
+        """
+        logs = []
+        path = self.logger.PATH
+        start_string = self.valky[-1]+"'"
+        with open(path, 'r') as f:
+            last_part = f.read().split(start_string)[-1]
+        for l in last_part.split('\n'):
+            if l == '':
+                continue
+            log_data = l[:-1].replace("b'", '').replace('b"', '').split(' | ', 5)
+            
+            if log_data[5] != self.valky[0]:
+                logs.append({
+                    'time': log_data[0],
+                    'level': log_data[1],
+                    'file': log_data[2],
+                    'line': log_data[3],
+                    'method': log_data[4],
+                    'message': log_data[5]
+                })
+        return logs
     
     def login(self):
         """
