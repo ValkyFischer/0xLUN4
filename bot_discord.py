@@ -35,6 +35,8 @@ Example:
 """
 
 import datetime
+import os
+
 import discord
 
 from discord import app_commands, ui
@@ -76,6 +78,18 @@ class DiscordBot:
         
         global LUNA
         LUNA = Luna(self.logger, self.config)
+        if not os.path.exists("Discord/data/tickets.txt"):
+            self.write_ticket(0)
+    
+    @staticmethod
+    def write_ticket(i):
+        with open("Discord/data/tickets.txt", "w") as f:
+            f.write(str(i))
+    
+    @staticmethod
+    def read_ticket():
+        with open("Discord/data/tickets.txt", "r") as f:
+            return int(f.read())
     
     async def send_log(self, message: str):
         """
@@ -157,6 +171,7 @@ class DiscordBot:
             """
             self.logger.info(f'Discord Command | ping | {interaction.user.name}')
             await interaction.response.send_message(f"[PING] Pong! | {round(self.client.latency * 1000)}ms")
+            await self.send_log(f'{interaction.user.name} pinged the bot')
         
         @self.tree.command(name="discord", description="Discord Invite Link", guild=self.guild)
         async def dc_discord(interaction):
@@ -168,6 +183,7 @@ class DiscordBot:
             """
             self.logger.info(f'Discord Command | discord | {interaction.user.name}')
             await interaction.response.send_message(f"[DISCORD] You can use the following link to invite your friends. |  https://discord.gg/vky")
+            await self.send_log(f'{interaction.user.name} requested the Discord invite link')
         
         @self.tree.command(name="twitch", description="Twitch Channel Link", guild=self.guild)
         async def dc_twitch(interaction):
@@ -179,6 +195,7 @@ class DiscordBot:
             """
             self.logger.info(f'Discord Command | twitch | {interaction.user.name}')
             await interaction.response.send_message(f"[TWITCH] Want to watch Valky live? Follow on Twitch and dont miss the next stream. | https://twitch.tv/v_lky")
+            await self.send_log(f'{interaction.user.name} requested the Twitch channel link')
         
         @self.tree.command(name="exval", description="ExVal Limited Link", guild=self.guild)
         async def dc_exval(interaction):
@@ -190,6 +207,7 @@ class DiscordBot:
             """
             self.logger.info(f'Discord Command | exval | {interaction.user.name}')
             await interaction.response.send_message(f"[EXVAL] Want to know more about ExVal Limited? Check out the official website of ExVal Ltd. | https://exv.al/en")
+            await self.send_log(f'{interaction.user.name} requested the ExVal Limited link')
         
         @self.tree.command(name="translate", description="Translate any text into english", guild=self.guild)
         async def dc_translate(interaction):
@@ -201,6 +219,7 @@ class DiscordBot:
             """
             self.logger.info(f'Discord Command | translate | {interaction.user.name}')
             await interaction.response.send_modal(LunaTranslate())
+            await self.send_log(f'{interaction.user.name} requested the translation modal')
             
         @self.tree.command(name="ask", description="Ask L.U.N.A. a question", guild=self.guild)
         async def dc_ask(interaction):
@@ -212,6 +231,57 @@ class DiscordBot:
             """
             self.logger.info(f'Discord Command | ask | {interaction.user.name}')
             await interaction.response.send_modal(LunaAsk())
+            await self.send_log(f'{interaction.user.name} requested the ask modal')
+        
+        @self.tree.command(name="support", description="Open a support ticket", guild=self.guild)
+        async def dc_support(interaction):
+            """
+            This command allows you to open a support ticket.
+            
+            Args:
+                interaction (any): The interaction object.
+            """
+            self.logger.info(f'Discord Command | support | {interaction.user.name}')
+            await interaction.response.send_modal(LunaSupport())
+            await self.send_log(f'{interaction.user.name} requested the support modal')
+
+
+class LunaSupport(discord.ui.Modal, title='L.U.N.A. Support'):
+    description = ui.TextInput(label='What do you need help with?', style=discord.TextStyle.paragraph, min_length=69,
+                               max_length=1337)
+
+    async def on_submit(self, interaction: discord):
+        category = discord.utils.get(interaction.guild.categories, name="Support Tickets")
+        staff_role = discord.utils.get(interaction.guild.roles, name="Dark Raven")
+        guild = interaction.guild
+        overwrites = {
+            guild.default_role: discord.PermissionOverwrite(view_channel=False),
+            interaction.user: discord.PermissionOverwrite(view_channel=True),
+            staff_role: discord.PermissionOverwrite(view_channel=True)
+        }
+        
+        ticket_no = DiscordBot.read_ticket() + 1
+        channel = await guild.create_text_channel(f"ticket-{ticket_no}", category=category,
+                                                  topic=f"{interaction.user.name}", overwrites=overwrites)
+        
+        embed_widget = discord.Embed(
+            title=f"Ticket #{ticket_no}",
+            description=f"**Discord User ID:** *{interaction.user.id}*\n**Discord User:** *{interaction.user.name}*\n\n**Description:**\n{self.description}",
+            color=0xE91E63,
+            timestamp=datetime.datetime.utcnow()
+        )
+        embed_widget.set_footer(text=f"2023 © Valky Dev", icon_url=f"https://exv.al/static/img/dev.webp")
+        embed_widget.set_author(name=f"{interaction.user.name}", icon_url=f"{interaction.user.display_avatar.url}")
+        
+        await interaction.response.send_message(
+            f'Thanks for your message, {interaction.user.name}!\n\nA moderator will get back to you as soon as possible.\nThanks for your patience.\n\n*~L.U.N.A. Assistant*',
+            ephemeral=True)
+        await channel.send(
+            f'Thanks for your message, <@{interaction.user.id}>!\n\nA moderator will get back to you as soon as possible.\nThanks for your patience.\n\n*~L.U.N.A. Assistant*',
+            embed=embed_widget)
+        
+        DiscordBot.write_ticket(ticket_no)
+
 
 class LunaTranslate(discord.ui.Modal, title='L.U.N.A. Translator'):
     """
@@ -269,7 +339,7 @@ class LunaTranslate(discord.ui.Modal, title='L.U.N.A. Translator'):
             timestamp=datetime.datetime.utcnow()
         )
         embed_widget.set_footer(text=f"2023 © Valky Dev", icon_url=f"https://exv.al/static/img/dev.webp")
-        embed_widget.set_author(name=f"{interaction.user.name}")
+        embed_widget.set_author(name=f"{interaction.user.name}", icon_url=f"{interaction.user.display_avatar.url}")
         await interaction.response.send_message(embed=embed_widget)
 
 
@@ -302,6 +372,6 @@ class LunaAsk(discord.ui.Modal, title='L.U.N.A. Assistant'):
             timestamp=datetime.datetime.utcnow()
         )
         embed_widget.set_footer(text=f"2023 © Valky Dev", icon_url=f"https://exv.al/static/img/dev.webp")
-        embed_widget.set_author(name=f"{interaction.user.name}")
+        embed_widget.set_author(name=f"{interaction.user.name}", icon_url=f"{interaction.user.display_avatar.url}")
         
         await interaction.followup.send(embed = embed_widget)
