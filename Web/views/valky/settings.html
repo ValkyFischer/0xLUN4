@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block custom_css %}
+    <style>
+    tbody {
+        font-family: "monospace", monospace;
+    }
+    </style>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="text-right col-4 pt-2">
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Settings</h1>
+        <hl><div></div></hl>
+    </div>
+    <div class="text-left col-8">
+        <div class="row">
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <h2>Web Server</h2>
+                    <p class="mb-0">Web Server is a module that allows you to manage your bots through a web browser.</p>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Basic</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <form method="POST" action="/login">
+                            <div class="text-left col-12">
+                                <div class="row">
+                                    <div class="text-left col-6">
+                                        <div class="md-form form-sm mt-1">
+                                            <i class="fas fa-server prefix"></i>
+                                            <input type="text" name="web_host" id="web_host" class="form-control form-control-sm validate text-white" value="{{ config['web']['host'] }}" required />
+                                            <label data-error="wrong" data-success="right" for="web_host">Web Host Address</label>
+                                        </div>
+                                        <div class="md-form form-sm">
+                                            <i class="fas fa-lock prefix"></i>
+                                            <input type="number" name="web_port" id="web_port" class="form-control form-control-sm validate text-white" value="{{ config['web']['port'] }}" required />
+                                            <label data-error="wrong" data-success="right" for="web_port">Web Host Port</label>
+                                        </div>
+                                        <div class="md-form form-sm">
+                                            <i class="fas fa-clock prefix"></i>
+                                            <input type="number" name="update_interval" id="update_interval" class="form-control form-control-sm validate text-white" value="{{ config['interval'] }}" required />
+                                            <label data-error="wrong" data-success="right" for="update_interval">Update Interval in Seconds</label>
+                                        </div>
+                                    </div>
+                                    <div class="text-left col-6">
+                                        <div class="md-form form-sm mt-1">
+                                            <i class="fas fa-user-ninja prefix"></i>
+                                            <input type="text" name="web_user" id="web_user" class="form-control form-control-sm validate text-white" value="{{ config['web']['user'] }}" required />
+                                            <label data-error="wrong" data-success="right" for="web_user">Admin Login</label>
+                                        </div>
+                                        <div class="md-form form-sm">
+                                            <i class="fas fa-lock prefix"></i>
+                                            <input type="text" name="web_pass" id="web_pass" class="form-control form-control-sm validate text-white" value="{{ config['web']['pass'] }}" required />
+                                            <label data-error="wrong" data-success="right" for="web_pass">Admin Password</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="text-right mt-2">
+                                    <button name="submit" type="submit" class="btn btn-outline-warning">Save <i class="fas fa-edit ml-1"></i></button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}

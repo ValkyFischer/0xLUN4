@@ -4,7 +4,7 @@
 Created on Oct 23, 2023
 @author: v_lky
 """
-import asyncio
+
 import time
 from threading import Thread
 
@@ -61,6 +61,8 @@ class WebServer:
         self.app.add_url_rule('/<lang>/valky/', 'valky', self.valky_bot)
         self.app.add_url_rule('/<lang>/valky/status', 'valky', self.valky_bot)
         self.app.add_url_rule('/<lang>/valky/status/', 'valky', self.valky_bot)
+        self.app.add_url_rule('/<lang>/valky/settings', 'valky_settings', self.valky_settings)
+        self.app.add_url_rule('/<lang>/valky/settings/', 'valky_settings', self.valky_settings)
     
     # ========================================================================================
     # Valkyrie Bot - Views
@@ -148,6 +150,23 @@ class WebServer:
             stringtable=ST[lang],
             vk_status=self.vk_bot.ready,
             tasks=tasks,
+        )
+    
+    async def valky_settings(self, lang='en'):
+        """
+        The Valkyrie bot settings page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        return render_template(
+            template_name_or_list='valky/settings.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            config=self.config
         )
     
     # ========================================================================================
