@@ -115,9 +115,9 @@ class ValkyrieBot:
                         lines = f.readlines()
                         for line in lines:
                             line = line.strip()
-                            time, user_name = line.split('|')
-                            time = datetime.datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
-                            if (datetime.datetime.now() - time).total_seconds() > duration:
+                            time_count, user_name = line.split('|')
+                            time_dtime = datetime.datetime.strptime(time_count, '%Y-%m-%d %H:%M:%S')
+                            if (datetime.datetime.now() - time_dtime).total_seconds() > duration:
                                 await self.twitch_bot.channel.unmod(user_name)
                                 self.logger.info(f'Removing moderator role | {user_name}')
                                 lines.remove(line)
@@ -134,15 +134,17 @@ class ValkyrieBot:
             - TASK_TW_TIMEOUT: Times out a Twitch user.
             - TASK_SPECIAL: Sends a special message to a Discord channel.
         """
-        if self.task_queue.tasks.empty():
+        if self.task_queue.get_task_count() == 0:
             if not self.empty:
                 self.empty = True
                 self.logger.info(f'Observing task queue is empty')
         else:
             self.empty = False
-            q = self.task_queue.tasks.qsize()
+            q = self.task_queue.get_task_count()
             for i in range(q):
-                task = await self.task_queue.get_task()
+                
+                task = self.task_queue.get_task()
+                self.logger.info(f'Executing task from queue | {i+1}/{q} | {task.action} | {task.data}')
                 
                 if task.action == self.task_queue.TASK_DC_ADD_ROLE:
                     await self.discord_bot.assign_role(task.data['user_input'] if 'user_input' in task.data else task.data['user_name'])
@@ -187,24 +189,24 @@ class ValkyrieBot:
                     self.logger.warning(f'Unknown task action: {task.action}')
                     await self.discord_bot.send_log(f"Unknown task action: {task.action}")
                     
-                self.logger.info(f'Executing task from queue | {i+1}/{q} | {task.action} | {task.data}')
+                self.task_queue.end_task(task)
     
     async def run(self):
         """
         A loop which runs the main bot methods every N seconds. The N seconds interval is defined in the configuration
         file.
         """
-        while self.running:
-            start_time = datetime.datetime.now()
+        while True:
+            start_time = time.time()
+            interval_seconds = self.config['interval'] if self.ready else 5
             
             await self.check_unmod()
             await self.check_queue()
             await self.check_refresh()
             await self.check_live()
             
-            interval_miliseconds = self.config['interval'] * 1000 if self.ready else 10000
-            time_microseconds = (datetime.datetime.now() - start_time).microseconds
-            await asyncio.sleep((interval_miliseconds - time_microseconds) / 1000000)
+            sleep_duration = interval_seconds - (time.time() - start_time)
+            await asyncio.sleep(sleep_duration)
     
     async def stop(self):
         """

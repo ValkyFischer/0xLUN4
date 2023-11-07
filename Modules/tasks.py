@@ -11,7 +11,7 @@ About:
     Discord or Twitch. The task queue is based on asyncio.Queue and can be used to add and get tasks concurrently.
 
 """
-import asyncio
+
 import logging
 
 
@@ -41,7 +41,8 @@ class TaskQueue:
     def __init__(self, config: dict, logger: logging.Logger):
         self.config = config
         self.logger = logger
-        self.tasks = asyncio.Queue()
+        self.tasks = []
+        self.finished_tasks = []
         
         self.TASK_TW_TIMEOUT = "twitch_timeout"
         self.TASK_TW_ADD_MODERATOR = "twitch_moderator"
@@ -49,31 +50,51 @@ class TaskQueue:
         self.TASK_DC_ADD_ROLE = "discord_role"
         self.TASK_SPECIAL = "special"
 
-    async def add_task(self, task) -> None:
+    def add_task(self, task: Task) -> None:
         """
         Adds a task to the queue. The task can be any object.
         
         Args:
             task: The task to add to the queue.
         """
-        await self.tasks.put(task)
-        self.logger.info(f'Adding task to queue | {task.action} ({task.id})')
+        self.tasks.append(task)
+        self.logger.info(f'Adding task to queue | {task.action} ({task.id}) | Queue size: {self.get_task_count()}')
 
-    async def get_task(self) -> any:
+    def get_task(self) -> Task:
         """
         Gets a task from the queue. The task can be any object.
         
         Returns:
-            any: The task from the queue.
+            Task: The task from the queue.
         """
-        task = await self.tasks.get()
-        
-        self.logger.info(f'Getting task from queue | {task.action} ({task.id})')
+        task = self.tasks.pop(0)
+        self.logger.info(f'Getting task from queue | {task.action} ({task.id}) | Queue size: {self.get_task_count()}')
         return task
 
-    def task_done(self):
+    def end_task(self, task: Task) -> None:
         """
         Marks a task as done. This should be called after a task has been completed.
+        
+        Args:
+            task: The task to mark as done.
         """
-        self.tasks.task_done()
-        self.logger.info(f'Finished task from queue')
+        self.finished_tasks.append(task)
+        self.logger.info(f'Finished task from queue | {task.action} ({task.id}) | Queue size: {self.get_task_count()}')
+    
+    def get_task_count(self) -> int:
+        """
+        Gets the number of tasks in the queue.
+        
+        Returns:
+            int: The number of tasks in the queue.
+        """
+        return len(self.tasks)
+    
+    def get_task_queue(self) -> list:
+        """
+        Gets the task queue.
+        
+        Returns:
+            list: The task queue.
+        """
+        return self.tasks

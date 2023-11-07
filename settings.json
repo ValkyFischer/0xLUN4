@@ -107,12 +107,13 @@
             "stream": ""
         }
     },
-    "interval": 60000,
+    "interval": 60,
     "luna": {
         "host": "valky.dev",
         "port": 443,
         "version": 2,
-        "token": ""
+        "token": "",
+        "interval": 3600
     },
     "web": {
         "host": "0.0.0.0",

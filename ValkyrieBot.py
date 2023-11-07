@@ -71,24 +71,13 @@ class Valkyrie:
     
     def run(self):
         """
-        Runs the Discord bot and the Twitch bot concurrently in an asyncio event loop. The event loop will run until
-        the user presses CTRL+C.
+        Runs the Valkyrie Bot web server and gives an asyncio event loop to its run function. The web server allows to
+        run a Discord bot and the Twitch bot concurrently in one loop.
+        
+        The event loop will run until the user presses CTRL+C.
         """
         loop = asyncio.get_event_loop()
-        
-        # valkyrie
-        # loop.create_task(self.vk_bot.run())
-
-        # discord
-        self.dc_bot.setup()
-        # loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
-        #
-        # # twitch
-        # loop.create_task(self.tw_bot.run())
-
-        # web
-        loop.create_task(self.web.run())
-        
+        loop.create_task(self.web.run(loop))
         
         try:
             # run until CTRL+C

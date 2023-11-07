@@ -25,6 +25,9 @@ class WebServer:
         self.logger = logger
         self.valky = valky
         self.luna = Luna(self.logger, self.config)
+        self.luna_time = 0
+        self.luna_ping = 0
+        self.luna_interval = self.config['luna']['interval']
         
         self.tw_bot = twitch_b
         self.dc_bot = discord_b
@@ -32,16 +35,38 @@ class WebServer:
         
         self.app = Flask(__name__, static_folder='Web/data', template_folder='Web/views')
         self.app.config['SECRET_KEY'] = self.config['web']['token']
+        self.app.config['SESSION_COOKIE_SECURE'] = True
         
+        self.loop = None
+        
+        self.setup()
+        
+    def setup(self):
+        """
+        Sets up the web server.
+        """
+        # index
         self.app.add_url_rule('/', 'index', self.index)
         self.app.add_url_rule('/<lang>', 'index', self.index)
         self.app.add_url_rule('/<lang>/', 'index', self.index)
+        # logs
         self.app.add_url_rule('/<lang>/logs', 'logs', self.logs)
         self.app.add_url_rule('/<lang>/logs/', 'logs', self.logs)
+        # functions
         self.app.add_url_rule('/login', 'login', self.login, methods=['POST'])
         self.app.add_url_rule('/logout', 'logout', self.logout)
         self.app.add_url_rule('/start/<bot>', 'start_bot', self.start_bot)
-        
+        # valky
+        self.app.add_url_rule('/<lang>/valky', 'valky', self.valky_bot)
+        self.app.add_url_rule('/<lang>/valky/', 'valky', self.valky_bot)
+        self.app.add_url_rule('/<lang>/valky/status', 'valky', self.valky_bot)
+        self.app.add_url_rule('/<lang>/valky/status/', 'valky', self.valky_bot)
+    
+    # ========================================================================================
+    # Valkyrie Bot - Views
+    # ========================================================================================
+    
+    # Index
     def index(self, lang='en'):
         """
         The index page.
@@ -54,18 +79,22 @@ class WebServer:
         
         logs = self.getLogs()
         latest_5 = logs[-5:]
-
-        try:
-            x = requests.post(url = f"{self.luna.luna_rest_url}/ping", json = {})
-            ping = int(x.elapsed.microseconds / 1000)
-            data = x.json()
-            server_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['Timestamp']))
-        except requests.RequestException as e:
-            self.logger.error(f'Failed to make the request: {str(e)}')
-            ping = 0
-            server_time = 'N/A'
-            
-        l4_status = 'OFFLINE' if ping == 0 else 'ONLINE'
+        
+        if self.luna_time + self.luna_interval < time.time():
+            try:
+                x = requests.post(url = f"{self.luna.luna_rest_url}/ping", json = {})
+                self.luna_ping = int(x.elapsed.microseconds / 1000)
+                data = x.json()
+                self.luna_time = data['Timestamp']
+                server_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['Timestamp']))
+                self.logger.info(f'Luna Ping | Latency: {self.luna_ping}ms')
+                
+            except requests.RequestException as e:
+                self.logger.error(f'Failed to make the request: {str(e)}')
+                self.luna_ping = 0
+                server_time = 'N/A'
+        else:
+            server_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.luna_time))
         
         return render_template(
             template_name_or_list='index.html',
@@ -74,8 +103,8 @@ class WebServer:
             dc_status=self.dc_bot.loaded,
             tw_status=self.tw_bot.loaded,
             logs=latest_5,
-            l4_status=l4_status,
-            ping=ping,
+            l4_status='OFFLINE' if self.luna_ping == 0 else 'ONLINE',
+            ping=self.luna_ping,
             server_time=server_time
         )
     
@@ -96,30 +125,34 @@ class WebServer:
             logs=logs
         )
     
-    def getLogs(self):
+    # Valky
+    async def valky_bot(self, lang='en'):
         """
-        Returns the logs.
+        The Valkyrie bot page.
         """
-        logs = []
-        path = self.logger.PATH
-        start_string = self.valky[-1]+"'"
-        with open(path, 'r') as f:
-            last_part = f.read().split(start_string)[-1]
-        for l in last_part.split('\n'):
-            if l == '':
-                continue
-            log_data = l[:-1].replace("b'", '').replace('b"', '').split(' | ', 5)
-            
-            if log_data[5] != self.valky[0]:
-                logs.append({
-                    'time': log_data[0],
-                    'level': log_data[1],
-                    'file': log_data[2],
-                    'line': log_data[3],
-                    'method': log_data[4],
-                    'message': log_data[5]
-                })
-        return logs
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        tasks_raw = self.vk_bot.task_queue.get_task_queue()
+        tasks = []
+        for task in tasks_raw:
+            task.data['id'] = task.id
+            task.data['action'] = task.action
+            tasks.append(task.data)
+        
+        return render_template(
+            template_name_or_list='valky.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            tasks=tasks,
+        )
+    
+    # ========================================================================================
+    # Valkyrie Bot - Functions
+    # ========================================================================================
     
     def login(self):
         """
@@ -167,37 +200,62 @@ class WebServer:
         flash(f'Started {name} Bot', 'info')
         return redirect('/')
     
+    # ========================================================================================
+    # Valkyrie Bot - Helpers
+    # ========================================================================================
+    
     def start_vk_bot(self):
         """
         Starts the Valkyrie bot.
         """
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.create_task(self.vk_bot.run())
-        loop.run_forever()
+        self.loop.create_task(self.vk_bot.run())
         
     def start_dc_bot(self):
         """
         Starts the Discord bot.
         """
-        # self.dc_bot.setup()
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
-        loop.run_forever()
+        self.dc_bot.setup()
+        self.loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
         
     def start_tw_bot(self):
         """
         Starts the Twitch bot.
         """
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-        loop.create_task(self.tw_bot.run())
-        loop.run_forever()
+        self.loop.create_task(self.tw_bot.run())
     
-    def run(self):
+    def getLogs(self):
+        """
+        Returns the logs.
+        """
+        logs = []
+        path = self.logger.PATH
+        start_string = self.valky[-1] + "'"
+        with open(path, 'r') as f:
+            last_part = f.read().split(start_string)[-1]
+        for l in last_part.split('\n'):
+            if l == '':
+                continue
+            log_data = l[:-1].replace("b'", '').replace('b"', '').split(' | ', 5)
+            
+            if log_data[5] != self.valky[0]:
+                logs.append({
+                    'time': log_data[0],
+                    'level': log_data[1],
+                    'file': log_data[2],
+                    'line': log_data[3],
+                    'method': log_data[4],
+                    'message': log_data[5]
+                })
+        return logs
+    
+    # ========================================================================================
+    # Valkyrie Bot - Serve
+    # ========================================================================================
+    
+    def run(self, loop):
         """
         Runs the web server using waitress.
         """
+        self.loop = loop
         self.logger.info(f'Web | Starting web server on port {self.config["web"]["port"]}...')
         serve(self.app, host=self.config['web']['host'], port=self.config['web']['port'])

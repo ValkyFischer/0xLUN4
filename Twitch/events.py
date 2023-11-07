@@ -96,7 +96,7 @@ class Event:
                     "user_input": event.input,
                 }
                 task = Task(task_action, task_data)
-                await self.bot.task_queue.add_task(task)
+                self.bot.task_queue.add_task(task)
         
         channel = self.bot.get_channel(user_name)
         if channel is not None:
