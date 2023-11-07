@@ -61,18 +61,25 @@
                         </div>
                         <div class="text-left col-8">
                             <div class="row">
-                                <div class="text-left col-6">
+                                <div class="text-left col-12">
                                     <div class="md-form form-sm mt-1">
-                                        <i class="fas fa-user-ninja prefix"></i>
-                                        <input type="text" name="web_user" id="web_user" class="form-control form-control-sm validate text-white" value="{{ config['web']['user'] }}" required />
-                                        <label data-error="wrong" data-success="right" for="web_user">Admin Login</label>
+                                        <i class="fas fa-lock prefix"></i>
+                                        <input type="password" name="web_token" id="web_token" class="form-control form-control-sm validate text-white" value="{{ config['web']['token'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="web_token">Web Host Token</label>
                                     </div>
                                 </div>
                                 <div class="text-left col-6">
                                     <div class="md-form form-sm mt-1">
-                                        <i class="fas fa-lock prefix"></i>
+                                        <i class="fas fa-user-ninja prefix"></i>
+                                        <input type="text" name="web_user" id="web_user" class="form-control form-control-sm validate text-white" value="{{ config['web']['user'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="web_user">Web Host Login</label>
+                                    </div>
+                                </div>
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-1">
+                                        <i class="fas fa-key prefix"></i>
                                         <input type="password" name="web_pass" id="web_pass" class="form-control form-control-sm validate text-white" value="{{ config['web']['pass'] }}" required />
-                                        <label data-error="wrong" data-success="right" for="web_pass">Admin Password</label>
+                                        <label data-error="wrong" data-success="right" for="web_pass">Web Host Password</label>
                                     </div>
                                 </div>
                             </div>
