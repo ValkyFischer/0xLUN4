@@ -5,13 +5,12 @@ Created on Oct 23, 2023
 @author: v_lky
 """
 import asyncio
-import logging
 import time
 from threading import Thread
 
 import requests
 from waitress import serve
-from flask import Flask, request, jsonify, render_template, session, redirect, flash
+from flask import Flask, request, render_template, session, redirect, flash
 
 from Web.stringtable import ST
 from Modules.luna import Luna
@@ -93,7 +92,7 @@ class WebServer:
                 stringtable=ST[lang],
                 logs=logs
             )
-        return redirect('/')
+        return redirect('https://valky.xyz/')
     
     def getLogs(self):
         """
@@ -129,11 +128,9 @@ class WebServer:
         if input_login == self.config['web']['user'] and input_password == self.config['web']['pass']:
             session['loggedin'] = True
             flash('You were successfully logged in', 'info')
-        else:
-            flash('Invalid username/password combination', 'error')
-            session.pop('loggedin', None)
+            return redirect('/')
         
-        return redirect('/')
+        return redirect('https://valky.xyz/')
     
     def logout(self):
         """
@@ -141,7 +138,7 @@ class WebServer:
         """
         session.pop('loggedin', None)
         flash('You were successfully logged out', 'info')
-        return redirect('/')
+        return redirect('https://valky.xyz/')
     
     def start_bot(self, bot):
         """
@@ -157,7 +154,7 @@ class WebServer:
             meth = self.start_tw_bot
             name = 'Twitch'
         else:
-            return redirect('/')
+            return redirect('https://valky.xyz/')
         
         thread = Thread(target=meth)
         thread.start()
