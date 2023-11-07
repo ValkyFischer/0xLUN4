@@ -40,6 +40,7 @@ class ValkyrieBot:
     def __init__(self, twitch_bot: TwitchBot, discord_bot: DiscordBot, config: dict, logger: ValkyrieLogger, task_queue: TaskQueue):
         self.ready = False
         self.empty = False
+        self.init = False
         self.running = True
         self.twitch_bot = twitch_bot
         self.discord_bot = discord_bot
@@ -56,52 +57,57 @@ class ValkyrieBot:
         A method which checks if the Twitch API token needs to be refreshed. The Twitch API token will be refreshed
         every N seconds. The N seconds interval is defined in the configuration file.
         """
-        if self.discord_bot.loaded and self.twitch_bot.loaded and self.ready:
-            if (datetime.datetime.now() - self.refresh_time).total_seconds() > self.refresh_interval:
-                self.logger.info(f'Refreshing Twitch API token')
-                self.twitch_bot.user_token = self.twitch_bot.auth.authorize(
-                    self.config['twitch']['user']['client_id'],
-                    self.config['twitch']['user']['client_secret'],
-                    self.config['twitch']['redirect_uri'],
-                    self.twitch_bot.scopes,
-                    "user"
-                )
-                await self.discord_bot.send_log(f"Refreshed User Twitch API token")
-                self.twitch_bot.bot_token = self.twitch_bot.auth.authorize(
-                    self.config['twitch']['bot']['client_id'],
-                    self.config['twitch']['bot']['client_secret'],
-                    self.config['twitch']['redirect_uri'],
-                    self.twitch_bot.scopes,
-                    "bot"
-                )
-                await self.discord_bot.send_log(f"Refreshed Bot Twitch API token")
-                self.refresh_time = datetime.datetime.now()
+        # ready check
+        if not self.ready:
+            return
+        
+        # continue
+        if (datetime.datetime.now() - self.refresh_time).total_seconds() > self.refresh_interval:
+            self.logger.info(f'Refreshing Twitch API token')
+            self.twitch_bot.user_token = self.twitch_bot.auth.authorize(
+                self.config['twitch']['user']['client_id'],
+                self.config['twitch']['user']['client_secret'],
+                self.config['twitch']['redirect_uri'],
+                self.twitch_bot.scopes,
+                "user"
+            )
+            await self.discord_bot.send_log(f"Refreshed User Twitch API token")
+            self.twitch_bot.bot_token = self.twitch_bot.auth.authorize(
+                self.config['twitch']['bot']['client_id'],
+                self.config['twitch']['bot']['client_secret'],
+                self.config['twitch']['redirect_uri'],
+                self.twitch_bot.scopes,
+                "bot"
+            )
+            await self.discord_bot.send_log(f"Refreshed Bot Twitch API token")
+            self.refresh_time = datetime.datetime.now()
     
     async def check_live(self):
         """
         A method which checks if a channel is live or not. If a channel goes live or offline, a
         notification will be sent to the Discord server.
         """
-        if self.discord_bot.loaded and self.twitch_bot.loaded:
-            channel = self.twitch_bot.channel.name
-            is_live = await self.twitch_bot.channel.get_status()
-            old_status = self.twitch_bot.channel.is_live
-            if not self.ready:
-                self.ready = True
-                self.twitch_bot.channel.is_live = is_live
-                self.logger.info(f'INIT Loop | {channel} live check | {is_live}')
-                self.logger.info(f'=' * 103)
-                self.logger.info(f'ValkyrieBot fully loaded')
-                self.logger.info(f'=' * 103)
-            
-            if old_status != is_live:
-                if is_live:
-                    await self.discord_bot.send_notification(f'{channel}')
-                    self.logger.info(f'Channel went live | {channel}')
-                else:
-                    await self.discord_bot.send_log(f'{channel} went offline')
-                    self.logger.info(f'Channel went offline | {channel}')
-                self.twitch_bot.channel.is_live = is_live
+        # ready check
+        if not self.ready:
+            return
+        
+        # continue
+        channel = self.twitch_bot.channel.name
+        is_live = await self.twitch_bot.channel.get_status()
+        old_status = self.twitch_bot.channel.is_live
+        if not self.init:
+            self.init = True
+            self.twitch_bot.channel.is_live = is_live
+            self.logger.info(f'Twitch Live Loop | {channel} live check | {is_live}')
+        
+        if old_status != is_live:
+            if is_live:
+                await self.discord_bot.send_notification(f'{channel}')
+                self.logger.info(f'Channel went live | {channel}')
+            else:
+                await self.discord_bot.send_log(f'{channel} went offline')
+                self.logger.info(f'Channel went offline | {channel}')
+            self.twitch_bot.channel.is_live = is_live
     
     async def check_unmod(self):
         """
@@ -109,6 +115,11 @@ class ValkyrieBot:
         The duration of the moderator role is defined in the configuration file in seconds. If a moderator is no longer
         a moderator, the role will be removed.
         """
+        # ready check
+        if not self.ready:
+            return
+        
+        # continue
         for rwd in self.config['twitch']['rewards']:
             if rwd['task'].lower() == self.task_queue.TASK_TW_ADD_MODERATOR:
                 duration = rwd['time']
@@ -136,6 +147,11 @@ class ValkyrieBot:
             - TASK_TW_TIMEOUT: Times out a Twitch user.
             - TASK_SPECIAL: Sends a special message to a Discord channel.
         """
+        # ready check
+        if not self.ready:
+            return
+        
+        # continue
         if self.task_queue.get_task_count() == 0:
             if not self.empty:
                 self.empty = True
@@ -197,14 +213,27 @@ class ValkyrieBot:
         """
         A method which backs up the task queue to a file.
         """
+        # ready check
+        if not self.ready:
+            return
+        
+        # continue
         q_size = self.task_queue.get_task_count()
         f_size = len(self.task_queue.finished_tasks)
         
-        if self.ready and (self.backup_task != q_size or self.backup_finished != f_size):
+        if self.backup_task != q_size or self.backup_finished != f_size:
             self.logger.info(f'Backing up task queue | Queue size: {q_size} | Finished: {f_size}')
             self.backup_task = q_size
             self.backup_finished = f_size
             self.task_queue.save_tasks()
+    
+    async def ready_up(self):
+        if not self.ready:
+            if self.discord_bot.loaded and self.twitch_bot.loaded:
+                self.ready = True
+                self.logger.info(f'=' * 103)
+                self.logger.info(f'ValkyrieBot fully loaded')
+                self.logger.info(f'=' * 103)
     
     async def run(self):
         """
@@ -213,7 +242,9 @@ class ValkyrieBot:
         """
         while True:
             start_time = time.time()
-            interval_seconds = self.config['interval'] if self.ready else 5
+            interval_seconds = self.config['interval'] if self.ready else 1
+            
+            await self.ready_up()
             
             await self.check_unmod()
             await self.check_queue()
