@@ -13,7 +13,7 @@ ST = {
         "nav-3": "DISCORD BOT",
         "nav-5": "ABOUT",
         "nav-1-1": "Bot Status",
-        "nav-1-2": "Tasks, Queued",
+        "nav-1-2": "Tasks Queue",
         "nav-1-3": "Tasks, Finished",
         "nav-1-4": "Settings, Web Server",
         "nav-1-5": "Settings, L.U.N.A.",

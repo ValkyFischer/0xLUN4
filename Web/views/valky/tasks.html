@@ -17,7 +17,7 @@
 {% block content %}
 <div class="row">
     <div class="col-4 text-right pt-2">
-        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Main Bot</h1>
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Tasks</h1>
         <hl><div></div></hl>
         <p class="pt-2 pr-2 "><a class="white-50" href="javascript:location.reload()">Refresh Status</a></p>
         <p class="pr-2"><a class="white-50" href="/{{ stringtable['lang'] }}/logs">Read Logs</a></p>
@@ -26,48 +26,15 @@
         <div class="row">
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white">
-                    <h2 class="">
-                        Status
-                        <spam class="pt-2 {{ 'text-success' if vk_status else 'text-warning' }}">
-                            {{ 'ONLINE' if vk_status else 'OFFLINE' }}
-                        </spam>
-                    </h2>
-                    <p class="mb-0">The Main Bot is the core of the Valkyrie Bot project. It handles configuration files and logs events.</p>
-                </div>
-            </div>
-            <div class="col-12 p-2">
-                <div class="card card-body bg-dark text-white">
-                    <div class="row">
-                        <div class="text-right col-4 pt-2">
-                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Controls</h3>
-                            <hl><div></div></hl>
-                        </div>
-                        <div class="text-left col-8">
-                            <div class="row">
-                                <div class="col-5 pt-2">Start the bot:</div>
-                                <div class="col-5"><a href="/start/vk" class="btn btn-outline-info btn-sm mt-2 w-100">Start</a></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-5 pt-2">View All Tasks</div>
-                                <div class="col-5"><a href="/{{ stringtable['lang'] }}/valky/tasks" class="btn btn-outline-white btn-sm mt-2 w-100">All Tasks</a></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-5 pt-2">Open Settings, Basic</div>
-                                <div class="col-5"><a href="/{{ stringtable['lang'] }}/valky/settings" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Basic</a></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-5 pt-2">Open Settings, Luna</div>
-                                <div class="col-5"><a href="/{{ stringtable['lang'] }}/valky/luna" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Luna</a></div>
-                            </div>
-                        </div>
-                    </div>
+                    <h2 class="">Tasks Queue</h2>
+                    <p class="mb-0">The tasks queue is a list of tasks that are waiting to be processed.</p>
                 </div>
             </div>
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white pb-1">
                     <div class="row">
                         <div class="text-right col-4 pt-2">
-                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Next 5 Tasks</h3>
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>All Tasks, Queued</h3>
                             <hl><div></div></hl>
                         </div>
                         <div class="text-left col-8">
@@ -101,7 +68,7 @@
                 <div class="card card-body bg-dark text-white pb-1">
                     <div class="row">
                         <div class="text-right col-4 pt-2">
-                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Finished 5 Tasks</h3>
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>All Tasks, Finished</h3>
                             <hl><div></div></hl>
                         </div>
                         <div class="text-left col-8">

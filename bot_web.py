@@ -65,6 +65,8 @@ class WebServer:
         self.app.add_url_rule('/<lang>/valky/settings/', 'valky_settings', self.valky_settings)
         self.app.add_url_rule('/<lang>/valky/luna', 'valky_luna', self.valky_luna)
         self.app.add_url_rule('/<lang>/valky/luna/', 'valky_luna', self.valky_luna)
+        self.app.add_url_rule('/<lang>/valky/tasks', 'valky_tasks', self.valky_tasks)
+        self.app.add_url_rule('/<lang>/valky/tasks/', 'valky_tasks', self.valky_tasks)
     
     # ========================================================================================
     # Valkyrie Bot - Views
@@ -184,6 +186,26 @@ class WebServer:
             stringtable=ST[lang],
             vk_status=self.vk_bot.ready,
             config=self.config
+        )
+    
+    async def valky_tasks(self, lang='en'):
+        """
+        The Valkyrie bot tasks page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        tasks, finished = self.getTasks()
+        
+        return render_template(
+            template_name_or_list='valky/tasks.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            tasks=tasks,
+            finished=finished
         )
     
     # ========================================================================================
