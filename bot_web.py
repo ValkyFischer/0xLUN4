@@ -49,34 +49,35 @@ class WebServer:
         if lang not in ['en', 'de', 'ru', 'vk']:
             lang = 'en'
         
-        if 'loggedin' in session:
-            logs = self.getLogs()
-            latest_5 = logs[-5:]
+        if 'loggedin' not in session:
+            return render_template('index.html', stringtable=ST[lang])
+        
+        logs = self.getLogs()
+        latest_5 = logs[-5:]
 
-            try:
-                x = requests.post(url = f"{self.luna.luna_rest_url}/ping", json = {})
-                ping = int(x.elapsed.microseconds / 1000)
-                data = x.json()
-                server_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['Timestamp']))
-            except requests.RequestException as e:
-                self.logger.error(f'Failed to make the request: {str(e)}')
-                ping = 0
-                server_time = 'N/A'
-                
-            l4_status = 'OFFLINE' if ping == 0 else 'ONLINE'
+        try:
+            x = requests.post(url = f"{self.luna.luna_rest_url}/ping", json = {})
+            ping = int(x.elapsed.microseconds / 1000)
+            data = x.json()
+            server_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(data['Timestamp']))
+        except requests.RequestException as e:
+            self.logger.error(f'Failed to make the request: {str(e)}')
+            ping = 0
+            server_time = 'N/A'
             
-            return render_template(
-                template_name_or_list='index.html',
-                stringtable=ST[lang],
-                vk_status=self.vk_bot.ready,
-                dc_status=self.dc_bot.loaded,
-                tw_status=self.tw_bot.loaded,
-                logs=latest_5,
-                l4_status=l4_status,
-                ping=ping,
-                server_time=server_time
-            )
-        return render_template('index.html', stringtable=ST[lang])
+        l4_status = 'OFFLINE' if ping == 0 else 'ONLINE'
+        
+        return render_template(
+            template_name_or_list='index.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            dc_status=self.dc_bot.loaded,
+            tw_status=self.tw_bot.loaded,
+            logs=latest_5,
+            l4_status=l4_status,
+            ping=ping,
+            server_time=server_time
+        )
     
     def logs(self, lang='en'):
         """
@@ -85,14 +86,15 @@ class WebServer:
         if lang not in ['en', 'de', 'ru', 'vk']:
             lang = 'en'
         
-        if 'loggedin' in session:
-            logs = self.getLogs()
-            return render_template(
-                template_name_or_list='logs.html',
-                stringtable=ST[lang],
-                logs=logs
-            )
-        return redirect('https://valky.xyz/')
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        logs = self.getLogs()
+        return render_template(
+            template_name_or_list='logs.html',
+            stringtable=ST[lang],
+            logs=logs
+        )
     
     def getLogs(self):
         """
@@ -144,6 +146,9 @@ class WebServer:
         """
         Starts a bot.
         """
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
         if bot == 'vk':
             meth = self.start_vk_bot
             name = 'Valkyrie'
