@@ -63,6 +63,8 @@ class WebServer:
         self.app.add_url_rule('/<lang>/valky/status/', 'valky', self.valky_bot)
         self.app.add_url_rule('/<lang>/valky/settings', 'valky_settings', self.valky_settings)
         self.app.add_url_rule('/<lang>/valky/settings/', 'valky_settings', self.valky_settings)
+        self.app.add_url_rule('/<lang>/valky/luna', 'valky_luna', self.valky_luna)
+        self.app.add_url_rule('/<lang>/valky/luna/', 'valky_luna', self.valky_luna)
     
     # ========================================================================================
     # Valkyrie Bot - Views
@@ -138,18 +140,16 @@ class WebServer:
         if 'loggedin' not in session:
             return redirect('https://valky.xyz/')
         
-        tasks_raw = self.vk_bot.task_queue.get_task_queue()
-        tasks = []
-        for task in tasks_raw:
-            task.data['id'] = task.id
-            task.data['action'] = task.action
-            tasks.append(task.data)
+        tasks, finished = self.getTasks()
+        tasks_5 = tasks[-5:]
+        finished_5 = finished[-5:]
         
         return render_template(
             template_name_or_list='valky.html',
             stringtable=ST[lang],
             vk_status=self.vk_bot.ready,
-            tasks=tasks,
+            tasks=tasks_5,
+            finished=finished_5,
         )
     
     async def valky_settings(self, lang='en'):
@@ -164,6 +164,23 @@ class WebServer:
         
         return render_template(
             template_name_or_list='valky/settings.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            config=self.config
+        )
+    
+    async def valky_luna(self, lang='en'):
+        """
+        The Valkyrie bot Luna page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        return render_template(
+            template_name_or_list='valky/luna.html',
             stringtable=ST[lang],
             vk_status=self.vk_bot.ready,
             config=self.config
@@ -266,6 +283,23 @@ class WebServer:
                     'message': log_data[5]
                 })
         return logs
+    
+    def getTasks(self):
+        tasks_raw = self.vk_bot.task_queue.tasks
+        tasks = []
+        for task in tasks_raw:
+            task.data['id'] = task.id
+            task.data['action'] = task.action
+            tasks.append(task.data)
+        
+        finished_raw = self.vk_bot.task_queue.finished_tasks
+        finished = []
+        for task in finished_raw:
+            task.data['id'] = task.id
+            task.data['action'] = task.action
+            finished.append(task.data)
+        
+        return tasks, finished
     
     # ========================================================================================
     # Valkyrie Bot - Serve

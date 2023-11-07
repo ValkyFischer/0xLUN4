@@ -15,7 +15,7 @@ ST = {
         "nav-1-1": "Bot Status",
         "nav-1-2": "Tasks, Queued",
         "nav-1-3": "Tasks, Finished",
-        "nav-1-4": "Settings, Basic",
+        "nav-1-4": "Settings, Web Server",
         "nav-1-5": "Settings, L.U.N.A.",
         "nav-2-1": "Bot Status",
         "nav-2-2": "Settings, Basic",

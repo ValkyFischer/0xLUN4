@@ -48,6 +48,8 @@ class ValkyrieBot:
         self.task_queue = task_queue
         self.refresh_time = datetime.datetime.now()
         self.refresh_interval = 10800
+        self.backup_task = 0
+        self.backup_finished = 0
     
     async def check_refresh(self):
         """
@@ -191,6 +193,19 @@ class ValkyrieBot:
                     
                 self.task_queue.end_task(task)
     
+    async def backup_tasks(self):
+        """
+        A method which backs up the task queue to a file.
+        """
+        q_size = self.task_queue.get_task_count()
+        f_size = len(self.task_queue.finished_tasks)
+        
+        if self.ready and (self.backup_task != q_size or self.backup_finished != f_size):
+            self.logger.info(f'Backing up task queue | Queue size: {q_size} | Finished: {f_size}')
+            self.backup_task = q_size
+            self.backup_finished = f_size
+            self.task_queue.save_tasks()
+    
     async def run(self):
         """
         A loop which runs the main bot methods every N seconds. The N seconds interval is defined in the configuration
@@ -204,6 +219,8 @@ class ValkyrieBot:
             await self.check_queue()
             await self.check_refresh()
             await self.check_live()
+            
+            await self.backup_tasks()
             
             sleep_duration = interval_seconds - (time.time() - start_time)
             await asyncio.sleep(sleep_duration)

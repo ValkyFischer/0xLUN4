@@ -11,8 +11,9 @@ About:
     Discord or Twitch. The task queue is based on asyncio.Queue and can be used to add and get tasks concurrently.
 
 """
-
+import json
 import logging
+import os
 
 
 class Task:
@@ -43,6 +44,7 @@ class TaskQueue:
         self.logger = logger
         self.tasks = []
         self.finished_tasks = []
+        self.load_tasks()
         
         self.TASK_TW_TIMEOUT = "twitch_timeout"
         self.TASK_TW_ADD_MODERATOR = "twitch_moderator"
@@ -98,3 +100,56 @@ class TaskQueue:
             list: The task queue.
         """
         return self.tasks
+    
+    def load_tasks(self) -> None:
+        """
+        Loads a list of tasks from a json file to the queue.
+        """
+        if os.path.exists(f'Modules/data/tasks.json'):
+            with open(f'Modules/data/tasks.json', 'r') as f:
+                task_data = json.load(f)
+                tasks = task_data['tasks']
+                finished = task_data['finished']
+            for task in tasks:
+                self.tasks.append(Task(task['action'], task['data']))
+            for task in finished:
+                self.finished_tasks.append(Task(task['action'], task['data']))
+            self.logger.info(f'Loaded Tasks | Queue size: {self.get_task_count()} | Finished: {len(self.finished_tasks)}')
+        
+        else:
+            if not os.path.exists(f'Modules/data/'):
+                os.makedirs(f'Modules/data/')
+            with open(f'Modules/data/tasks.json', 'w') as f:
+                json.dump({"tasks": [], "finished": []}, f, indent=4)
+            self.logger.info(f'Initialized Tasks | Queue size: {self.get_task_count()} | Finished: {len(self.finished_tasks)}')
+        
+        Task._task_id_counter = self.tasks[-1].id if len(self.tasks) > 0 else 0
+    
+    def save_tasks(self) -> None:
+        """
+        Saves a list of tasks from the queue to a json file.
+        """
+        tasks = []
+        finished = []
+        
+        for task in self.tasks:
+            tasks.append({
+                "id": task.id,
+                "action": task.action,
+                "data": task.data
+            })
+        
+        for task in self.finished_tasks:
+            finished.append({
+                "id": task.id,
+                "action": task.action,
+                "data": task.data
+            })
+            
+        task_data = {
+            "tasks": tasks,
+            "finished": finished
+        }
+        with open(f'Modules/data/tasks.json', 'w') as f:
+            json.dump(task_data, f, indent=4)
+        self.logger.info(f'Saved Tasks | Queue size: {self.get_task_count()} | Finished: {len(self.finished_tasks)}')

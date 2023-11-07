@@ -3,3 +3,4 @@
 /settings.json
 /logs/logger.log
 /logs/logger.log.*
+/Modules/data/tasks.json
