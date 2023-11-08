@@ -1,17 +1,6 @@
 {% extends "base.html" %}
 
 {% block custom_css %}
-    <style>
-    tbody {
-        font-family: "monospace", monospace;
-    }
-    .white-50 {
-        color: rgba(255, 255, 255, 0.5);
-    }
-    .white-50:hover {
-        color: rgba(255, 255, 255, 0.75);
-    }
-    </style>
 {% endblock %}
 
 {% block content %}
@@ -19,8 +8,8 @@
     <div class="col-4 text-right pt-2">
         <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Tasks</h1>
         <hl><div></div></hl>
-        <p class="pt-2 pr-2 "><a class="white-50" href="javascript:location.reload()">Refresh Status</a></p>
-        <p class="pr-2"><a class="white-50" href="/{{ stringtable['lang'] }}/logs">Read Logs</a></p>
+        <p class="pt-2 pr-2 "><a class="white-50" href="javascript:location.reload()">Refresh</a></p>
+        <p class="pr-2"><a class="white-50" href="/{{ stringtable['lang'] }}/logs">View Logs</a></p>
     </div>
     <div class="col-8">
         <div class="row">

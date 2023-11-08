@@ -1,194 +1,138 @@
 {% extends "base.html" %}
 
 {% block custom_css %}
-    <style>
-    tbody {
-        font-family: "monospace", monospace;
-    }
-    </style>
 {% endblock %}
 
 {% block content %}
 <div class="row">
-    <div class="text-right col-4">
-        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>The Valkyrie Bot</h1>
-        <hl><div></div></hl>
+    <div class="col-3 p-2">
+        <div class="card card-body bg-dark text-white text-left">
+            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Valkyrie Bot</h3>
+            <hl><div></div></hl>
+            <div class="text-right">
+                <h1 class="
+                    {{ 'text-success' if vk_status == 'ONLINE' }}
+                    {{ 'text-info' if vk_status == 'STARTED' }}
+                    {{ 'text-danger' if vk_status == 'OFFLINE' }}
+                ">{{ vk_status }}</h1>
+                <i class="text-white-50">STATUS</i>
+                <div class=""><a href="/start/vk" class="btn btn-outline-info btn-sm mt-2 w-100">Run Bot</a></div>
+                <i class="text-white-50">START</i>
+            </div>
+        </div>
     </div>
-    <div class="text-left col-8">
-        <div class="row">
-            <div class="col-12">
-                <p class="">The Valkyrie Bot is a project created by <a class="text-warning" href="https://valky.dev/en">Valky Fischer</a>, designed to provide functionality for Discord and Twitch communities. The project includes:</p>
-                <ul class="pl-3 py-2">
-                    <li><b>Main Bot</b>: The main bot that runs Discord and Twitch bots concurrently. It handles configuration files and logs events.</li>
-                    <li><b>Discord Bot</b>: A Discord bot that sends notifications and utilizes slash commands.</li>
-                    <li><b>Twitch Bot</b>: A Twitch bot that checks the status of Twitch channels and responds to chat commands.</li>
-                </ul>
-                <p class="">The Valkyrie Bot is designed to be versatile and user-friendly, suitable for various communities and content creators.</p>
+    <div class="col-3 p-2">
+        <div class="card card-body bg-dark text-white text-left">
+            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Discord Bot</h3>
+            <hl><div></div></hl>
+            <div class="text-right">
+                <h1 class="{{ 'text-success' if dc_status else 'text-danger' }}">{{ 'ONLINE' if dc_status else 'OFFLINE' }}</h1>
+                <i class="text-white-50">STATUS</i>
+                <div class=""><a href="/start/dc" class="btn btn-outline-info btn-sm mt-2 w-100">Run Bot</a></div>
+                <i class="text-white-50">START</i>
+            </div>
+        </div>
+    </div>
+    <div class="col-3 p-2">
+        <div class="card card-body bg-dark text-white text-left">
+            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Twitch Bot</h3>
+            <hl><div></div></hl>
+            <div class="text-right">
+                <h1 class="{{ 'text-success' if tw_status else 'text-danger' }}">{{ 'ONLINE' if tw_status else 'OFFLINE' }}</h1>
+                <i class="text-white-50">STATUS</i>
+                <div class=""><a href="/start/tw" class="btn btn-outline-info btn-sm mt-2 w-100">Run Bot</a></div>
+                <i class="text-white-50">START</i>
+            </div>
+        </div>
+    </div>
+    <div class="col-3 p-2">
+        <div class="card card-body bg-dark text-white text-left">
+            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Luna API</h3>
+            <hl><div></div></hl>
+            <div class="text-right">
+                <h1 class="{{ 'text-success' if l4_status else 'text-danger' }}">{{ 'ONLINE' if l4_status else 'OFFLINE' }}</h1>
+                <i class="text-white-50">STATUS</i>
+                <h2 class="text-info pt-2 pb-1">{{ ping }} ms</h2>
+                <i class="text-white-50">LATENCY</i>
             </div>
         </div>
     </div>
 </div>
 <div class="row pt-5">
     <div class="text-right col-4">
-        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Status Overview</h1>
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Project 0xLUN4</h1>
         <hl><div></div></hl>
+        <p class="pt-2 pr-2 "><a class="text-white" href="https://github.com/ValkyFischer/0xLUN4">Build {{ build }}</a></p>
+        <p class="pr-2 "><a class="white-50" href="javascript:location.reload()">Refresh</a></p>
+        <p class="pr-2"><a class="white-50" href="/{{ stringtable['lang'] }}/valky/tasks">View Tasks</a></p>
+        <p class="pr-2"><a class="white-50" href="/{{ stringtable['lang'] }}/logs">View Logs</a></p>
     </div>
     <div class="text-left col-8">
         <div class="row">
-            <div class="col-4 pt-2">
-                L.U.N.A. API
-            </div>
-            <div class="col-4 pt-2 {{ 'text-success' if l4_status else 'text-warning' }}">
-                {{ 'ONLINE' if l4_status else 'OFFLINE' }}
-            </div>
-            <div class="col-4">
-                <button class="btn btn-outline-warning btn-sm" type="button" data-toggle="collapse" data-target="#collapseLuna" aria-expanded="false" aria-controls="collapseLuna">
-                    <i class="fas fa-info-circle"></i> Info
-                </button>
-            </div>
-            <div class="col-12 collapse pb-2" id="collapseLuna">
+            <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white">
-                    <p class="mb-0">L.U.N.A. represents a remarkable leap forward in AI technology, driven by the power of Microsoft's GPT-4 language model. I've trained this AI using data collected over the past several years from private Discord channels, Twitch streams, and various other public platforms.</p>
-                    <div class="row pt-2">
+                    <h2>The Valkyrie Bot</h2>
+                    <p class="mb-0">
+                        The Valkyrie Bot is a project created by <a class="text-warning" href="https://valky.dev/en">Valky Fischer</a>,
+                        designed to provide functionality for Discord and Twitch communities. It handles and executes
+                        all tasks, while it aims to be versatile and user-friendly, suitable for various communities
+                        and content creators. It is currently in development, and will be updated frequently. If you
+                        have any questions, suggestions, or concerns, please contact me on <a class="text-warning" href="https://discord.gg/vky">Discord</a>.
+                    </p>
+                    <div class="text-right">
+                        <a href="/{{ stringtable['lang'] }}/valky/status" class="btn btn-outline-white btn-sm mt-2">More Info</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <div class="row">
                         <div class="text-right col-4 pt-2">
-                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Info</h3>
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Discord Bot</h3>
                             <hl><div></div></hl>
                         </div>
                         <div class="text-left col-8">
-                            <div class="row">
-                                <div class="col-6 pt-2">API Latency:</div>
-                                <div class="col-6 pt-2 text-warning">{{ ping }} ms</div>
+                            <p class="mb-0">
+                                A Discord bot that sends notifications and utilizes slash commands. Can add tasks.
+                            </p>
+                            <div class="text-right">
+                                <a href="/{{ stringtable['lang'] }}/discord/status" class="btn btn-outline-white btn-sm mt-2">More Info</a>
                             </div>
-                            <div class="row">
-                                <div class="col-6 pt-2">Server Time:</div>
-                                <div class="col-6 pt-2 text-warning">{{ server_time }}</div>
+                        </div>
+                    </div>
+                    <div class="row pt-5">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Twitch Bot</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <p class="mb-0">
+                                A Twitch bot that checks for multiple actions and responds to chat commands. Can add tasks.
+                            </p>
+                            <div class="text-right">
+                                <a href="/{{ stringtable['lang'] }}/twitch/status" class="btn btn-outline-white btn-sm mt-2">More Info</a>
                             </div>
+                        </div>
+                    </div>
+                    <div class="row pt-5">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Luna API</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <p class="">
+                                L.U.N.A. represents a remarkable leap forward in AI technology, driven by the power of
+                                Microsoft's GPT-4 language model. I've trained this AI using data collected over the past
+                                several years from private Discord channels, Twitch streams, and various other public platforms.
+                            </p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col-4 pt-2">
-                Main Bot
-            </div>
-            <div class="col-4 pt-2 {{ 'text-success' if vk_status else 'text-warning' }}">
-                {{ 'ONLINE' if vk_status else 'OFFLINE' }}
-            </div>
-            <div class="col-4">
-                <button class="btn btn-outline-warning btn-sm" type="button" data-toggle="collapse" data-target="#collapseMain" aria-expanded="false" aria-controls="collapseMain">
-                    <i class="fas fa-info-circle"></i> Info
-                </button>
-            </div>
-            <div class="col-12 collapse pb-2" id="collapseMain">
-                <div class="card card-body bg-dark text-white">
-                    <p class="mb-0">The Main Bot is the core of the Valkyrie Bot project. It handles configuration files and logs events.</p>
-                    <div class="row pt-2">
-                        <div class="text-right col-4 pt-2">
-                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Controls</h3>
-                            <hl><div></div></hl>
-                        </div>
-                        <div class="text-left col-8">
-                            <div class="row">
-                                <div class="col-6 pt-2">Start the bot:</div>
-                                <div class="col-6"><a href="/start/vk" class="btn btn-outline-info btn-sm mt-2 w-100">Start</a></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 pt-2">View All Tasks</div>
-                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/valky/tasks" class="btn btn-outline-white btn-sm mt-2 w-100">All Tasks</a></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 pt-2">Open Settings, Basic</div>
-                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/valky/settings" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Basic</a></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 pt-2">Open Settings, Luna</div>
-                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/valky/luna" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Luna</a></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-4 pt-2">
-                Twitch Bot
-            </div>
-            <div class="col-4 pt-2 {{ 'text-success' if tw_status else 'text-warning' }}">
-                {{ 'ONLINE' if tw_status else 'OFFLINE' }}
-            </div>
-            <div class="col-4">
-                <button class="btn btn-outline-warning btn-sm" type="button" data-toggle="collapse" data-target="#collapseTwitch" aria-expanded="false" aria-controls="collapseTwitch">
-                    <i class="fas fa-info-circle"></i> Info
-                </button>
-            </div>
-            <div class="col-12 collapse pb-2" id="collapseTwitch">
-                <div class="card card-body bg-dark text-white">
-                    <p class="mb-0">The Twitch Bot is a bot that checks the status of Twitch channels and responds to chat commands.</p>
-                    <div class="row pt-2">
-                        <div class="text-right col-4 pt-2">
-                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Controls</h3>
-                            <hl><div></div></hl>
-                        </div>
-                        <div class="text-left col-8">
-                            <div class="row">
-                                <div class="col-6 pt-2">Start the bot:</div>
-                                <div class="col-6"><a href="/start/tw" class="btn btn-outline-info btn-sm mt-2 w-100">Start</a></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 pt-2">Open Settings, Basic</div>
-                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/twitch/settings" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Basic</a></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 pt-2">Open Settings, Scopes</div>
-                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/twitch/scopes" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Scopes</a></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 pt-2">Open Settings, Rewards</div>
-                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/twitch/rewards" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Rewards</a></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-4 pt-2">
-                Discord Bot
-            </div>
-            <div class="col-4 pt-2 {{ 'text-success' if dc_status else 'text-warning' }}">
-                {{ 'ONLINE' if dc_status else 'OFFLINE' }}
-            </div>
-            <div class="col-4">
-                <button class="btn btn-outline-warning btn-sm" type="button" data-toggle="collapse" data-target="#collapseDiscord" aria-expanded="false" aria-controls="collapseDiscord">
-                    <i class="fas fa-info-circle"></i> Info
-                </button>
-            </div>
-            <div class="col-12 collapse pb-2" id="collapseDiscord">
-                <div class="card card-body bg-dark text-white">
-                    <p class="mb-0">The Discord Bot is a bot that sends notifications and utilizes slash commands.</p>
-                    <div class="row pt-2">
-                        <div class="text-right col-4 pt-2">
-                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Controls</h3>
-                            <hl><div></div></hl>
-                        </div>
-                        <div class="text-left col-8">
-                            <div class="row">
-                                <div class="col-6 pt-2">Start the bot:</div>
-                                <div class="col-6"><a href="/start/dc" class="btn btn-outline-info btn-sm mt-2 w-100">Start</a></div>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 pt-2">Open Settings, Basic</div>
-                                <div class="col-6"><a href="/{{ stringtable['lang'] }}/discord/settings" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Basic</a></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
 </div>
+
 <div class="row pt-5">
     <div class="text-right col-4">
         <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Latest 5 Logs</h1>

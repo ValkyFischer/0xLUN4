@@ -41,7 +41,7 @@ class ValkyrieBot:
         self.ready = False
         self.empty = False
         self.init = False
-        self.running = True
+        self.running = None
         self.twitch_bot = twitch_bot
         self.discord_bot = discord_bot
         self.config = config
@@ -228,6 +228,7 @@ class ValkyrieBot:
             self.task_queue.save_tasks()
     
     async def ready_up(self):
+        self.running = True
         if not self.ready:
             if self.discord_bot.loaded and self.twitch_bot.loaded:
                 self.ready = True

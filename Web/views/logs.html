@@ -1,11 +1,6 @@
 {% extends "base.html" %}
 
 {% block custom_css %}
-    <style>
-    tbody {
-        font-family: "monospace", monospace;
-    }
-    </style>
 {% endblock %}
 
 {% block content %}
@@ -13,7 +8,8 @@
     <div class="text-right col-4">
         <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>All Logs</h1>
         <hl><div></div></hl>
-        <p>Refresh logs <a class="text-warning" href="javascript:location.reload()">here...</a></p>
+        <p class="pt-2 pr-2 "><a class="white-50" href="javascript:location.reload()">Refresh</a></p>
+        <p class="pr-2"><a class="white-50" href="/{{ stringtable['lang'] }}/valky/tasks">View Tasks</a></p>
     </div>
     <div class="text-left col-8">
         <div class="row">

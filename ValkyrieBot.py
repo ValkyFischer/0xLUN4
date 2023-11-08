@@ -52,22 +52,46 @@ class Valkyrie:
     Args:
         config_path (str): The path to the configuration file.
         debug (bool): True if debug mode is enabled, False if debug mode is disabled.
+        env (str): The environment. Can be either 'dev' or 'prod'. Default is 'prod'.
     """
-    def __init__(self, config_path: str, debug: bool):
+    __version__ = '0.4.3'
+    __author__ = '2023 © Valky Dev - All rights reserved.'
+    
+    def __init__(self, config_path: str, debug: bool, env: str):
         self.debug = debug
         self.logger = ValkyrieLogger('info', 'logs/logger.log', 'ValkyrieBot', True, self.debug)
-        for v in valky:
-            self.logger.info(v)
+        self.env = self.__env__(env)
+        self.cfg, self.config = self.__config__(config_path)
+        self.task_queue = TaskQueue(self.config, self.logger)
+        if self.env == 'prod':
+            self.tw_bot = TwitchBot(self.config, self.logger, self.task_queue)
+            self.dc_bot = DiscordBot(self.config, self.logger, self.task_queue)
+            self.vk_bot = ValkyrieBot(self.tw_bot, self.dc_bot, self.config, self.logger, self.task_queue)
+        else:
+            self.tw_bot, self.dc_bot, self.vk_bot = None, None, None
+        self.web = WebServer(self.tw_bot, self.dc_bot, self.vk_bot, self.logger, self.config, valky)
+    
+    def __env__(self, env: str):
+        if env == 'prod':
+            self.logger.info(valky[-1])
+        else:
+            env = 'dev'
+            for v in valky:
+                self.logger.info(v)
+        
+        self.logger.info(f"ValkyrieBot v{Valkyrie.__version__} | Environment: {env.capitalize()} | Debug: {self.debug}")
+        self.logger.info(f"{Valkyrie.__author__}")
+        
+        return env
+    
+    def __config__(self, config_path: str):
         if os.path.exists(config_path):
-            self._cfg = ValkyrieConfig(config_path, self.logger, self.debug)
+            cfg = ValkyrieConfig(config_path, self.logger, self.debug)
+            config = cfg.get_config()
+            config['version'] = Valkyrie.__version__
+            return cfg, config
         else:
             raise ConfigError(f"Configuration file not found: {config_path}")
-        self.config = self._cfg.get_config()
-        self.task_queue = TaskQueue(self.config, self.logger)
-        self.tw_bot = TwitchBot(self.config, self.logger, self.task_queue)
-        self.dc_bot = DiscordBot(self.config, self.logger, self.task_queue)
-        self.vk_bot = ValkyrieBot(self.tw_bot, self.dc_bot, self.config, self.logger, self.task_queue)
-        self.web = WebServer(self.tw_bot, self.dc_bot, self.vk_bot, self.logger, self.config, valky)
     
     def run(self):
         """
@@ -93,14 +117,16 @@ class Valkyrie:
 if __name__ == "__main__":
     
     start_arg = ValkyrieOptions([
-        ('config_file', 'str', 'Configuration File Path and filename', 'settings.json'),
-        ('debug', 'str', 'Enable Debug Mode', 'False')
+        ('config_file', 'str', 'Configuration File Path', 'settings.json'),
+        ('debug', 'str', 'Enable Debug Mode', 'False'),
+        ('env', 'str', 'Set Environment')
     ])
     parsed_options = start_arg.parse()
     
     _config_file = parsed_options['config_file']
     _debug = True if parsed_options['debug'].lower() == 'true' else False
-
+    _env = parsed_options['env'].lower() if parsed_options['env'] is not None and parsed_options['env'].lower() in ['dev', 'prod'] else 'prod'
+    
     valky = [
         r"=======================================================================================================",
         r"                                                                                                       ",
@@ -114,11 +140,11 @@ if __name__ == "__main__":
         r"        \   /     |  | |  | |      | |  |\   \  `-./  /.__)        |  '--'  / |  `---.    \   /        ",
         r"         `-'      `--' `--' `------' `--' '--'    `--'             `-------'  `------'     `-'         ",
         r"                                                                                                       ",
-        r"==v=================================================================================================v=="
+        r"==v=================================================================================================v==",
     ]
 
     try:
-        VB = Valkyrie(_config_file, _debug)
+        VB = Valkyrie(_config_file, _debug, _env)
         VB.run()
 
     except Exception as exc:

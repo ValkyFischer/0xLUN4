@@ -6,6 +6,7 @@ Created on Oct 23, 2023
 """
 
 import time
+from binascii import hexlify
 from threading import Thread
 
 import requests
@@ -24,6 +25,8 @@ class WebServer:
         self.config = config
         self.logger = logger
         self.valky = valky
+        self.build = hexlify(self.config['version'].replace('.', '').encode()).decode('utf-8')
+        
         self.luna = Luna(self.logger, self.config)
         self.luna_time = 0
         self.luna_ping = 0
@@ -102,16 +105,27 @@ class WebServer:
         else:
             server_time = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.luna_time))
         
+        if self.vk_bot is not None:
+            if self.vk_bot.ready:
+                vk_status = 'ONLINE'
+            elif self.vk_bot.running:
+                vk_status = 'STARTED'
+            else:
+                vk_status = 'OFFLINE'
+        else:
+            vk_status = 'UNKNOWN'
+            
         return render_template(
             template_name_or_list='index.html',
             stringtable=ST[lang],
-            vk_status=self.vk_bot.ready,
-            dc_status=self.dc_bot.loaded,
-            tw_status=self.tw_bot.loaded,
+            vk_status=vk_status,
+            dc_status=self.dc_bot.loaded if self.dc_bot is not None else False,
+            tw_status=self.tw_bot.loaded if self.tw_bot is not None else False,
             logs=latest_5,
             l4_status='OFFLINE' if self.luna_ping == 0 else 'ONLINE',
             ping=self.luna_ping,
-            server_time=server_time
+            server_time=server_time,
+            build=self.build
         )
     
     def logs(self, lang='en'):
