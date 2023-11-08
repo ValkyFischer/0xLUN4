@@ -89,13 +89,14 @@ class Event:
         for reward in self.config['twitch']['rewards']:
             if reward['name'].lower() == reward_name.lower():
                 task_action = reward['task']
+                task_instant = reward['instant']
                 task_data = {
                     "user_name": user_name,
                     "reward_name": reward_name,
                     "reward_cost": reward_cost,
                     "user_input": event.input,
                 }
-                task = Task(task_action, task_data)
+                task = Task(task_action, task_data, task_instant)
                 self.bot.task_queue.add_task(task)
         
         channel = self.bot.get_channel(user_name)

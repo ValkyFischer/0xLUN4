@@ -13,6 +13,7 @@ import requests
 from waitress import serve
 from flask import Flask, request, render_template, session, redirect, flash
 
+from ValkyrieUtils.Tools import ValkyrieTools
 from Web.stringtable import ST
 from Modules.luna import Luna
 
@@ -70,6 +71,7 @@ class WebServer:
         self.app.add_url_rule('/<lang>/valky/luna/', 'valky_luna', self.valky_luna)
         self.app.add_url_rule('/<lang>/valky/tasks', 'valky_tasks', self.valky_tasks)
         self.app.add_url_rule('/<lang>/valky/tasks/', 'valky_tasks', self.valky_tasks)
+        self.app.add_url_rule('/<lang>/valky/tasks/<task_id>/<action>', 'valky_tasks_action', self.valky_tasks_action)
     
     # ========================================================================================
     # Valkyrie Bot - Views
@@ -156,7 +158,7 @@ class WebServer:
         if 'loggedin' not in session:
             return redirect('https://valky.xyz/')
         
-        tasks, finished = self.getTasks()
+        tasks, finished, deleted, errors = self.getTasks()
         tasks_5 = tasks[-5:]
         finished_5 = finished[-5:]
         
@@ -212,15 +214,61 @@ class WebServer:
         if 'loggedin' not in session:
             return redirect('https://valky.xyz/')
         
-        tasks, finished = self.getTasks()
+        tasks, finished, deleted, errors = self.getTasks()
         
         return render_template(
             template_name_or_list='valky/tasks.html',
             stringtable=ST[lang],
             vk_status=self.vk_bot.ready,
             tasks=tasks,
-            finished=finished
+            finished=finished,
+            deleted=deleted,
+            errors=errors
         )
+    
+    async def valky_tasks_action(self, task_id, action, lang='en'):
+        """
+        The Valkyrie bot tasks action page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        if not ValkyrieTools.isInteger(task_id):
+            return redirect('https://valky.xyz/')
+        task_id = int(task_id)
+        
+        if action not in ['delete', 'start', 'end', 'queue']:
+            return redirect('https://valky.xyz/')
+        
+        if action == 'delete':
+            task = self.vk_bot.task_queue.get_task_by_id(task_id)
+            self.vk_bot.task_queue.remove_task(task)
+            flash(f'Task "{task.action}" ({task.id}) deleted', 'info')
+            return redirect(f'/{lang}/valky/tasks')
+        
+        elif action == 'start':
+            task = self.vk_bot.task_queue.get_task_by_id(task_id)
+            self.vk_bot.task_queue.add_task(task, True)
+            flash('Task restarted', 'info')
+            return redirect(f'/{lang}/valky/tasks')
+        
+        elif action == 'end':
+            task = self.vk_bot.task_queue.get_task_by_id(task_id)
+            self.vk_bot.task_queue.end_task(task)
+            flash('Task ended', 'info')
+            return redirect(f'/{lang}/valky/tasks')
+        
+        elif action == 'queue':
+            task = self.vk_bot.task_queue.get_task_by_id(task_id)
+            self.vk_bot.task_queue.add_task(task)
+            flash('Task queued', 'info')
+            return redirect(f'/{lang}/valky/tasks')
+        
+        else:
+            return redirect('https://valky.xyz/')
     
     # ========================================================================================
     # Valkyrie Bot - Functions
@@ -281,6 +329,7 @@ class WebServer:
         Starts the Valkyrie bot.
         """
         self.loop.create_task(self.vk_bot.run())
+        self.loop.create_task(self.vk_bot.run_fast())
         
     def start_dc_bot(self):
         """
@@ -335,7 +384,21 @@ class WebServer:
             task.data['action'] = task.action
             finished.append(task.data)
         
-        return tasks, finished
+        deleted_raw = self.vk_bot.task_queue.deleted_tasks
+        deleted = []
+        for task in deleted_raw:
+            task.data['id'] = task.id
+            task.data['action'] = task.action
+            deleted.append(task.data)
+        
+        errors_raw = self.vk_bot.task_queue.errors
+        errors = []
+        for task in errors_raw:
+            task.data['id'] = task.id
+            task.data['action'] = task.action
+            errors.append(task.data)
+        
+        return tasks, finished, deleted, errors
     
     # ========================================================================================
     # Valkyrie Bot - Serve

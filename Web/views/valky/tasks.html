@@ -13,12 +13,14 @@
     </div>
     <div class="col-8">
         <div class="row">
+            {# INFO #}
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white">
                     <h2 class="">Tasks Queue</h2>
                     <p class="mb-0">The tasks queue is a list of tasks that are waiting to be processed.</p>
                 </div>
             </div>
+            {# QUEUED #}
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white pb-1">
                     <div class="row">
@@ -35,6 +37,7 @@
                                         <th scope="col">Reward</th>
                                         <th scope="col">Cost</th>
                                         <th scope="col">Input</th>
+                                        <th scope="col"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -45,6 +48,37 @@
                                         <td>{{ task['reward_name'] }}</td>
                                         <td>{{ task['reward_cost'] }}</td>
                                         <td>{{ task['user_input'] }}</td>
+                                        <td class="text-right">
+                                            <div class="dropdown">
+                                                <button class="white-50" type="button" id="ddown-{{ task['id'] }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
+                                                <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown-{{ task['id'] }}">
+                                                    <a class="dropdown-item p-1 bg-dark-3 text-white-50" href="#">
+                                                        <div class="row" title="Move the task in to the queue.">
+                                                            <div class="col-3"><i class="fal fa-sync pl-2"></i></div>
+                                                            <div class="col-9">Queue Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/start">
+                                                        <div class="row" title="Execute the task immediately.">
+                                                            <div class="col-3"><i class="fal fa-play pl-2"></i></div>
+                                                            <div class="col-9">Start Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/end">
+                                                        <div class="row" title="Move and mark the task as finished.">
+                                                            <div class="col-3"><i class="fal fa-check pl-2"></i></div>
+                                                            <div class="col-9">End Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/delete">
+                                                        <div class="row" title="Delete the task.">
+                                                            <div class="col-3"><i class="fal fa-trash-alt pl-2"></i></div>
+                                                            <div class="col-9">Delete Task</div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>
@@ -53,6 +87,7 @@
                     </div>
                 </div>
             </div>
+            {# FINISHED #}
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white pb-1">
                     <div class="row">
@@ -69,6 +104,7 @@
                                         <th scope="col">Reward</th>
                                         <th scope="col">Cost</th>
                                         <th scope="col">Input</th>
+                                        <th scope="col"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -79,6 +115,171 @@
                                         <td>{{ task['reward_name'] }}</td>
                                         <td>{{ task['reward_cost'] }}</td>
                                         <td>{{ task['user_input'] }}</td>
+                                        <td class="text-right">
+                                            <div class="dropdown">
+                                                <button class="white-50" type="button" id="ddown-{{ task['id'] }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
+                                                <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown-{{ task['id'] }}">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/queue">
+                                                        <div class="row" title="Move the task in to the queue.">
+                                                            <div class="col-3"><i class="fal fa-sync pl-2"></i></div>
+                                                            <div class="col-9">Queue Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/start">
+                                                        <div class="row" title="Execute the task immediately.">
+                                                            <div class="col-3"><i class="fal fa-play pl-2"></i></div>
+                                                            <div class="col-9">Start Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-3 text-white-50" href="#">
+                                                        <div class="row" title="Move and mark the task as finished.">
+                                                            <div class="col-3"><i class="fal fa-check pl-2"></i></div>
+                                                            <div class="col-9">End Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/delete">
+                                                        <div class="row" title="Delete the task.">
+                                                            <div class="col-3"><i class="fal fa-trash-alt pl-2"></i></div>
+                                                            <div class="col-9">Delete Task</div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {# FAILED #}
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-1">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>All Tasks, Errors</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <table class="table table-dark table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">User Name</th>
+                                        <th scope="col">Reward</th>
+                                        <th scope="col">Cost</th>
+                                        <th scope="col">Input</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for task in errors %}
+                                    <tr>
+                                        <td>{{ task['id'] }}</td>
+                                        <td>{{ task['user_name'] }}</td>
+                                        <td>{{ task['reward_name'] }}</td>
+                                        <td>{{ task['reward_cost'] }}</td>
+                                        <td>{{ task['user_input'] }}</td>
+                                        <td class="text-right">
+                                            <div class="dropdown">
+                                                <button class="white-50" type="button" id="ddown-{{ task['id'] }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
+                                                <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown-{{ task['id'] }}">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/queue">
+                                                        <div class="row" title="Move the task in to the queue.">
+                                                            <div class="col-3"><i class="fal fa-sync pl-2"></i></div>
+                                                            <div class="col-9">Queue Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/start">
+                                                        <div class="row" title="Execute the task immediately.">
+                                                            <div class="col-3"><i class="fal fa-play pl-2"></i></div>
+                                                            <div class="col-9">Start Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/end">
+                                                        <div class="row" title="Move and mark the task as finished.">
+                                                            <div class="col-3"><i class="fal fa-check pl-2"></i></div>
+                                                            <div class="col-9">End Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/delete">
+                                                        <div class="row" title="Delete the task.">
+                                                            <div class="col-3"><i class="fal fa-trash-alt pl-2"></i></div>
+                                                            <div class="col-9">Delete Task</div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {# DELETED #}
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-1">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>All Tasks, Deleted</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <table class="table table-dark table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">User Name</th>
+                                        <th scope="col">Reward</th>
+                                        <th scope="col">Cost</th>
+                                        <th scope="col">Input</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for task in deleted %}
+                                    <tr>
+                                        <td>{{ task['id'] }}</td>
+                                        <td>{{ task['user_name'] }}</td>
+                                        <td>{{ task['reward_name'] }}</td>
+                                        <td>{{ task['reward_cost'] }}</td>
+                                        <td>{{ task['user_input'] }}</td>
+                                        <td class="text-right">
+                                            <div class="dropdown">
+                                                <button class="white-50" type="button" id="ddown-{{ task['id'] }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
+                                                <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown-{{ task['id'] }}">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/queue">
+                                                        <div class="row" title="Move the task in to the queue.">
+                                                            <div class="col-3"><i class="fal fa-sync pl-2"></i></div>
+                                                            <div class="col-9">Queue Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/start">
+                                                        <div class="row" title="Execute the task immediately.">
+                                                            <div class="col-3"><i class="fal fa-play pl-2"></i></div>
+                                                            <div class="col-9">Start Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/end">
+                                                        <div class="row" title="Move and mark the task as finished.">
+                                                            <div class="col-3"><i class="fal fa-check pl-2"></i></div>
+                                                            <div class="col-9">End Task</div>
+                                                        </div>
+                                                    </a>
+                                                    <a class="dropdown-item p-1 bg-dark-3 text-white-50" href="#">
+                                                        <div class="row" title="Delete the task.">
+                                                            <div class="col-3"><i class="fal fa-trash-alt pl-2"></i></div>
+                                                            <div class="col-9">Delete Task</div>
+                                                        </div>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

@@ -16,21 +16,26 @@
             {
                 "name": "timeout for 5 minutes",
                 "task": "twitch_timeout",
-                "time": 300
+                "time": 300,
+                "instant": true
             },{
                 "name": "moderator for 1 week",
                 "task": "twitch_moderator",
-                "time": 604800
+                "time": 604800,
+                "instant": false
             },{
                 "name": "vip badge",
-                "task": "twitch_vip"
+                "task": "twitch_vip",
+                "instant": false
             },{
                 "name": "wasted discord role",
                 "task": "discord_role",
-                "role": "WASTED"
+                "role": "WASTED",
+                "instant": false
             },{
                 "name": "celestial power",
-                "task": "special"
+                "task": "special",
+                "instant": false
             }
         ],
         "scopes": {
