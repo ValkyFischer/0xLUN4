@@ -43,7 +43,11 @@
             <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Discord Bot</h3>
             <hl><div></div></hl>
             <div class="text-right pb-3">
-                <h1 class="{{ 'text-success' if dc_status else 'text-danger' }}">{{ 'ONLINE' if dc_status else 'OFFLINE' }}</h1>
+                <h1 class="
+                    {{ 'text-success' if dc_status == 'ONLINE' }}
+                    {{ 'text-info' if dc_status == 'STARTED' }}
+                    {{ 'text-danger' if dc_status == 'OFFLINE' }}
+                ">{{ dc_status }}</h1>
                 <i class="text-white-50">STATUS</i>
                 <div class="dropdown">
                     <button class="white-50" type="button" id="ddown_dc" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
@@ -72,7 +76,11 @@
             <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Twitch Bot</h3>
             <hl><div></div></hl>
             <div class="text-right pb-3">
-                <h1 class="{{ 'text-success' if tw_status else 'text-danger' }}">{{ 'ONLINE' if tw_status else 'OFFLINE' }}</h1>
+                <h1 class="
+                    {{ 'text-success' if tw_status == 'ONLINE' }}
+                    {{ 'text-info' if tw_status == 'STARTED' }}
+                    {{ 'text-danger' if tw_status == 'OFFLINE' }}
+                ">{{ tw_status }}</h1>
                 <i class="text-white-50">STATUS</i>
                 <div class="dropdown">
                     <button class="white-50" type="button" id="ddown_tw" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>

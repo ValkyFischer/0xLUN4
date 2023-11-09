@@ -56,6 +56,7 @@ class TwitchBot(commands.Bot):
     """
     def __init__(self, config: dict, logger: ValkyrieLogger, task_queue: TaskQueue):
         self.loaded = False
+        self.running = False
         self.logger = logger
         self.config = config
         self.task_queue = task_queue

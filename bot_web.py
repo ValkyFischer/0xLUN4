@@ -117,13 +117,33 @@ class WebServer:
                 vk_status = 'OFFLINE'
         else:
             vk_status = 'UNKNOWN'
+        
+        if self.dc_bot is not None:
+            if self.dc_bot.loaded:
+                dc_status = 'ONLINE'
+            elif self.dc_bot.running:
+                dc_status = 'STARTED'
+            else:
+                dc_status = 'OFFLINE'
+        else:
+            dc_status = 'UNKNOWN'
+        
+        if self.tw_bot is not None:
+            if self.tw_bot.loaded:
+                tw_status = 'ONLINE'
+            elif self.tw_bot.running:
+                tw_status = 'STARTED'
+            else:
+                tw_status = 'OFFLINE'
+        else:
+            tw_status = 'UNKNOWN'
             
         return render_template(
             template_name_or_list='index.html',
             stringtable=ST[lang],
             vk_status=vk_status,
-            dc_status=self.dc_bot.loaded if self.dc_bot is not None else False,
-            tw_status=self.tw_bot.loaded if self.tw_bot is not None else False,
+            dc_status=dc_status,
+            tw_status=tw_status,
             logs=latest_5,
             l4_status='OFFLINE' if self.luna_ping == 0 else 'ONLINE',
             ping=self.luna_ping,
@@ -164,7 +184,17 @@ class WebServer:
         
         if 'loggedin' not in session:
             return redirect('https://valky.xyz/')
-        
+
+        if self.vk_bot is not None:
+            if self.vk_bot.ready:
+                vk_status = 'ONLINE'
+            elif self.vk_bot.running:
+                vk_status = 'STARTED'
+            else:
+                vk_status = 'OFFLINE'
+        else:
+            vk_status = 'UNKNOWN'
+            
         tasks, finished, deleted, errors = self.getTasks()
         tasks_5 = tasks[-5:]
         finished_5 = finished[-5:]
@@ -172,7 +202,7 @@ class WebServer:
         return render_template(
             template_name_or_list='valky.html',
             stringtable=ST[lang],
-            vk_status=self.vk_bot.ready,
+            vk_status=vk_status,
             tasks=tasks_5,
             finished=finished_5,
             build=self.build,
@@ -345,6 +375,7 @@ class WebServer:
         Starts the Valkyrie bot.
         """
         self.vk_bot.start_time = time.time()
+        self.vk_bot.running = True
         self.loop.create_task(self.vk_bot.run())
         self.loop.create_task(self.vk_bot.run_fast())
         
@@ -353,6 +384,7 @@ class WebServer:
         Starts the Discord bot.
         """
         self.dc_bot.start_time = time.time()
+        self.dc_bot.running = True
         self.dc_bot.setup()
         self.loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
         
@@ -361,6 +393,7 @@ class WebServer:
         Starts the Twitch bot.
         """
         self.tw_bot.start_time = time.time()
+        self.tw_bot.running = True
         self.loop.create_task(self.tw_bot.run())
     
     def getLogs(self):

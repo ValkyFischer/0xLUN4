@@ -30,9 +30,12 @@
                 <div class="card card-body bg-dark text-white">
                     <h2 class="">
                         Status
-                        <spam class="pt-2 {{ 'text-success' if vk_status else 'text-warning' }}">
-                            {{ 'ONLINE' if vk_status else 'OFFLINE' }}
-                        </spam>
+                        <span class="pt-2
+                            {{ 'text-success' if vk_status == 'ONLINE' }}
+                            {{ 'text-info' if vk_status == 'STARTED' }}
+                            {{ 'text-danger' if vk_status == 'OFFLINE' }}
+                        ">{{ vk_status }}
+                        </span>
                     </h2>
                     <p class="mb-0">The Valkyrie Bot is the core of the 0xLUN4 project. It handles configurations, files, tasks and logs events.</p>
                 </div>
@@ -111,7 +114,7 @@
                                 <thead>
                                     <tr>
                                         <th scope="col">#</th>
-                                        <th scope="col">Name</th>
+                                        <th scope="col">User</th>
                                         <th scope="col">Reward</th>
                                         <th scope="col">Cost</th>
                                         <th scope="col">Input</th>
