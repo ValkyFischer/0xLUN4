@@ -13,6 +13,7 @@ import requests
 from waitress import serve
 from flask import Flask, request, render_template, session, redirect, flash
 
+from Modules.tasks import Task
 from ValkyrieUtils.Tools import ValkyrieTools
 from Web.stringtable import ST
 from Modules.luna import Luna
@@ -72,6 +73,10 @@ class WebServer:
         self.app.add_url_rule('/<lang>/valky/luna/', 'valky_luna', self.valky_luna)
         self.app.add_url_rule('/<lang>/valky/tasks', 'valky_tasks', self.valky_tasks)
         self.app.add_url_rule('/<lang>/valky/tasks/', 'valky_tasks', self.valky_tasks)
+        self.app.add_url_rule('/<lang>/valky/tasks/new', 'valky_tasks_new', self.valky_tasks_new)
+        self.app.add_url_rule('/<lang>/valky/tasks/new/', 'valky_tasks_new', self.valky_tasks_new)
+        self.app.add_url_rule('/<lang>/valky/tasks/new', 'valky_tasks_post', self.valky_tasks_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/valky/tasks/new/', 'valky_tasks_post', self.valky_tasks_post, methods=['POST'])
         self.app.add_url_rule('/<lang>/valky/tasks/<task_id>/<action>', 'valky_tasks_action', self.valky_tasks_action)
     
     # ========================================================================================
@@ -267,10 +272,86 @@ class WebServer:
             finished=finished,
             deleted=deleted,
             errors=errors,
+            build=self.build,
+            build_v=self.build_v
+        )
+    
+    async def valky_tasks_new(self, lang='en'):
+        """
+        The Valkyrie bot tasks page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        return render_template(
+            template_name_or_list='valky/tasks_new.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
             actions=self.vk_bot.task_queue.__globals__(),
             build=self.build,
             build_v=self.build_v
         )
+    
+    async def valky_tasks_post(self, lang='en'):
+        """
+        The Valkyrie bot tasks page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        data = request.form.to_dict()
+        if data['submit'] == 'add':
+            task_action = data['task_action']
+            task_instant = True if data['task_exec'] == '1' else False
+            task_data = {
+                'user_name': data['task_name'],
+                'reward_name': data['task_reward'],
+                'reward_cost': data['task_cost'],
+                'user_input': data['task_input'],
+            }
+            time_frame = int(data['task_time']) if data['task_time'] != '' else None
+            role_assign = data['task_role'] if data['task_role'] != '' else None
+            
+            if self.vk_bot.task_queue.TASK_TW_TIMEOUT == task_action:
+                if time_frame is None:
+                    flash(f'Time frame is required for this task: {task_action}', 'error')
+                    return redirect(f'/{lang}/valky/tasks')
+                if data['task_input'] is None or data['task_input'] == '':
+                    flash(f'Input is required for this task: {task_action}', 'error')
+                    return redirect(f'/{lang}/valky/tasks')
+            
+            if self.vk_bot.task_queue.TASK_DC_ADD_ROLE == task_action:
+                if role_assign is None:
+                    flash(f'Role is required for this task: {task_action}', 'error')
+                    return redirect(f'/{lang}/valky/tasks')
+                if data['task_input'] is None or data['task_input'] == '':
+                    flash(f'Input is required for this task: {task_action}', 'error')
+                    return redirect(f'/{lang}/valky/tasks')
+            
+            if self.vk_bot.task_queue.TASK_TW_ADD_MODERATOR == task_action:
+                if data['task_input'] is None or data['task_input'] == '':
+                    flash(f'Input is required for this task: {task_action}', 'error')
+                    return redirect(f'/{lang}/valky/tasks')
+            
+            if self.vk_bot.task_queue.TASK_TW_ADD_VIP == task_action:
+                if data['task_input'] is None or data['task_input'] == '':
+                    flash(f'Input is required for this task: {task_action}', 'error')
+                    return redirect(f'/{lang}/valky/tasks')
+            
+            task = Task(task_action, task_data, task_instant, time_frame, role_assign)
+            self.vk_bot.task_queue.add_task(task)
+            flash(f'Task "{task}" added', 'info')
+            return redirect(f'/{lang}/valky/tasks')
+        
+        else:
+            flash('Unknown action', 'error')
+            return redirect(f'/{lang}/valky/tasks')
     
     async def valky_tasks_action(self, task_id, action, lang='en'):
         """

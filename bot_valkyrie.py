@@ -216,47 +216,80 @@ class ValkyrieBot:
     async def execute_task(self, task: Task):
         err = True
         if task.action == self.task_queue.TASK_DC_ADD_ROLE:
-            await self.discord_bot.assign_role(
-                task.data['user_input'] if 'user_input' in task.data else task.data['user_name'])
-            await self.discord_bot.send_log(
-                f"Assigned Discord Role | {task.data['user_input'] if 'user_input' in task.data else task.data['user_name']}")
-            self.logger.info(f'Assigning role | {task.data["user_name"]}')
+            user = task.data['user_input'] if 'user_input' in task.data else task.data['user_name']
+            await self.discord_bot.assign_role(user, task.role)
+            await self.discord_bot.send_log(f"Assigned Discord Role | {user}")
+            self.logger.info(f'Assigning role | {user}')
             err = False
         
         elif task.action == self.task_queue.TASK_TW_ADD_MODERATOR:
-            await self.twitch_bot.channel.mod(task.data['user_name'])
-            await self.discord_bot.send_log(
-                f"Added Twitch Moderator | {task.data['user_input'] if 'user_input' in task.data else task.data['user_name']}")
+            user = task.data['user_input'] if 'user_input' in task.data else task.data['user_name']
+            await self.twitch_bot.channel.mod(user)
+            await self.discord_bot.send_log(f"Added Twitch Moderator | {user}")
             time_now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            if task.time is not None:
+                time_end = (datetime.datetime.now() + datetime.timedelta(seconds = task.time)).strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                time_end = None
             with open('Twitch/data/rewards/moderators.txt', 'a+') as f:
-                f.write(f'{time_now}|{task.data["user_name"]}\n')
+                f.write(f'{time_now}|{user}|{time_end}\n')
+            err = False
+        
+        elif task.action == self.task_queue.TASK_TW_REM_MODERATOR:
+            user = task.data['user_input'] if 'user_input' in task.data else task.data['user_name']
+            await self.twitch_bot.channel.unmod(user)
+            await self.discord_bot.send_log(f"Removed Twitch Moderator | {user}")
+            with open('Twitch/data/rewards/moderators.txt', 'w') as f:
+                file_data = f.readlines()
+                for line in file_data:
+                    if line.split('|')[1] != user:
+                        f.write(line)
             err = False
         
         elif task.action == self.task_queue.TASK_TW_ADD_VIP:
-            await self.twitch_bot.channel.vip(task.data['user_name'])
-            await self.discord_bot.send_log(
-                f"Added Twitch VIP | {task.data['user_input'] if 'user_input' in task.data else task.data['user_name']}")
+            user = task.data['user_input'] if 'user_input' in task.data else task.data['user_name']
+            await self.twitch_bot.channel.vip(user)
+            await self.discord_bot.send_log(f"Added Twitch VIP | {user}")
             time_now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            if task.time is not None:
+                time_end = (datetime.datetime.now() + datetime.timedelta(seconds = task.time)).strftime('%Y-%m-%d %H:%M:%S')
+            else:
+                time_end = None
             with open('Twitch/data/rewards/vips.txt', 'a+') as f:
-                f.write(f'{time_now}|{task.data["user_name"]}\n')
+                f.write(f'{time_now}|{user}|{time_end}\n')
+            err = False
+            
+        elif task.action == self.task_queue.TASK_TW_REM_VIP:
+            user = task.data['user_input'] if 'user_input' in task.data else task.data['user_name']
+            await self.twitch_bot.channel.unvip(user)
+            await self.discord_bot.send_log(f"Removed Twitch VIP | {user}")
+            with open('Twitch/data/rewards/vips.txt', 'w') as f:
+                file_data = f.readlines()
+                for line in file_data:
+                    if line.split('|')[1] != user:
+                        f.write(line)
             err = False
         
         elif task.action == self.task_queue.TASK_TW_TIMEOUT:
-            for rwd in self.config['twitch']['rewards']:
-                if rwd['name'].lower() == task.data['reward_name'].lower():
-                    duration = rwd['time']
-                    await self.twitch_bot.channel.timeout(
-                        timeout_id = task.data['user_input'] if 'user_input' in task.data else task.data['user_name'],
-                        duration = duration,
-                        reason = f'ValkyrieBot | {task.data["user_name"]} has timed you out for {task.data["reward_cost"]} Divine Potions!'
-                    )
-                    await self.discord_bot.send_log(
-                        f"Timed out Twitch User | {task.data['user_input'] if 'user_input' in task.data else task.data['user_name']} | {duration} seconds")
-                    err = False
-                    break
-            else:
-                self.logger.warning(f'Unknown Reward Redemption | {task.data["reward_name"]}')
-                await self.discord_bot.send_log(f"Unknown Reward Redemption | {task.data['reward_name']}")
+            user = task.data['user_input'] if 'user_input' in task.data else task.data['user_name']
+            await self.twitch_bot.channel.timeout(
+                timeout_id = user, duration = task.time,
+                reason = f'ValkyrieBot | {task.data["user_name"]} has timed you out for {task.data["reward_cost"]} Divine Potions!'
+            )
+            await self.discord_bot.send_log(f"Timed out Twitch User | {user} | {task.time} seconds")
+            err = False
+            
+        elif task.action == self.task_queue.TASK_TW_BAN:
+            user = task.data['user_input'] if 'user_input' in task.data else task.data['user_name']
+            await self.twitch_bot.channel.ban(user)
+            await self.discord_bot.send_log(f"Banned Twitch User | {user}")
+            err = False
+        
+        elif task.action == self.task_queue.TASK_TW_UNBAN:
+            user = task.data['user_input'] if 'user_input' in task.data else task.data['user_name']
+            await self.twitch_bot.channel.unban(user)
+            await self.discord_bot.send_log(f"Unbanned Twitch User | {user}")
+            err = False
         
         elif task.action == self.task_queue.TASK_SPECIAL:
             # await self.discord_bot.send_special(task.data)
@@ -303,8 +336,7 @@ class ValkyrieBot:
     
     async def run_fast(self):
         """
-        A loop which runs the main bot methods every N seconds. The N seconds interval is defined in the configuration
-        file.
+        A loop which runs the main bot methods every 1 second.
         """
         while True:
             start_time = time.time()

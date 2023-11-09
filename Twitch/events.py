@@ -96,7 +96,10 @@ class Event:
                     "reward_cost": reward_cost,
                     "user_input": event.input,
                 }
-                task = Task(task_action, task_data, task_instant)
+                time_frame = reward['time'] if 'time' in reward.keys() else None
+                role_assign = reward['role'] if 'role' in reward.keys() else None
+                
+                task = Task(task_action, task_data, task_instant, time_frame, role_assign)
                 self.bot.task_queue.add_task(task)
         
         channel = self.bot.get_channel(user_name)
@@ -136,3 +139,6 @@ class Event:
             else:
                 await channel.send(
                     f'[SUBSCRIPTION] {user_name} got a {tier_name}. They are subscribed for {length} month{"s" if int(length) > 1 else ""}{message} {random_emote}')
+        
+        self.channel.subscribers.append(recipient_name if is_gift else user_name)
+        self.channel.subscriber_count += 1

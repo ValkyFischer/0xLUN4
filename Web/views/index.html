@@ -129,31 +129,12 @@
     </div>
 </div>
 <div class="row pt-5">
-    <div class="text-right col-4">
+    <div class="col-4 text-right pt-2">
         <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Project 0xLUN4</h1>
         <hl><div></div></hl>
-        <ul class="MegaLink-list pt-2">
-            <li class="MegaLink-item item-r">
-                <a class="MegaLink-link link-r">Build {{ build_v }}</a>
-            </li>
-        </ul>
-        <ul class="MegaLink-list">
-            <li class="MegaLink-item item-r">
-                <a class="MegaLink-link link-r" href="javascript:location.reload()">Refresh</a>
-            </li>
-        </ul>
-        <ul class="MegaLink-list">
-            <li class="MegaLink-item item-r">
-                <a class="MegaLink-link link-r" href="/{{ stringtable['lang'] }}/valky/tasks">View Tasks</a>
-            </li>
-        </ul>
-        <ul class="MegaLink-list">
-            <li class="MegaLink-item item-r">
-                <a class="MegaLink-link link-r" href="/{{ stringtable['lang'] }}/logs">View Logs</a>
-            </li>
-        </ul>
+        {% include 'parts/megalink.html' %}
     </div>
-    <div class="text-left col-8">
+    <div class="col-8">
         <div class="row">
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white">

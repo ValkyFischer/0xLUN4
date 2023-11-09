@@ -317,6 +317,8 @@ class Channel:
                 'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.post(url, headers=headers) as resp:
+                if resp.status == 204:
+                    return True
                 response_data = await resp.json()
                 return response_data
     
@@ -337,6 +339,8 @@ class Channel:
                 'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.delete(url, headers=headers) as resp:
+                if resp.status == 204:
+                    return True
                 response_data = await resp.json()
                 return response_data
     
@@ -357,6 +361,8 @@ class Channel:
                 'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.post(url, headers=headers) as resp:
+                if resp.status == 204:
+                    return True
                 response_data = await resp.json()
                 return response_data
     
@@ -377,6 +383,8 @@ class Channel:
                 'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.delete(url, headers=headers) as resp:
+                if resp.status == 204:
+                    return True
                 response_data = await resp.json()
                 return response_data
     
@@ -407,6 +415,8 @@ class Channel:
                 'Content-Type': 'application/json'
             }
             async with session.post(url, headers=headers, json=data) as resp:
+                if resp.status == 204:
+                    return True
                 response_data = await resp.json()
                 return response_data
     
@@ -447,6 +457,8 @@ class Channel:
                 'Content-Type': 'application/json'
             }
             async with session.post(url, headers=headers, json=data) as resp:
+                if resp.status == 204:
+                    return True
                 response_data = await resp.json()
                 return response_data
             
@@ -467,7 +479,10 @@ class Channel:
                 'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             async with session.delete(url, headers=headers) as resp:
-                pass
+                if resp.status == 204:
+                    return True
+                response_data = await resp.json()
+                return response_data
     
     async def announce(self, message: str, color: str = "primary") -> None:
         """
@@ -490,6 +505,8 @@ class Channel:
                 'Content-Type': 'application/json'
             }
             async with session.post(url, headers=headers, json=data) as resp:
+                if resp.status == 204:
+                    return True
                 response_data = await resp.json()
                 return response_data
             
@@ -520,6 +537,8 @@ class Channel:
                 'Content-Type': 'application/json'
             }
             async with session.post(url, headers=headers, json=data) as resp:
+                if resp.status == 204:
+                    return True
                 response_data = await resp.json()
                 return response_data
             

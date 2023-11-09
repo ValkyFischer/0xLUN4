@@ -115,22 +115,22 @@ class DiscordBot:
         # TODO: Proper embedded message
         #       await self.ch_stream.send(message)
     
-    async def assign_role(self, user_id: int | str):
+    async def assign_role(self, user_id: int | str, role: str):
         """
         Assigns a role to a user.
         
         Args:
             user_id (int | str): The user to assign the role to.
+            role (str): The role to assign.
         """
         for user in self.client.users:
             if user.name == user_id or user.id == user_id:
                 guild = await self.client.fetch_guild(self.guild_id)
                 user = await guild.fetch_member(user.id)
-                for rwd in self.config['twitch']['rewards']:
-                    if rwd['task'] == "discord_role":
-                        role = discord.utils.get(guild.roles, name=rwd['role'])
-                        await user.add_roles(role)
-                        return
+                
+                role = discord.utils.get(guild.roles, name=role)
+                await user.add_roles(role)
+                return
 
     def setup(self):
         """

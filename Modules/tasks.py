@@ -14,6 +14,7 @@ About:
 import json
 import logging
 import os
+import time
 import xml.etree.ElementTree as ET
 
 
@@ -23,12 +24,15 @@ class Task:
     """
     _task_id_counter = 0
 
-    def __init__(self, action: str, data: dict, instant: bool, task_id: int = None):
+    def __init__(self, action: str, data: dict, instant: bool, timeframe: int, role: str, task_id: int = None, date: int = None):
         Task._task_id_counter += 1
         self.id = Task._task_id_counter if task_id is None else task_id
         self.action = action
         self.data = data
         self.instant = instant
+        self.time = timeframe
+        self.role = role
+        self.date = time.time() if date is None else date
 
 
 class TaskQueue:
@@ -52,9 +56,14 @@ class TaskQueue:
         self.path_tasks = 'Modules/data/tasks.xml'
         
         self.TASK_TW_TIMEOUT = "twitch_timeout"
+        self.TASK_TW_BAN = "twitch_ban"
+        self.TASK_TW_UNBAN = "twitch_unban"
         self.TASK_TW_ADD_MODERATOR = "twitch_moderator"
+        self.TASK_TW_REM_MODERATOR = "twitch_moderator_rem"
         self.TASK_TW_ADD_VIP = "twitch_vip"
+        self.TASK_TW_REM_VIP = "twitch_vip_rem"
         self.TASK_DC_ADD_ROLE = "discord_role"
+        self.TASK_DC_REM_ROLE = "discord_role_rem"
         self.TASK_SPECIAL = "special"
 
         self.load_tasks()
@@ -65,10 +74,18 @@ class TaskQueue:
         """
         TASKS = [
             self.TASK_TW_TIMEOUT,
+            self.TASK_TW_BAN,
+            self.TASK_TW_UNBAN,
+            
             self.TASK_TW_ADD_MODERATOR,
+            self.TASK_TW_REM_MODERATOR,
+            
             self.TASK_TW_ADD_VIP,
+            self.TASK_TW_REM_VIP,
+            
             self.TASK_DC_ADD_ROLE,
-            self.TASK_SPECIAL
+            
+            self.TASK_SPECIAL,
         ]
         return TASKS
 
@@ -185,28 +202,31 @@ class TaskQueue:
                 tel: The task element.
             """
             task_id = int(tel.get("id"))
-            action = tel.get("action")
-            instant = tel.get("instant") == "True"
-            data = {k: tel.get(k) for k in tel.keys() if k not in ["id", "action", "instant"]}
-            return Task(action, data, instant, task_id)
+            task_action = tel.get("action")
+            task_instant = tel.get("instant") == "True"
+            task_data = {k: tel.get(k) for k in tel.keys() if k not in ["id", "action", "instant"]}
+            time_frame = tel.get("time") if "time" in tel.keys() else None
+            role_assign = tel.get("role") if "role" in tel.keys() else None
+            creation_date = tel.get("date") if "date" in tel.keys() else None
+            return Task(task_action, task_data, task_instant, time_frame, role_assign, task_id, creation_date)
         
         # If the XML file exists, load the tasks from the file
         if os.path.exists(self.path_tasks):
             tree = ET.parse(self.path_tasks)
             root = tree.getroot()
             
-            task_data = {"tasks": [], "finished": [], "deleted": [], "errors": []}
+            t_template = {"tasks": [], "finished": [], "deleted": [], "errors": []}
             
             for element in root:
                 key = element.tag
                 for task_element in element:
                     task = parse_task_element(task_element)
-                    task_data[key].append(task)
+                    t_template[key].append(task)
             
-            self.tasks = task_data["tasks"]
-            self.finished_tasks = task_data["finished"]
-            self.deleted_tasks = task_data["deleted"]
-            self.errors = task_data["errors"]
+            self.tasks = t_template["tasks"]
+            self.finished_tasks = t_template["finished"]
+            self.deleted_tasks = t_template["deleted"]
+            self.errors = t_template["errors"]
             
             self.logger.info(f'Loaded Tasks | Queue size: {self.get_task_count()} | Finished: {len(self.finished_tasks)} | Deleted: {len(self.deleted_tasks)} | Errors: {len(self.errors)}')
         
@@ -255,6 +275,11 @@ class TaskQueue:
                 task_element.set("id", str(task.id))
                 task_element.set("action", task.action)
                 task_element.set("instant", str(task.instant))
+                task_element.set("date", str(task.date))
+                if task.time is not None:
+                    task_element.set("time", str(task.time))
+                if task.role is not None:
+                    task_element.set("role", str(task.role))
                 for data_key, data_value in task.data.items():
                     task_element.set(data_key, str(data_value))
         
