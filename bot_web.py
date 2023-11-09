@@ -127,9 +127,12 @@ class WebServer:
             logs=latest_5,
             l4_status='OFFLINE' if self.luna_ping == 0 else 'ONLINE',
             ping=self.luna_ping,
-            server_time=server_time,
             build=self.build,
-            build_v=self.build_v
+            build_v=self.build_v,
+            vk_start_time=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.vk_bot.start_time)),
+            dc_start_time=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.dc_bot.start_time)),
+            tw_start_time=time.strftime("%Y-%m-%d %H:%M:%S", time.localtime(self.tw_bot.start_time)),
+            l4_server_time=server_time,
         )
     
     def logs(self, lang='en'):
@@ -341,6 +344,7 @@ class WebServer:
         """
         Starts the Valkyrie bot.
         """
+        self.vk_bot.start_time = time.time()
         self.loop.create_task(self.vk_bot.run())
         self.loop.create_task(self.vk_bot.run_fast())
         
@@ -348,6 +352,7 @@ class WebServer:
         """
         Starts the Discord bot.
         """
+        self.dc_bot.start_time = time.time()
         self.dc_bot.setup()
         self.loop.create_task(self.dc_bot.client.start(self.dc_bot.token))
         
@@ -355,6 +360,7 @@ class WebServer:
         """
         Starts the Twitch bot.
         """
+        self.tw_bot.start_time = time.time()
         self.loop.create_task(self.tw_bot.run())
     
     def getLogs(self):

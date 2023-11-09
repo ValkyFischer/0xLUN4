@@ -72,6 +72,8 @@ class TwitchBot(commands.Bot):
         self.pubsub = pubsub.PubSubPool(self)
         self.event_handler = Event(self)
         self.cmd_handler = Commands(self)
+        
+        self.start_time = 0
 
     # ==================================================================================================================
     # Events

@@ -76,6 +76,8 @@ class DiscordBot:
         self.ch_cmd = None
         self.ch_stream = None
         
+        self.start_time = 0
+        
         global LUNA
         LUNA = Luna(self.logger, self.config)
         if not os.path.exists("Discord/data/tickets.txt"):

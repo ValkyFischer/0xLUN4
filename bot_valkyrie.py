@@ -55,6 +55,8 @@ class ValkyrieBot:
         self.backup_finished = 0
         self.backup_deleted = 0
         self.backup_errors = 0
+        
+        self.start_time = 0
     
     async def check_refresh(self):
         """

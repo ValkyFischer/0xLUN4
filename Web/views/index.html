@@ -9,52 +9,114 @@
         <div class="card card-body bg-dark text-white text-left">
             <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Valkyrie Bot</h3>
             <hl><div></div></hl>
-            <div class="text-right">
+            <div class="text-right pb-3">
                 <h1 class="
                     {{ 'text-success' if vk_status == 'ONLINE' }}
                     {{ 'text-info' if vk_status == 'STARTED' }}
                     {{ 'text-danger' if vk_status == 'OFFLINE' }}
                 ">{{ vk_status }}</h1>
                 <i class="text-white-50">STATUS</i>
-                <div class=""><a href="/start/vk" class="btn btn-outline-info btn-sm mt-2 w-100">Run Bot</a></div>
-                <i class="text-white-50">START</i>
+                <div class="dropdown">
+                    <button class="white-50" type="button" id="ddown_vk" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
+                    <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown_vk">
+                        <a class="dropdown-item p-1 bg-dark-4 text-white" href="/start/vk">
+                            <div class="row" title="Start the Valkyrie Bot.">
+                                <div class="col-3"><i class="fal fa-play pl-2"></i></div>
+                                <div class="col-9">Run Bot</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/status">
+                            <div class="row" title="Check the Valkyrie Bot.">
+                                <div class="col-3"><i class="fal fa-laptop-medical pl-2"></i></div>
+                                <div class="col-9">Bot Status</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </div>
+            <i class="text-white-50"><i class="fal fa-clock"></i> {{ vk_start_time }}</i>
+            <hl><div></div></hl>
         </div>
     </div>
     <div class="col-3 p-2">
         <div class="card card-body bg-dark text-white text-left">
             <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Discord Bot</h3>
             <hl><div></div></hl>
-            <div class="text-right">
+            <div class="text-right pb-3">
                 <h1 class="{{ 'text-success' if dc_status else 'text-danger' }}">{{ 'ONLINE' if dc_status else 'OFFLINE' }}</h1>
                 <i class="text-white-50">STATUS</i>
-                <div class=""><a href="/start/dc" class="btn btn-outline-info btn-sm mt-2 w-100">Run Bot</a></div>
-                <i class="text-white-50">START</i>
+                <div class="dropdown">
+                    <button class="white-50" type="button" id="ddown_dc" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
+                    <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown_dc">
+                        <a class="dropdown-item p-1 bg-dark-4 text-white" href="/start/dc">
+                            <div class="row" title="Start the Discord Bot.">
+                                <div class="col-3"><i class="fal fa-play pl-2"></i></div>
+                                <div class="col-9">Run Bot</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/discord/status">
+                            <div class="row" title="Check the Discord Bot.">
+                                <div class="col-3"><i class="fal fa-laptop-medical pl-2"></i></div>
+                                <div class="col-9">Bot Status</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </div>
+            <i class="text-white-50"><i class="fal fa-clock"></i> {{ dc_start_time }}</i>
+            <hl><div></div></hl>
         </div>
     </div>
     <div class="col-3 p-2">
         <div class="card card-body bg-dark text-white text-left">
             <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Twitch Bot</h3>
             <hl><div></div></hl>
-            <div class="text-right">
+            <div class="text-right pb-3">
                 <h1 class="{{ 'text-success' if tw_status else 'text-danger' }}">{{ 'ONLINE' if tw_status else 'OFFLINE' }}</h1>
                 <i class="text-white-50">STATUS</i>
-                <div class=""><a href="/start/tw" class="btn btn-outline-info btn-sm mt-2 w-100">Run Bot</a></div>
-                <i class="text-white-50">START</i>
+                <div class="dropdown">
+                    <button class="white-50" type="button" id="ddown_tw" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
+                    <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown_tw">
+                        <a class="dropdown-item p-1 bg-dark-4 text-white" href="/start/tw">
+                            <div class="row" title="Start the Twitch Bot.">
+                                <div class="col-3"><i class="fal fa-play pl-2"></i></div>
+                                <div class="col-9">Run Bot</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/twitch/status">
+                            <div class="row" title="Check the Twitch Bot.">
+                                <div class="col-3"><i class="fal fa-laptop-medical pl-2"></i></div>
+                                <div class="col-9">Bot Status</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </div>
+            <i class="text-white-50"><i class="fal fa-clock"></i> {{ tw_start_time }}</i>
+            <hl><div></div></hl>
         </div>
     </div>
     <div class="col-3 p-2">
         <div class="card card-body bg-dark text-white text-left">
             <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Luna API</h3>
             <hl><div></div></hl>
-            <div class="text-right">
+            <div class="text-right pb-3">
                 <h1 class="{{ 'text-success' if l4_status else 'text-danger' }}">{{ 'ONLINE' if l4_status else 'OFFLINE' }}</h1>
                 <i class="text-white-50">STATUS</i>
-                <h2 class="text-info pt-2 pb-1">{{ ping }} ms</h2>
-                <i class="text-white-50">LATENCY</i>
+                <div class="dropdown">
+                    <button class="white-50" type="button" id="ddown_tw" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
+                    <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown_tw">
+                        <a class="dropdown-item p-1 bg-dark-4 text-white">
+                            <div class="row" title="Latency in milliseconds.">
+                                <div class="col-3"><i class="fal fa-tachometer-fast pl-2"></i></div>
+                                <div class="col-9">{{ ping }} ms</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </div>
+            <i class="text-white-50"><i class="fal fa-clock"></i> {{ l4_server_time }}</i>
+            <hl><div></div></hl>
         </div>
     </div>
 </div>
