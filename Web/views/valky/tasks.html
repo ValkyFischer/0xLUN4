@@ -8,8 +8,16 @@
     <div class="col-4 text-right pt-2">
         <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Tasks</h1>
         <hl><div></div></hl>
-        <p class="pt-2 pr-2 "><a class="white-50" href="javascript:location.reload()">Refresh</a></p>
-        <p class="pr-2"><a class="white-50" href="/{{ stringtable['lang'] }}/logs">View Logs</a></p>
+        <ul class="MegaLink-list pt-2">
+            <li class="MegaLink-item item-r">
+                <a class="MegaLink-link link-r" href="javascript:location.reload()">Refresh</a>
+            </li>
+        </ul>
+        <ul class="MegaLink-list">
+            <li class="MegaLink-item item-r">
+                <a class="MegaLink-link link-r" href="/{{ stringtable['lang'] }}/logs">View Logs</a>
+            </li>
+        </ul>
     </div>
     <div class="col-8">
         <div class="row">
@@ -17,7 +25,15 @@
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white">
                     <h2 class="">Tasks Queue</h2>
-                    <p class="mb-0">The tasks queue is a list of tasks that are waiting to be processed.</p>
+                    <p class="mb-0">
+                        The tasks queue is a list of tasks that are waiting to be processed. Tasks are processed in the
+                        order they are received.
+                    </p>
+                    <p class="mb-0">
+                        Tasks can be queued, started, ended, failed or deleted. Queued tasks are waiting to be processed.
+                        Started tasks are currently being processed. Ended tasks have been processed and are finished.
+                        Failed tasks have been processed but failed. Deleted tasks have been deleted.
+                    </p>
                 </div>
             </div>
             {# QUEUED #}
@@ -291,8 +307,96 @@
         </div>
     </div>
 </div>
-
+<form method="POST">
+<div class="row pt-5">
+    <div class="col-4 text-right pt-2">
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>New Task</h1>
+        <hl><div></div></hl>
+    </div>
+    <div class="col-8">
+        <div class="row">
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <h2>Manual Task</h2>
+                    <p class="mb-0">
+                        Create a new task manually. This task will be added to the queue and processed in the order it
+                        was received.
+                    </p>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-0">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Task Data</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="text-left col-6">
+                                    <div class="input-field">
+                                        <select name="task_action" id="task_action" class="hidden validate" required>
+                                            <option value="" disabled selected>Choose Action</option>
+                                            {% for action in actions %}
+                                            <option value="{{ action }}">{{ action|upper }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="text-left col-6">
+                                    <div class="input-field">
+                                        <select name="task_exec" id="task_exec" class="hidden validate" required>
+                                            <option class="bg-dark-3 text-white-50" value="" disabled selected>Execute Instantly?</option>
+                                            <option class="bg-dark-4 text-white" value="0">No, add to queue</option>
+                                            <option class="bg-dark-4 text-white" value="1">Yes, execute now</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row pt-4">
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-4">
+                                        <input type="text" name="task_name" id="task_name" class="form-control form-control-sm validate text-white" placeholder="0xLUN4" required />
+                                        <label data-error="wrong" data-success="right" for="task_name">Username to add as task executor</label>
+                                    </div>
+                                    <div class="md-form form-sm mt-0">
+                                        <input type="text" name="task_input" id="task_input" class="form-control form-control-sm validate text-white" placeholder="V_LKY" required />
+                                        <label data-error="wrong" data-success="right" for="task_input">User input to add to the task</label>
+                                    </div>
+                                </div>
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-4">
+                                        <input type="text" name="task_reward" id="task_reward" class="form-control form-control-sm validate text-white" placeholder="Timeout a User" required />
+                                        <label data-error="wrong" data-success="right" for="task_reward">Twitch channel point reward name</label>
+                                    </div>
+                                    <div class="md-form form-sm mt-0">
+                                        <input type="number" name="task_cost" id="task_cost" class="form-control form-control-sm validate text-white" placeholder="1337" />
+                                        <label data-error="wrong" data-success="right" for="task_cost">Twitch channel point reward cost</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <div class="text-right">
+                        <button name="submit" type="submit" class="btn btn-outline-warning">Add <i class="fas fa-plus ml-1"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
 {% endblock %}
 
 {% block custom_js %}
+<script>
+$(document).ready(function() {
+    // Materialize Select
+    $('select').material_select();
+});
+</script>
 {% endblock %}

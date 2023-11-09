@@ -58,6 +58,19 @@ class TaskQueue:
         self.TASK_SPECIAL = "special"
 
         self.load_tasks()
+    
+    def __globals__(self):
+        """
+        This method is called to receive globals.
+        """
+        TASKS = [
+            self.TASK_TW_TIMEOUT,
+            self.TASK_TW_ADD_MODERATOR,
+            self.TASK_TW_ADD_VIP,
+            self.TASK_DC_ADD_ROLE,
+            self.TASK_SPECIAL
+        ]
+        return TASKS
 
     def add_task(self, task: Task, instant: bool = False) -> None:
         """

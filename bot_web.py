@@ -26,7 +26,8 @@ class WebServer:
         self.config = config
         self.logger = logger
         self.valky = valky
-        self.build = hexlify(self.config['version'].replace('.', '').encode()).decode('utf-8')
+        self.build = hexlify(self.config['version'].replace('.', '').encode()).decode('utf-8').replace('2d', ':')
+        self.build_v = self.build.split(':')[1]
         
         self.luna = Luna(self.logger, self.config)
         self.luna_time = 0
@@ -127,7 +128,8 @@ class WebServer:
             l4_status='OFFLINE' if self.luna_ping == 0 else 'ONLINE',
             ping=self.luna_ping,
             server_time=server_time,
-            build=self.build
+            build=self.build,
+            build_v=self.build_v
         )
     
     def logs(self, lang='en'):
@@ -144,7 +146,9 @@ class WebServer:
         return render_template(
             template_name_or_list='logs.html',
             stringtable=ST[lang],
-            logs=logs
+            logs=logs,
+            build=self.build,
+            build_v=self.build_v
         )
     
     # Valky
@@ -168,6 +172,8 @@ class WebServer:
             vk_status=self.vk_bot.ready,
             tasks=tasks_5,
             finished=finished_5,
+            build=self.build,
+            build_v=self.build_v,
         )
     
     async def valky_settings(self, lang='en'):
@@ -184,7 +190,9 @@ class WebServer:
             template_name_or_list='valky/settings.html',
             stringtable=ST[lang],
             vk_status=self.vk_bot.ready,
-            config=self.config
+            config=self.config,
+            build=self.build,
+            build_v=self.build_v
         )
     
     async def valky_luna(self, lang='en'):
@@ -201,7 +209,9 @@ class WebServer:
             template_name_or_list='valky/luna.html',
             stringtable=ST[lang],
             vk_status=self.vk_bot.ready,
-            config=self.config
+            config=self.config,
+            build=self.build,
+            build_v=self.build_v
         )
     
     async def valky_tasks(self, lang='en'):
@@ -223,7 +233,10 @@ class WebServer:
             tasks=tasks,
             finished=finished,
             deleted=deleted,
-            errors=errors
+            errors=errors,
+            actions=self.vk_bot.task_queue.__globals__(),
+            build=self.build,
+            build_v=self.build_v
         )
     
     async def valky_tasks_action(self, task_id, action, lang='en'):

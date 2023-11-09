@@ -54,7 +54,7 @@ class Valkyrie:
         debug (bool): True if debug mode is enabled, False if debug mode is disabled.
         env (str): The environment. Can be either 'dev' or 'prod'. Default is 'prod'.
     """
-    __version__ = '0.5.1'
+    __version__ = 'Nov9-0.5.2'
     __author__ = '2023 © Valky Dev - All rights reserved.'
     
     def __init__(self, config_path: str, debug: bool, env: str):
@@ -79,7 +79,7 @@ class Valkyrie:
             for v in valky:
                 self.logger.info(v)
         
-        self.logger.info(f"ValkyrieBot v{Valkyrie.__version__} | Environment: {env.capitalize()} | Debug: {self.debug}")
+        self.logger.info(f"ValkyrieBot {Valkyrie.__version__} | Environment: {env.capitalize()} | Debug: {self.debug}")
         self.logger.info(f"{Valkyrie.__author__}")
         
         return env
