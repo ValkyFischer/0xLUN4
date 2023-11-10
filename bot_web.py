@@ -24,7 +24,8 @@ class WebServer:
     A class for web management of all bots.
     """
     def __init__(self, twitch_b, discord_b, valky_b, logger, config, valky):
-        self.config = config
+        self.cfg = config[0]
+        self.config = config[1]
         self.logger = logger
         self.valky = valky
         self.build = hexlify(self.config['version'].replace('.', '').encode()).decode('utf-8').replace('2d', ':')
@@ -77,10 +78,20 @@ class WebServer:
         # settings
         self.app.add_url_rule('/<lang>/settings/web', 'valky_settings', self.valky_settings)
         self.app.add_url_rule('/<lang>/settings/web/', 'valky_settings', self.valky_settings)
+        self.app.add_url_rule('/<lang>/settings/web', 'valky_settings_post', self.settings_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/settings/web/', 'valky_settings_post', self.settings_post, methods=['POST'])
         self.app.add_url_rule('/<lang>/settings/luna', 'valky_luna', self.valky_luna)
         self.app.add_url_rule('/<lang>/settings/luna/', 'valky_luna', self.valky_luna)
+        self.app.add_url_rule('/<lang>/settings/luna', 'valky_luna_post', self.settings_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/settings/luna/', 'valky_luna_post', self.settings_post, methods=['POST'])
         self.app.add_url_rule('/<lang>/settings/twitch', 'twitch_settings', self.twitch_settings)
         self.app.add_url_rule('/<lang>/settings/twitch/', 'twitch_settings', self.twitch_settings)
+        self.app.add_url_rule('/<lang>/settings/twitch', 'twitch_settings_post', self.settings_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/settings/twitch/', 'twitch_settings_post', self.settings_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/settings/discord', 'discord_settings', self.discord_settings)
+        self.app.add_url_rule('/<lang>/settings/discord/', 'discord_settings', self.discord_settings)
+        self.app.add_url_rule('/<lang>/settings/discord', 'discord_settings_post', self.settings_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/settings/discord/', 'discord_settings_post', self.settings_post, methods=['POST'])
 
         # functions
         self.app.add_url_rule('/login', 'login', self.login, methods=['POST'])
@@ -102,7 +113,7 @@ class WebServer:
         if 'loggedin' not in session:
             return render_template('index.html', stringtable=ST[lang])
         
-        logs = self.getLogs()
+        logs = self.get_logs()
         latest_5 = logs[-5:]
         
         if self.luna_time + self.luna_interval < time.time():
@@ -178,7 +189,7 @@ class WebServer:
         if 'loggedin' not in session:
             return redirect('https://valky.xyz/')
         
-        logs = self.getLogs()
+        logs = self.get_logs()
         return render_template(
             template_name_or_list='logs.html',
             stringtable=ST[lang],
@@ -208,7 +219,7 @@ class WebServer:
         else:
             vk_status = 'UNKNOWN'
             
-        tasks, finished, deleted, errors = self.getTasks()
+        tasks, finished, deleted, errors = self.get_tasks()
         tasks_5 = tasks[-5:]
         finished_5 = finished[-5:]
         
@@ -270,7 +281,7 @@ class WebServer:
         if 'loggedin' not in session:
             return redirect('https://valky.xyz/')
         
-        tasks, finished, deleted, errors = self.getTasks()
+        tasks, finished, deleted, errors = self.get_tasks()
         
         return render_template(
             template_name_or_list='valky/tasks.html',
@@ -360,6 +371,23 @@ class WebServer:
             build_v=self.build_v
         )
     
+    # Discord
+    async def discord_settings(self, lang='en'):
+        """
+        The Valkyrie bot settings page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        return render_template(
+            template_name_or_list='discord/settings.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            config=self.config,
+            build=self.build,
+            build_v=self.build_v
+        )
+    
     async def valky_tasks_post(self, lang='en'):
         """
         The Valkyrie bot tasks page.
@@ -385,37 +413,37 @@ class WebServer:
             
             if self.vk_bot.task_queue.TASK_TW_TIMEOUT == task_action:
                 if time_frame is None:
-                    flash(f'Time frame is required for this task: {task_action}', 'error')
+                    flash(f'Time frame is required for this task: {task_action}', category='error')
                     return redirect(f'/{lang}/tasks')
                 if data['task_input'] is None or data['task_input'] == '':
-                    flash(f'Input is required for this task: {task_action}', 'error')
+                    flash(f'Input is required for this task: {task_action}', category='error')
                     return redirect(f'/{lang}/tasks')
             
             if self.vk_bot.task_queue.TASK_DC_ADD_ROLE == task_action:
                 if role_assign is None:
-                    flash(f'Role is required for this task: {task_action}', 'error')
+                    flash(f'Role is required for this task: {task_action}', category='error')
                     return redirect(f'/{lang}/tasks')
                 if data['task_input'] is None or data['task_input'] == '':
-                    flash(f'Input is required for this task: {task_action}', 'error')
+                    flash(f'Input is required for this task: {task_action}', category='error')
                     return redirect(f'/{lang}/tasks')
             
             if self.vk_bot.task_queue.TASK_TW_ADD_MODERATOR == task_action:
                 if data['task_input'] is None or data['task_input'] == '':
-                    flash(f'Input is required for this task: {task_action}', 'error')
+                    flash(f'Input is required for this task: {task_action}', category='error')
                     return redirect(f'/{lang}/tasks')
             
             if self.vk_bot.task_queue.TASK_TW_ADD_VIP == task_action:
                 if data['task_input'] is None or data['task_input'] == '':
-                    flash(f'Input is required for this task: {task_action}', 'error')
+                    flash(f'Input is required for this task: {task_action}', category='error')
                     return redirect(f'/{lang}/tasks')
             
             task = Task(task_action, task_data, task_instant, time_frame, role_assign)
             self.vk_bot.task_queue.add_task(task)
-            flash(f'Task "{task}" added', 'info')
+            flash(f'Task "{task}" added', category='info')
             return redirect(f'/{lang}/tasks')
         
         else:
-            flash('Unknown action', 'error')
+            flash('Unknown action', category='error')
             return redirect(f'/{lang}/tasks')
     
     async def valky_tasks_action(self, task_id, action, lang='en'):
@@ -434,31 +462,31 @@ class WebServer:
         
         if action not in ['delete', 'start', 'end', 'queue']:
             self.logger.error(f'Unknown action: {action}')
-            flash('Unknown action', 'error')
+            flash('Unknown action', category='error')
             return redirect(f'/{lang}/tasks')
         
         if action == 'delete':
             task = self.vk_bot.task_queue.get_task_by_id(task_id)
             self.vk_bot.task_queue.remove_task(task)
-            flash(f'Task "{task.action}" ({task.id}) deleted', 'info')
+            flash(f'Task "{task.action}" ({task.id}) deleted', category='info')
             return redirect(f'/{lang}/tasks')
         
         elif action == 'start':
             task = self.vk_bot.task_queue.get_task_by_id(task_id)
             self.vk_bot.task_queue.add_task(task, True)
-            flash('Task restarted', 'info')
+            flash('Task restarted', category='info')
             return redirect(f'/{lang}/tasks')
         
         elif action == 'end':
             task = self.vk_bot.task_queue.get_task_by_id(task_id)
             self.vk_bot.task_queue.end_task(task)
-            flash('Task ended', 'info')
+            flash('Task ended', category='info')
             return redirect(f'/{lang}/tasks')
         
         elif action == 'queue':
             task = self.vk_bot.task_queue.get_task_by_id(task_id)
             self.vk_bot.task_queue.add_task(task)
-            flash('Task queued', 'info')
+            flash('Task queued', category='info')
             return redirect(f'/{lang}/tasks')
     
     async def twitch_bot_post(self, lang='en'):
@@ -474,7 +502,7 @@ class WebServer:
         data = request.form.to_dict()
         if data['submit'] == 'stream':
             if data['stream_title'] is None or data['stream_title'] == '':
-                flash('Stream title is required', 'error')
+                flash('Stream title is required', category='error')
                 return redirect(f'/{lang}/twitch')
             
             await self.tw_bot.stream.set_info(
@@ -483,13 +511,80 @@ class WebServer:
                 game_name = data['stream_game']
             )
             self.logger.info(f'Twitch | Stream information updated | {data["stream_title"]} | {data["stream_game"]}')
-            flash('Stream information updated', 'info')
+            flash('Stream information updated', category='info')
             return redirect(f'/{lang}/twitch')
         
         else:
             self.logger.error(f'Unknown action: {data["submit"]}')
-            flash('Unknown action', 'error')
+            flash('Unknown action', category='error')
             return redirect(f'/{lang}/twitch')
+    
+    async def settings_post(self, lang='en'):
+        """
+        The Valkyrie bot settings page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+
+        data = request.form.to_dict()
+        if data['submit'] == 'web':
+            self.config['web']['host'] = data['web_host']
+            self.config['web']['port'] = int(data['web_port'])
+            self.config['interval'] = int(data['update_interval'])
+            self.config['web']['token'] = data['web_token']
+            self.config['web']['user'] = data['web_user']
+            self.config['web']['pass'] = data['web_pass']
+            self.save_cfg()
+            
+            self.logger.info(f'Web | Settings updated | {data}')
+            flash('Settings updated', category='info')
+            return redirect(f'/{lang}/settings/web')
+        
+        elif data['submit'] == 'luna':
+            self.config['luna']['host'] = data['luna_host']
+            self.config['luna']['port'] = int(data['luna_port'])
+            self.config['luna']['version'] = int(data['luna_version'])
+            self.config['luna']['interval'] = int(data['luna_interval'])
+            self.config['luna']['token'] = data['luna_token']
+            self.save_cfg()
+            
+            self.logger.info(f'Web | Settings updated | {data}')
+            flash('Settings updated', category='info')
+            return redirect(f'/{lang}/settings/luna')
+        
+        elif data['submit'] == 'twitch':
+            self.config['twitch']['channel'] = data['tw_channel']
+            self.config['twitch']['prefix'] = data['tw_prefix']
+            self.config['twitch']['api_uri'] = data['tw_api']
+            self.config['twitch']['redirect_uri'] = data['tw_redr']
+            self.config['twitch']['user']['client_id'] = data['user_id']
+            self.config['twitch']['user']['client_secret'] = data['user_secret']
+            self.config['twitch']['bot']['client_id'] = data['bot_id']
+            self.config['twitch']['bot']['client_secret'] = data['bot_secret']
+            self.save_cfg()
+            
+            self.logger.info(f'Web | Settings updated | {data}')
+            flash('Settings updated', category='info')
+            return redirect(f'/{lang}/settings/twitch')
+        
+        elif data['submit'] == 'discord':
+            self.config['discord']['bot_token'] = data['dc_token']
+            self.config['discord']['guild_id'] = data['dc_guild']
+            self.config['discord']['channels']['admin'] = data['dc_admin']
+            self.config['discord']['channels']['commands'] = data['dc_cmd']
+            self.config['discord']['channels']['stream'] = data['dc_announce']
+            self.save_cfg()
+            
+            self.logger.info(f'Web | Settings updated | {data}')
+            flash('Settings updated', category='info')
+            return redirect(f'/{lang}/settings/discord')
+        
+        else:
+            self.logger.error(f'Unknown action: {data["submit"]}')
+            flash('Unknown action', category='error')
     
     # ========================================================================================
     # Valkyrie Bot - Functions
@@ -503,7 +598,7 @@ class WebServer:
         input_password = request.form.get('pass')
         if input_login == self.config['web']['user'] and input_password == self.config['web']['pass']:
             session['loggedin'] = True
-            flash('You were successfully logged in', 'info')
+            flash('You were successfully logged in', category='info')
             return redirect('/')
         
         return redirect('https://valky.xyz/')
@@ -513,7 +608,7 @@ class WebServer:
         The logout page.
         """
         session.pop('loggedin', None)
-        flash('You were successfully logged out', 'info')
+        flash('You were successfully logged out', category='info')
         return redirect('https://valky.xyz/')
     
     def start_bot(self, bot):
@@ -538,7 +633,7 @@ class WebServer:
         thread = Thread(target=meth)
         thread.start()
         
-        flash(f'Started {name} Bot', 'info')
+        flash(f'Started {name} Bot', category='info')
         return redirect('/')
     
     # ========================================================================================
@@ -571,7 +666,7 @@ class WebServer:
         self.tw_bot.running = True
         self.loop.create_task(self.tw_bot.run())
     
-    def getLogs(self):
+    def get_logs(self):
         """
         Returns the logs.
         """
@@ -596,7 +691,7 @@ class WebServer:
                 })
         return logs
     
-    def getTasks(self):
+    def get_tasks(self):
         tasks_raw = self.vk_bot.task_queue.tasks
         tasks = []
         for task in tasks_raw:
@@ -626,6 +721,31 @@ class WebServer:
             errors.append(task.data)
         
         return tasks, finished, deleted, errors
+    
+    def save_cfg(self):
+        """
+        Saves the configuration file.
+        
+        Note:
+            This function will pop the tokens and refresh tokens from the configuration file before saving it. After
+            saving the configuration file, the tokens and refresh tokens will be added back to the configuration
+            dictionary.
+        """
+        pop_utoken = self.config['twitch']['user'].pop('token')
+        pop_urefresh = self.config['twitch']['user'].pop('refresh_token')
+        pop_uexpire = self.config['twitch']['user'].pop('token_expires')
+        pop_btoken = self.config['twitch']['bot'].pop('token')
+        pop_brefresh = self.config['twitch']['bot'].pop('refresh_token')
+        pop_bexpire = self.config['twitch']['bot'].pop('token_expires')
+        
+        self.cfg.save(self.config)
+        
+        self.config['twitch']['user']['token'] = pop_utoken
+        self.config['twitch']['user']['refresh_token'] = pop_urefresh
+        self.config['twitch']['user']['token_expires'] = pop_uexpire
+        self.config['twitch']['bot']['token'] = pop_btoken
+        self.config['twitch']['bot']['refresh_token'] = pop_brefresh
+        self.config['twitch']['bot']['token_expires'] = pop_bexpire
     
     # ========================================================================================
     # Valkyrie Bot - Serve

@@ -15,10 +15,10 @@
         <div class="row">
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white">
-                    <h2>L.U.N.A.</h2>
+                    <h2>Discord Bot</h2>
                     <p class="mb-0 p-2">
-                        L.U.N.A., the Limitless Universal Numeric Assistant, represents a remarkable leap forward in
-                        AI technology, driven by the power of Microsoft's GPT-4 language model.
+                        The Discord Bot is the main bot that will be used to interact with the Discord Server. It
+                        will be used to manage the server, and to interact with the Twitch Bot.
                     </p>
                 </div>
             </div>
@@ -26,29 +26,33 @@
                 <div class="card card-body bg-dark text-white pb-0">
                     <div class="row">
                         <div class="text-right col-4 pt-2">
-                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Luna API</h3>
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Discord Basic</h3>
                             <hl><div></div></hl>
                         </div>
                         <div class="text-left col-8">
                             <div class="row">
                                 <div class="text-left col-6">
                                     <div class="md-form form-sm mt-1">
-                                        <input type="text" name="luna_host" id="luna_host" class="form-control form-control-sm validate text-white" value="{{ config['luna']['host'] }}" required />
-                                        <label data-error="wrong" data-success="right" for="luna_host">Luna API Address</label>
-                                    </div>
-                                    <div class="md-form form-sm">
-                                        <input type="number" name="luna_port" id="luna_port" class="form-control form-control-sm validate text-white" value="{{ config['luna']['port'] }}" required />
-                                        <label data-error="wrong" data-success="right" for="luna_port">Luna API Port</label>
+                                        <input type="text" name="dc_guild" id="dc_guild" class="form-control form-control-sm validate text-white" value="{{ config['discord']['guild_id'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="dc_guild">Discord Guild</label>
                                     </div>
                                 </div>
                                 <div class="text-left col-6">
                                     <div class="md-form form-sm mt-1">
-                                        <input type="number" name="luna_version" id="luna_version" class="form-control form-control-sm validate text-white" value="{{ config['luna']['version'] }}" required />
-                                        <label data-error="wrong" data-success="right" for="luna_version">Luna API Version</label>
+                                        <input type="text" name="dc_announce" id="dc_announce" class="form-control form-control-sm validate text-white" value="{{ config['discord']['channels']['stream'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="dc_announce">Discord Announce Channel</label>
                                     </div>
-                                    <div class="md-form form-sm">
-                                        <input type="number" name="luna_interval" id="luna_interval" class="form-control form-control-sm validate text-white" value="{{ config['luna']['interval'] }}" required />
-                                        <label data-error="wrong" data-success="right" for="luna_interval">Ping Interval in Seconds</label>
+                                </div>
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-1">
+                                        <input type="text" name="dc_admin" id="dc_admin" class="form-control form-control-sm validate text-white" value="{{ config['discord']['channels']['admin'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="dc_admin">Discord Admin Channel</label>
+                                    </div>
+                                </div>
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-1">
+                                        <input type="text" name="dc_cmd" id="dc_cmd" class="form-control form-control-sm validate text-white" value="{{ config['discord']['channels']['commands'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="dc_cmd">Discord Command Channel</label>
                                     </div>
                                 </div>
                             </div>
@@ -60,15 +64,15 @@
                 <div class="card card-body bg-dark text-white pb-0">
                     <div class="row">
                         <div class="text-right col-4 pt-2">
-                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Credentials</h3>
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Discord Credentials</h3>
                             <hl><div></div></hl>
                         </div>
                         <div class="text-left col-8">
                             <div class="row">
                                 <div class="text-left col-12">
                                     <div class="md-form form-sm mt-1">
-                                        <input type="password" name="luna_token" id="luna_token" class="form-control form-control-sm validate text-white" value="{{ config['luna']['token'] }}" required />
-                                        <label data-error="wrong" data-success="right" for="luna_token">Luna API Token</label>
+                                        <input type="password" name="dc_token" id="dc_token" class="form-control form-control-sm validate text-white" value="{{ config['discord']['bot_token'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="dc_token">Discord Bot Token</label>
                                     </div>
                                 </div>
                             </div>
@@ -79,7 +83,7 @@
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white">
                     <div class="text-right">
-                        <button name="submit" type="submit" value="luna" class="btn btn-outline-warning">Save <i class="fas fa-edit ml-1"></i></button>
+                        <button name="submit" type="submit" value="discord" class="btn btn-outline-warning">Save <i class="fas fa-edit ml-1"></i></button>
                     </div>
                 </div>
             </div>

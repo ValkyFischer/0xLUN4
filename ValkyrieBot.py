@@ -54,7 +54,7 @@ class Valkyrie:
         debug (bool): True if debug mode is enabled, False if debug mode is disabled.
         env (str): The environment. Can be either 'dev' or 'prod'. Default is 'prod'.
     """
-    __version__ = 'Nov10-0.6.0'
+    __version__ = 'Nov10-0.7.0'
     __author__ = '2023 © Valky Dev - All rights reserved.'
     
     def __init__(self, config_path: str, debug: bool, env: str):
@@ -69,7 +69,7 @@ class Valkyrie:
             self.vk_bot = ValkyrieBot(self.tw_bot, self.dc_bot, self.config, self.logger, self.task_queue)
         else:
             self.tw_bot, self.dc_bot, self.vk_bot = None, None, None
-        self.web = WebServer(self.tw_bot, self.dc_bot, self.vk_bot, self.logger, self.config, valky)
+        self.web = WebServer(self.tw_bot, self.dc_bot, self.vk_bot, self.logger, (self.cfg, self.config), valky)
     
     def __env__(self, env: str):
         if env == 'prod':
