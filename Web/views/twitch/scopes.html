@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{% block custom_css %}
+{% endblock %}
+
+{% block content %}
+<form method="POST">
+<div class="row">
+    <div class="text-right col-4 pt-2">
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Settings</h1>
+        <hl><div></div></hl>
+        {% include 'parts/megalink.html' %}
+    </div>
+    <div class="text-left col-8">
+        <div class="row">
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <h2>Twitch Scopes</h2>
+                    <p class="mb-0 p-2">
+                        The Twitch Bot needs the different scopes to work properly for different needs.
+                    </p>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-4">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Message</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                {% for scope, status in config['twitch']['scopes'].items() %}
+                                {% if 'chat:' in scope or 'whispers:' in scope %}
+                                    <div class="col-md-9">
+                                        {{ scope }}
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <div class="switch">
+                                            <label>
+                                                <input type="checkbox" name="{{ scope }}" value="{{ '1' if status else '0' }}" {{ "checked" if status }} />
+                                                <span class="lever"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-4">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>User</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                {% for scope, status in config['twitch']['scopes'].items() %}
+                                {% if 'user:' in scope %}
+                                    <div class="col-md-9">
+                                        {{ scope }}
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <div class="switch">
+                                            <label>
+                                                <input type="checkbox" name="{{ scope }}" value="{{ '1' if status else '0' }}" {{ "checked" if status }} />
+                                                <span class="lever"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-4">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Channel</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                {% for scope, status in config['twitch']['scopes'].items() %}
+                                {% if 'channel:' in scope %}
+                                    <div class="col-md-9">
+                                        {{ scope }}
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <div class="switch">
+                                            <label>
+                                                <input type="checkbox" name="{{ scope }}" value="{{ '1' if status else '0' }}" {{ "checked" if status }} />
+                                                <span class="lever"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-4">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Moderator</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                {% for scope, status in config['twitch']['scopes'].items() %}
+                                {% if 'moderator:' in scope or 'moderation:' in scope %}
+                                    <div class="col-md-9">
+                                        {{ scope }}
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <div class="switch">
+                                            <label>
+                                                <input type="checkbox" name="{{ scope }}" value="{{ '1' if status else '0' }}" {{ "checked" if status }} />
+                                                <span class="lever"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-4">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Miscellaneous</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                {% for scope, status in config['twitch']['scopes'].items() %}
+                                {% if 'analytics:' in scope or 'clips:' in scope or 'bits:' in scope %}
+                                    <div class="col-md-9">
+                                        {{ scope }}
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <div class="switch">
+                                            <label>
+                                                <input type="checkbox" name="{{ scope }}" value="{{ '1' if status else '0' }}" {{ "checked" if status }} />
+                                                <span class="lever"></span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <div class="text-right">
+                        <button name="submit" type="submit" value="scopes" class="btn btn-outline-warning">Save <i class="fas fa-edit ml-1"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}

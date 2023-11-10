@@ -80,10 +80,10 @@ class WebServer:
         self.app.add_url_rule('/<lang>/settings/web/', 'valky_settings', self.valky_settings)
         self.app.add_url_rule('/<lang>/settings/web', 'valky_settings_post', self.settings_post, methods=['POST'])
         self.app.add_url_rule('/<lang>/settings/web/', 'valky_settings_post', self.settings_post, methods=['POST'])
-        self.app.add_url_rule('/<lang>/settings/luna', 'valky_luna', self.valky_luna)
-        self.app.add_url_rule('/<lang>/settings/luna/', 'valky_luna', self.valky_luna)
-        self.app.add_url_rule('/<lang>/settings/luna', 'valky_luna_post', self.settings_post, methods=['POST'])
-        self.app.add_url_rule('/<lang>/settings/luna/', 'valky_luna_post', self.settings_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/settings/luna', 'luna_settings', self.luna_settings)
+        self.app.add_url_rule('/<lang>/settings/luna/', 'luna_settings', self.luna_settings)
+        self.app.add_url_rule('/<lang>/settings/luna', 'luna_settings_post', self.settings_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/settings/luna/', 'luna_settings_post', self.settings_post, methods=['POST'])
         self.app.add_url_rule('/<lang>/settings/twitch', 'twitch_settings', self.twitch_settings)
         self.app.add_url_rule('/<lang>/settings/twitch/', 'twitch_settings', self.twitch_settings)
         self.app.add_url_rule('/<lang>/settings/twitch', 'twitch_settings_post', self.settings_post, methods=['POST'])
@@ -92,6 +92,10 @@ class WebServer:
         self.app.add_url_rule('/<lang>/settings/discord/', 'discord_settings', self.discord_settings)
         self.app.add_url_rule('/<lang>/settings/discord', 'discord_settings_post', self.settings_post, methods=['POST'])
         self.app.add_url_rule('/<lang>/settings/discord/', 'discord_settings_post', self.settings_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/settings/scopes', 'twitch_settings_scope', self.twitch_settings_scope)
+        self.app.add_url_rule('/<lang>/settings/scopes/', 'twitch_settings_scope', self.twitch_settings_scope)
+        self.app.add_url_rule('/<lang>/settings/scopes', 'twitch_settings_scope_post', self.settings_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/settings/scopes/', 'twitch_settings_scope_post', self.settings_post, methods=['POST'])
 
         # functions
         self.app.add_url_rule('/login', 'login', self.login, methods=['POST'])
@@ -233,47 +237,9 @@ class WebServer:
             build_v=self.build_v,
         )
     
-    async def valky_settings(self, lang='en'):
-        """
-        The Valkyrie bot settings page.
-        """
-        if lang not in ['en', 'de', 'ru', 'vk']:
-            lang = 'en'
-        
-        if 'loggedin' not in session:
-            return redirect('https://valky.xyz/')
-        
-        return render_template(
-            template_name_or_list='valky/settings.html',
-            stringtable=ST[lang],
-            vk_status=self.vk_bot.ready,
-            config=self.config,
-            build=self.build,
-            build_v=self.build_v
-        )
-    
-    async def valky_luna(self, lang='en'):
-        """
-        The Valkyrie bot Luna page.
-        """
-        if lang not in ['en', 'de', 'ru', 'vk']:
-            lang = 'en'
-        
-        if 'loggedin' not in session:
-            return redirect('https://valky.xyz/')
-        
-        return render_template(
-            template_name_or_list='valky/luna.html',
-            stringtable=ST[lang],
-            vk_status=self.vk_bot.ready,
-            config=self.config,
-            build=self.build,
-            build_v=self.build_v
-        )
-    
     async def valky_tasks(self, lang='en'):
         """
-        The Valkyrie bot tasks page.
+        The tasks queue page.
         """
         if lang not in ['en', 'de', 'ru', 'vk']:
             lang = 'en'
@@ -297,7 +263,7 @@ class WebServer:
     
     async def valky_tasks_new(self, lang='en'):
         """
-        The Valkyrie bot tasks page.
+        The tasks creation page.
         """
         if lang not in ['en', 'de', 'ru', 'vk']:
             lang = 'en'
@@ -352,9 +318,47 @@ class WebServer:
             emotes = self.tw_bot.channel.emotes_raw,
         )
     
-    async def twitch_settings(self, lang='en'):
+    async def valky_settings(self, lang='en'):
         """
         The Valkyrie bot settings page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        return render_template(
+            template_name_or_list='valky/settings.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            config=self.config,
+            build=self.build,
+            build_v=self.build_v
+        )
+    
+    async def luna_settings(self, lang= 'en'):
+        """
+        The Luna API settings page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        return render_template(
+            template_name_or_list='valky/luna.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            config=self.config,
+            build=self.build,
+            build_v=self.build_v
+        )
+    
+    async def twitch_settings(self, lang='en'):
+        """
+        The Twitch bot settings page.
         """
         if lang not in ['en', 'de', 'ru', 'vk']:
             lang = 'en'
@@ -371,10 +375,29 @@ class WebServer:
             build_v=self.build_v
         )
     
+    async def twitch_settings_scope(self, lang='en'):
+        """
+        The Twitch bot scope settings page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        return render_template(
+            template_name_or_list='twitch/scopes.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            config=self.config,
+            build=self.build,
+            build_v=self.build_v
+        )
+    
     # Discord
     async def discord_settings(self, lang='en'):
         """
-        The Valkyrie bot settings page.
+        The Discord bot settings page.
         """
         if lang not in ['en', 'de', 'ru', 'vk']:
             lang = 'en'
@@ -582,9 +605,19 @@ class WebServer:
             flash('Settings updated', category='info')
             return redirect(f'/{lang}/settings/discord')
         
+        elif data['submit'] == 'scopes':
+            for scope, status in self.config['twitch']['scopes'].items():
+                self.config['twitch']['scopes'][scope] = True if scope in data else False
+            self.save_cfg()
+            
+            self.logger.info(f'Web | Settings updated | {data}')
+            flash('Settings updated', category='info')
+            return redirect(f'/{lang}/settings/scopes')
+        
         else:
             self.logger.error(f'Unknown action: {data["submit"]}')
             flash('Unknown action', category='error')
+            return redirect('https://valky.xyz/')
     
     # ========================================================================================
     # Valkyrie Bot - Functions
