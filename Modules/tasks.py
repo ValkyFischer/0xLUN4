@@ -11,7 +11,7 @@ About:
     Discord or Twitch. The task queue is based on asyncio.Queue and can be used to add and get tasks concurrently.
 
 """
-import json
+
 import logging
 import os
 import time

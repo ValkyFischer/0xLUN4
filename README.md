@@ -5,10 +5,18 @@
 ## Table of Contents
 
 - [About](#about)
-- [Main Bot (ValkyrieBot)](#main-bot-valkyriebot)
-- [Discord Bot](#discord-bot)
-- [Twitch Bot](#twitch-bot)
-- [Usage](#usage)
+- [Instances](#instances)
+  - [Valkyrie Bot](#valkyrie-bot)
+  - [Discord Bot](#discord-bot)
+  - [Twitch Bot](#twitch-bot)
+  - [Web Server](#web-server)
+- [Modules](#modules)
+  - [Luna API](#luna-api)
+  - [Task System](#task-system)
+- [Configuration](#configuration)
+  - [Startup Bot](#startup-bot)
+  - [Startup Options](#startup-options)
+- [Example Usage](#example-usage)
 - [Community](#community)
   - [Creator](#creator)
   - [Contributions](#contributions)
@@ -19,42 +27,96 @@
 
 ***0xLUN4*** is a project created by [Valky Fischer](https://valky.dev/en), designed to provide functionality for Discord and Twitch communities. The project includes:
 
-- **Main Bot (ValkyrieBot)**: The main bot that runs Discord and Twitch bots concurrently. It handles configuration files and logs events.
-- **Discord Bot**: A Discord bot that sends notifications and utilizes slash commands.
-- **Twitch Bot**: A Twitch bot that checks the status of Twitch channels and responds to chat commands.
+- **The Valkyrie Bot**: A Discord and Twitch bot to provide various functionalities, such as sending 
+  notifications, checking channel status, and handling user interactions in both Discord and Twitch chat.
+- **Web Server**: A web management system for the Valkyrie Bot, including the Twitch and Discord bot. 
+  It provides web-based interfaces to monitor and control the Valkyrie Bot, Twitch bot, and Discord bot, such 
+  as changing settings, creating manual tasks, and viewing logs.
+- **Luna API**: An AI API that provides functions for interacting with its API, including translation and 
+  question-answering.
+- **Task System**: A task queue for managing asynchronous tasks within the project. It provides a queue for 
+  storing tasks from Discord and Twitch, and gets processed by the Valkyrie Bot.
 
-***0xLUN4*** is designed to be versatile and user-friendly, suitable for various communities and content creators.
+## Instances
 
-## Main Bot (ValkyrieBot)
+### Valkyrie Bot
 
-`ValkyrieBot.py` is the main script that runs the Discord and Twitch bots concurrently. It handles the configuration file and logger. The main features include:
+`bot_valkyrie.py` is the main bot script that runs the Valkyrie Bot. This bot integrates the functionalities of 
+both the Discord bot and the Twitch bot. It also handles and processes tasks through a task queue, which can be 
+related to either Discord or Twitch.
+- [Valkyrie Bot Documentation](docs/bot_valkyrie.md)
 
-- **Running Discord and Twitch Bots Concurrently**: The script runs both Discord and Twitch bots in an asyncio event loop.
-- **Configuration File**: A configuration file is used to configure the bots. The configuration file includes settings for both Discord and Twitch.
-- **Logger**: Logs events to a log file.
+### Discord Bot
 
-## Discord Bot
+`bot_discord.py` is a Discord bot designed for sending notifications to a Discord server. The bot utilizes the 
+Discord API for sending notifications and implementing slash commands. Additionally, it employs the Twitch API 
+to determine if a channel is live or offline, sending Discord notifications accordingly.
+- [Discord Bot Documentation](docs/bot_discord.md)
 
-`bot_discord.py` is a Discord bot that can be used to send notifications to a Discord server. It also supports slash commands for interactions. Key features include:
+### Twitch Bot
 
-- **Notifications**: Sends notifications to a Discord server when a Twitch channel goes live or offline.
-- **Slash Commands**: Supports slash commands for interactions in the Discord server, including commands like `/ping`, `/discord`, `/twitch`, and `/exval`.
+`bot_twitch.py` is a Twitch bot designed to check if a channel is live or not. It utilizes the Twitch API to 
+determine the channel's live status and provides various chat commands for interaction.
+- [Twitch Bot Documentation](docs/bot_twitch.md)
 
-## Twitch Bot
+### Web Server
 
-`bot_twitch.py` is a Twitch bot that checks if a Twitch channel is live. It also responds to chat commands. Key features include:
+`bot_web.py` is a Python script that implements a web management system for the Valkyrie Bot, including the 
+Twitch and Discord bot, within the **0xLUN4** project.
+- [Web Server Documentation](docs/bot_web.md)
 
-- **Channel Status Checking**: Utilizes the Twitch API to check if a specific channel is live or offline.
-- **Chat Commands**: Supports chat commands like `ping`, `discord`, and `exval` for user interactions.
+## Modules
 
-## Usage
+### Luna API
 
-To use ***0xLUN4***, you'll need to configure the bots, including adding your bot tokens and other settings, and then run the `ValkyrieBot.py` script. The main bot (`ValkyrieBot`) runs the Discord and Twitch bots concurrently.
+`luna.py` is a Python script that implements a wrapper for the Luna API. L.U.N.A. is an AI which provides 
+functions for interacting with its API, including translation and question-answering.
+- [Luna API Documentation](docs/modules/luna.md)
 
-Please refer to the specific bot's documentation for more details on configuring and using them:
+### Task System
 
-- [Discord Bot Documentation](./bot_discord.md)
-- [Twitch Bot Documentation](./bot_twitch.md)
+`tasks.py` is a Python script that implements a task queue for managing asynchronous tasks within the **0xLUN4** 
+project. It provides a queue for storing tasks from Discord and Twitch, and gets processed by the Valkyrie Bot.
+- [Task System Documentation](docs/modules/tasks.md)
+
+## Configuration
+
+To use ***0xLUN4***, you'll need to configure the bots, including adding your bot tokens and other settings, 
+and then run the `ValkyrieBot.py` script. This script will initialize the bots and start the web server.
+- [Configuration Documentation](docs/configuration.md)
+
+### Startup Bot
+
+To execute `ValkyrieBot`, use the following command:
+
+```bash
+python ValkyrieBot.py --config_file settings.json --debug False --env prod
+```
+
+### Startup Options
+
+- `config_path` (str): The path to the configuration file.
+- `debug` (bool): True if debug mode is enabled, False if debug mode is disabled.
+- `env` (str): The environment. Can be either 'dev' or 'prod'. Default is 'prod'.
+
+## Example Usage
+
+To use `ValkyrieBot`, interact with it in your Discord server or Twitch chat using the following example commands:
+
+1. **Check the bot's latency:**  
+   - Discord: /ping
+   - Twitch: !ping
+   This command shows the bot's latency in milliseconds.
+
+2. **Ask the AI any question:**  
+   - Discord: /ask
+   - Twitch: !ask
+   This command allows you to ask the AI any question. The AI will respond with a most precise answer.
+
+3. **The AI translates a message:**  
+   - Discord: /translate
+   - Twitch: !translate
+    This command allows you to translate any language into english. The AI will respond with the translated message.
 
 ## Community
 

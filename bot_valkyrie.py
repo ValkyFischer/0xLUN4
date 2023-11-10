@@ -214,6 +214,15 @@ class ValkyrieBot:
             self.task_queue.save_tasks()
     
     async def execute_task(self, task: Task):
+        """
+        A method which executes a task.
+        
+        Args:
+            task (Task): The task to execute.
+            
+        Returns:
+            bool: True if the task was executed successfully, False if not.
+        """
         err = True
         if task.action == self.task_queue.TASK_DC_ADD_ROLE:
             user = task.data['user_input'] if 'user_input' in task.data else task.data['user_name']

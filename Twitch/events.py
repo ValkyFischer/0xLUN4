@@ -12,7 +12,6 @@ About:
 """
 import random
 from twitchio.ext import pubsub
-
 from Modules.tasks import Task
 
 

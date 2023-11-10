@@ -12,10 +12,10 @@ from threading import Thread
 import requests
 from waitress import serve
 from flask import Flask, request, render_template, session, redirect, flash
-
-from Modules.tasks import Task
-from ValkyrieUtils.Tools import ValkyrieTools
 from Web.stringtable import ST
+
+from ValkyrieUtils.Tools import ValkyrieTools
+from Modules.tasks import Task
 from Modules.luna import Luna
 
 
