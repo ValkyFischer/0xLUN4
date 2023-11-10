@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+
+{% block custom_css %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-4 text-right pt-2">
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Discord Bot</h1>
+        <hl><div></div></hl>
+        {% include 'parts/megalink.html' %}
+    </div>
+    <div class="col-8">
+        <div class="row">
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <h2 class="">
+                        Status
+                        <span class="pt-2
+                            {{ 'text-success' if dc_status == 'ONLINE' }}
+                            {{ 'text-info' if dc_status == 'STARTED' }}
+                            {{ 'text-danger' if dc_status == 'OFFLINE' }}
+                        ">{{ dc_status }}
+                        </span>
+                    </h2>
+                    <p class="mb-0 p-2">
+                        The Discord Bot is a bot that can be used to manage your Discord server. It can be used to
+                        assign roles to users, based on tasks created manually or by Twitch channel point rewards.
+                    </p>
+                    <div class="row px-2">
+                        <div class="col-5">
+                            Guild Banner:<br>
+                            {% if dc_status != 'OFFLINE' %}
+                                <img src="{{ guild_banner }}" alt="Guild Banner" class="img-fluid" width="100%" />
+                            {% else %}
+                                <i>- No Banner -</i>
+                            {% endif %}
+                        </div>
+                        <div class="col-7">
+                            Channel Emotes:<br>
+                            {% if dc_status != 'OFFLINE' %}
+                                {% for emote in guild_emojis %}
+                                {% if loop.index0 < 39 %}
+                                    {% if emote.url %}
+                                    <img src="{{ emote.url }}" alt="" class="img-fluid" height="32px" width="32px" />
+                                    {% endif %}
+                                {% endif %}
+                                {% if loop.index0 == 39 %}
+                                    <i class="fal fa-plus-hexagon fa-2x p-1 white-50" style="position: absolute;" title="..and some more!"></i>
+                                {% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <i>- No Emotes -</i>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Controls</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="col-5 pt-2">Start the bot</div>
+                                <div class="col-5"><a href="/start/dc" class="btn btn-outline-info btn-sm mt-2 w-100">Start</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5 pt-2">Settings, Discord</div>
+                                <div class="col-5"><a href="/{{ stringtable['lang'] }}/settings/discord" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Basic</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Discord Info</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="col-5">Server Invite</div>
+                                <div class="col-7"><a class="text-info" href="https://discord.gg/{{ guild_invite }}">{{ guild_invite }}</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Server Name</div>
+                                <div class="col-7">{{ guild_name }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Server Description</div>
+                                <div class="col-7">{{ guild_description }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Discord Stats</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="col-5">Amount of Members</div>
+                                <div class="col-7">{{ guild_member_count }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Amount of Booster</div>
+                                <div class="col-7">{{ guild_booster_count }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Amount of Channel</div>
+                                <div class="col-7">{{ guild_channels_count }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Amount of Roles</div>
+                                <div class="col-7">{{ guild_roles_count }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Amount of Emotes</div>
+                                <div class="col-7">{{ guild_emote_count }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Amount of Stickers</div>
+                                <div class="col-7">{{ guild_sticker_count }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}

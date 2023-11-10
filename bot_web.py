@@ -57,8 +57,8 @@ class WebServer:
         self.app.add_url_rule('/<lang>', 'index', self.index)
         self.app.add_url_rule('/<lang>/', 'index', self.index)
         # logs
-        self.app.add_url_rule('/<lang>/logs', 'logs', self.logs)
-        self.app.add_url_rule('/<lang>/logs/', 'logs', self.logs)
+        self.app.add_url_rule('/<lang>/logs', 'logs', self.system_logs)
+        self.app.add_url_rule('/<lang>/logs/', 'logs', self.system_logs)
         # valky
         self.app.add_url_rule('/<lang>/valky', 'valky', self.valky_bot)
         self.app.add_url_rule('/<lang>/valky/', 'valky', self.valky_bot)
@@ -67,11 +67,14 @@ class WebServer:
         self.app.add_url_rule('/<lang>/twitch/', 'twitch', self.twitch_bot)
         self.app.add_url_rule('/<lang>/twitch', 'twitch_post', self.twitch_bot_post, methods=['POST'])
         self.app.add_url_rule('/<lang>/twitch/', 'twitch_post', self.twitch_bot_post, methods=['POST'])
+        # discord
+        self.app.add_url_rule('/<lang>/discord', 'discord', self.discord_bot)
+        self.app.add_url_rule('/<lang>/discord/', 'discord', self.discord_bot)
         # tasks
-        self.app.add_url_rule('/<lang>/tasks', 'valky_tasks', self.valky_tasks)
-        self.app.add_url_rule('/<lang>/tasks/', 'valky_tasks', self.valky_tasks)
-        self.app.add_url_rule('/<lang>/tasks/new', 'valky_tasks_new', self.valky_tasks_new)
-        self.app.add_url_rule('/<lang>/tasks/new/', 'valky_tasks_new', self.valky_tasks_new)
+        self.app.add_url_rule('/<lang>/tasks', 'system_tasks', self.system_tasks)
+        self.app.add_url_rule('/<lang>/tasks/', 'system_tasks', self.system_tasks)
+        self.app.add_url_rule('/<lang>/tasks/new', 'system_tasks_new', self.system_tasks_new)
+        self.app.add_url_rule('/<lang>/tasks/new/', 'system_tasks_new', self.system_tasks_new)
         self.app.add_url_rule('/<lang>/tasks/new', 'valky_tasks_post', self.valky_tasks_post, methods=['POST'])
         self.app.add_url_rule('/<lang>/tasks/new/', 'valky_tasks_post', self.valky_tasks_post, methods=['POST'])
         self.app.add_url_rule('/<lang>/tasks/<task_id>/<action>', 'valky_tasks_action', self.valky_tasks_action)
@@ -183,7 +186,7 @@ class WebServer:
             l4_server_time=server_time,
         )
     
-    def logs(self, lang='en'):
+    def system_logs(self, lang= 'en'):
         """
         The logs page.
         """
@@ -198,6 +201,49 @@ class WebServer:
             template_name_or_list='logs.html',
             stringtable=ST[lang],
             logs=logs,
+            build=self.build,
+            build_v=self.build_v
+        )
+    
+    async def system_tasks(self, lang= 'en'):
+        """
+        The tasks queue page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        tasks, finished, deleted, errors = self.get_tasks()
+        
+        return render_template(
+            template_name_or_list='valky/tasks.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            tasks=tasks,
+            finished=finished,
+            deleted=deleted,
+            errors=errors,
+            build=self.build,
+            build_v=self.build_v
+        )
+    
+    async def system_tasks_new(self, lang= 'en'):
+        """
+        The tasks creation page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        return render_template(
+            template_name_or_list='valky/tasks_new.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            actions=self.vk_bot.task_queue.__globals__(),
             build=self.build,
             build_v=self.build_v
         )
@@ -236,49 +282,6 @@ class WebServer:
             build=self.build,
             build_v=self.build_v,
         )
-    
-    async def valky_tasks(self, lang='en'):
-        """
-        The tasks queue page.
-        """
-        if lang not in ['en', 'de', 'ru', 'vk']:
-            lang = 'en'
-        
-        if 'loggedin' not in session:
-            return redirect('https://valky.xyz/')
-        
-        tasks, finished, deleted, errors = self.get_tasks()
-        
-        return render_template(
-            template_name_or_list='valky/tasks.html',
-            stringtable=ST[lang],
-            vk_status=self.vk_bot.ready,
-            tasks=tasks,
-            finished=finished,
-            deleted=deleted,
-            errors=errors,
-            build=self.build,
-            build_v=self.build_v
-        )
-    
-    async def valky_tasks_new(self, lang='en'):
-        """
-        The tasks creation page.
-        """
-        if lang not in ['en', 'de', 'ru', 'vk']:
-            lang = 'en'
-        
-        if 'loggedin' not in session:
-            return redirect('https://valky.xyz/')
-        
-        return render_template(
-            template_name_or_list='valky/tasks_new.html',
-            stringtable=ST[lang],
-            vk_status=self.vk_bot.ready,
-            actions=self.vk_bot.task_queue.__globals__(),
-            build=self.build,
-            build_v=self.build_v
-        )
         
     # Twitch
     async def twitch_bot(self, lang = 'en'):
@@ -316,6 +319,73 @@ class WebServer:
             mod_count = len(self.tw_bot.channel.moderators),
             emote_count = len(self.tw_bot.channel.emotes),
             emotes = self.tw_bot.channel.emotes_raw,
+        )
+    
+    # Discord
+    async def discord_bot(self, lang='en'):
+        """
+        The Discord bot page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if self.dc_bot is not None:
+            if self.dc_bot.loaded:
+                dc_status = 'ONLINE'
+            elif self.dc_bot.running:
+                dc_status = 'STARTED'
+            else:
+                dc_status = 'OFFLINE'
+        else:
+            dc_status = 'UNKNOWN'
+        
+        if self.dc_bot.loaded:
+            guild_name = self.dc_bot.guild.name
+            guild_description = self.dc_bot.guild.description
+            guild_emojis = self.dc_bot.guild.emojis
+            guild_stickers = self.dc_bot.guild.stickers
+            guild_icon = self.dc_bot.guild.icon
+            guild_banner = self.dc_bot.guild.banner
+            guild_owner = self.dc_bot.guild.owner_id
+            guild_roles = self.dc_bot.guild.roles
+            guild_channels = self.dc_bot.guild.channels
+            guild_features = self.dc_bot.guild.features
+            guild_members = self.dc_bot.client.users
+            guild_invite = self.dc_bot.guild.vanity_url_code
+            guild_booster_count = self.dc_bot.guild.premium_subscription_count
+            
+        else:
+            guild_name = 'N/A'
+            guild_description = 'N/A'
+            guild_emojis = 'N/A'
+            guild_stickers = 'N/A'
+            guild_icon = 'N/A'
+            guild_banner = 'N/A'
+            guild_owner = 'N/A'
+            guild_roles = 'N/A'
+            guild_channels = 'N/A'
+            guild_features = 'N/A'
+            guild_members = 'N/A'
+            guild_invite = 'N/A'
+            guild_booster_count = 'N/A'
+        
+        return render_template(
+            template_name_or_list='discord.html',
+            stringtable=ST[lang],
+            dc_status=dc_status,
+            build=self.build,
+            build_v=self.build_v,
+            guild_banner=guild_banner,
+            guild_name=guild_name,
+            guild_description=guild_description,
+            guild_emojis=guild_emojis,
+            guild_invite=guild_invite,
+            guild_member_count=len(guild_members) if guild_members != 'N/A' else 'N/A',
+            guild_booster_count=guild_booster_count,
+            guild_channels_count=len(guild_channels) if guild_channels != 'N/A' else 'N/A',
+            guild_roles_count=len(guild_roles) if guild_roles != 'N/A' else 'N/A',
+            guild_emote_count=len(guild_emojis) if guild_emojis != 'N/A' else 'N/A',
+            guild_sticker_count=len(guild_stickers) if guild_stickers != 'N/A' else 'N/A',
         )
     
     async def valky_settings(self, lang='en'):
@@ -632,7 +702,7 @@ class WebServer:
         if input_login == self.config['web']['user'] and input_password == self.config['web']['pass']:
             session['loggedin'] = True
             flash('You were successfully logged in', category='info')
-            return redirect('/')
+            return redirect('/en')
         
         return redirect('https://valky.xyz/')
     
@@ -667,7 +737,7 @@ class WebServer:
         thread.start()
         
         flash(f'Started {name} Bot', category='info')
-        return redirect('/')
+        return redirect('/en')
     
     # ========================================================================================
     # Valkyrie Bot - Helpers

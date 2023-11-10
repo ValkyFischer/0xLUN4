@@ -35,9 +35,14 @@
                                 - Make a user a Mod<br>
                         </div>
                         <div class="col-7">
-                            Channel emotes:<br>
+                            Channel Emotes:<br>
                             {% for emote in emotes %}
-                                <img src="{{ emote['images']['url_4x'] }}" alt="{{ emote['name'] }}" class="img-fluid" height="32px" width="32px" />
+                                {% if loop.index0 < 19 %}
+                                    <img src="{{ emote['images']['url_4x'] }}" alt="{{ emote['name'] }}" class="img-fluid" height="32px" width="32px" />
+                                {% endif %}
+                                {% if loop.index0 == 19 %}
+                                    <i class="fal fa-plus-hexagon fa-2x p-1 white-50" style="position: absolute;" title="..and some more!"></i>
+                                {% endif %}
                             {% endfor %}
                         </div>
                     </div>
@@ -88,7 +93,7 @@
                             <div class="row">
                                 <div class="col-5">Stream Title</div>
                                 <div class="col-7">
-                                    <a class="text-white-50" data-toggle="modal" data-target="#streamInfo">
+                                    <a class="white-50" data-toggle="modal" data-target="#streamInfo">
                                         <i class="fal fa-edit" title="Edit the stream information."></i></a>
                                     <i class="fal fa-grip-lines-vertical mx-1 text-warning"></i>{{ stream_title }}
                                 </div>
@@ -96,7 +101,7 @@
                             <div class="row">
                                 <div class="col-5">Stream Game</div>
                                 <div class="col-7">
-                                    <a class="text-white-50" data-toggle="modal" data-target="#streamInfo">
+                                    <a class="white-50" data-toggle="modal" data-target="#streamInfo">
                                         <i class="fal fa-edit" title="Edit the stream information."></i></a>
                                     <i class="fal fa-grip-lines-vertical mx-1 text-warning"></i>{{ stream_game }}
                                 </div>

@@ -148,6 +148,7 @@ class DiscordBot:
             """
             This event is called once when the bot goes online.
             """
+            self.guild = await self.client.fetch_guild(int(self.guild_id))
             await self.tree.sync(guild=self.guild)
             
             self.logger.info(f'Discord Bot logged in as {self.client.user}')
