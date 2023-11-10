@@ -54,20 +54,20 @@
                     <div class="col-12 py-5">
                         {% if 'loggedin' in session %}
                             {# Content View #}
-                            <div class="container py-5 text-white">
+                            <div class="container text-white">
                                 {% block content %}{% endblock %}
                             </div>
                         {% else %}
                             {# Login View #}
                             <div class="container py-5">
-                                <div class="row">
-                                    <div class="text-right col-4">
+                                <div class="row py-5">
+                                    <div class="text-right col-md-4 col-sm-12">
                                         <h1 class='u-margin-bottom-md ml-3 mr-3 pt-3'>
                                             <span class="text-warning">LOGIN</span>
                                         </h1>
                                         <hl><div></div></hl>
                                     </div>
-                                    <div class="text-left col-8">
+                                    <div class="text-left col-md-8 col-sm-12">
                                         <form method="POST" action="/login">
                                             <div class="md-form form-sm">
                                                 <i class="fas fa-user-ninja prefix"></i>

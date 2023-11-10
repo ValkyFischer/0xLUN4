@@ -106,8 +106,8 @@ class Stream:
         async with aiohttp.ClientSession() as session:
             url = f'{self.config["twitch"]["api_uri"]}/channels?broadcaster_id={str(user_id)}'
             headers = {
-                'Client-ID': self.config['twitch']['client_id'],
-                'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+                'Client-ID': self.config['twitch']['user']['client_id'],
+                'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
             }
             data = {
                 'title': title,
@@ -152,8 +152,8 @@ class Game:
         """
         url = f'{self.config["twitch"]["api_uri"]}/games?name={name}'
         headers = {
-            'Client-ID': self.config['twitch']['client_id'],
-            'Authorization': f'Bearer {self.config["twitch"]["bot_token"]}'
+            'Client-ID': self.config['twitch']['user']['client_id'],
+            'Authorization': f'Bearer {self.config["twitch"]["user"]["token"]}'
         }
         async with aiohttp.ClientSession() as session:
             async with session.get(url, headers=headers) as resp:

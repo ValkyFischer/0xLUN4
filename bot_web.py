@@ -61,13 +61,11 @@ class WebServer:
         # valky
         self.app.add_url_rule('/<lang>/valky', 'valky', self.valky_bot)
         self.app.add_url_rule('/<lang>/valky/', 'valky', self.valky_bot)
-        self.app.add_url_rule('/<lang>/valky/status', 'valky', self.valky_bot)
-        self.app.add_url_rule('/<lang>/valky/status/', 'valky', self.valky_bot)
         # twitch
         self.app.add_url_rule('/<lang>/twitch', 'twitch', self.twitch_bot)
         self.app.add_url_rule('/<lang>/twitch/', 'twitch', self.twitch_bot)
-        self.app.add_url_rule('/<lang>/twitch/status', 'twitch', self.twitch_bot)
-        self.app.add_url_rule('/<lang>/twitch/status/', 'twitch', self.twitch_bot)
+        self.app.add_url_rule('/<lang>/twitch', 'twitch_post', self.twitch_bot_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/twitch/', 'twitch_post', self.twitch_bot_post, methods=['POST'])
         # tasks
         self.app.add_url_rule('/<lang>/tasks', 'valky_tasks', self.valky_tasks)
         self.app.add_url_rule('/<lang>/tasks/', 'valky_tasks', self.valky_tasks)
@@ -340,6 +338,7 @@ class WebServer:
             vip_count = len(self.tw_bot.channel.vips),
             mod_count = len(self.tw_bot.channel.moderators),
             emote_count = len(self.tw_bot.channel.emotes),
+            emotes = self.tw_bot.channel.emotes_raw,
         )
     
     async def twitch_settings(self, lang='en'):
@@ -434,7 +433,9 @@ class WebServer:
         task_id = int(task_id)
         
         if action not in ['delete', 'start', 'end', 'queue']:
-            return redirect('https://valky.xyz/')
+            self.logger.error(f'Unknown action: {action}')
+            flash('Unknown action', 'error')
+            return redirect(f'/{lang}/tasks')
         
         if action == 'delete':
             task = self.vk_bot.task_queue.get_task_by_id(task_id)
@@ -459,9 +460,36 @@ class WebServer:
             self.vk_bot.task_queue.add_task(task)
             flash('Task queued', 'info')
             return redirect(f'/{lang}/tasks')
+    
+    async def twitch_bot_post(self, lang='en'):
+        """
+        The Twitch bot page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        data = request.form.to_dict()
+        if data['submit'] == 'stream':
+            if data['stream_title'] is None or data['stream_title'] == '':
+                flash('Stream title is required', 'error')
+                return redirect(f'/{lang}/twitch')
+            
+            await self.tw_bot.stream.set_info(
+                user_id = self.tw_bot.channel.id,
+                title = data['stream_title'],
+                game_name = data['stream_game']
+            )
+            self.logger.info(f'Twitch | Stream information updated | {data["stream_title"]} | {data["stream_game"]}')
+            flash('Stream information updated', 'info')
+            return redirect(f'/{lang}/twitch')
         
         else:
-            return redirect('https://valky.xyz/')
+            self.logger.error(f'Unknown action: {data["submit"]}')
+            flash('Unknown action', 'error')
+            return redirect(f'/{lang}/twitch')
     
     # ========================================================================================
     # Valkyrie Bot - Functions
