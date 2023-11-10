@@ -42,12 +42,17 @@ class Channel:
         self.is_live = False
         self.emotes = []
         self.followers = []
+        self.followers_raw = []
         self.follower_count = 0
         self.subscribers = []
+        self.subscribers_raw = []
         self.subscriber_count = 0
         self.vips = []
+        self.vips_raw = []
         self.moderators = []
+        self.moderators_raw = []
         self.banned = []
+        self.banned_raw = []
         self.stream = stream
         
     async def setup(self) -> None:
@@ -72,6 +77,7 @@ class Channel:
         for follower in followers:
             if follower.get('user_name') not in self.followers:
                 self.followers.append(follower.get('user_name')) if follower.get('user_name').lower() != self.name.lower() else None
+                self.followers_raw.append(follower)
         self.logger.info(f'Twitch Followers | {self.follower_count} | {len(self.followers)}')
         
         # get the subscribers of the channel
@@ -80,6 +86,7 @@ class Channel:
         for subscriber in subscribers:
             if subscriber.get('user_name') not in self.subscribers:
                 self.subscribers.append(subscriber.get('user_name')) if subscriber.get('user_name').lower() != self.name.lower() else None
+                self.subscribers_raw.append(subscriber)
         self.logger.info(f'Twitch Subscribers | {self.subscriber_count} | {len(self.subscribers)}')
         
         # get the VIPs of the channel
@@ -87,6 +94,7 @@ class Channel:
         for vip in vips:
             if vip.get('user_name') not in self.vips:
                 self.vips.append(vip.get('user_name')) if vip.get('user_name').lower() != self.name.lower() else None
+                self.vips_raw.append(vip)
         self.logger.info(f'Twitch VIPs | {len(self.vips)}')
         
         # get the moderators of the channel
@@ -94,6 +102,7 @@ class Channel:
         for moderator in moderators:
             if moderator.get('user_name') not in self.moderators:
                 self.moderators.append(moderator.get('user_name')) if moderator.get('user_name').lower() != self.name.lower() else None
+                self.moderators_raw.append(moderator)
         self.logger.info(f'Twitch Moderators | {len(self.moderators)}')
         
         # get the bans of the channel
@@ -101,6 +110,7 @@ class Channel:
         for ban in bans:
             if ban.get('user_name') not in self.banned:
                 self.banned.append(ban.get('user_name')) if ban.get('user_name').lower() != self.name.lower() else None
+                self.banned_raw.append(ban)
         self.logger.info(f'Twitch Bans | {len(self.banned)}')
         
         # get the stream information of the channel

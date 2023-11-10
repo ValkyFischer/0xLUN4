@@ -1,0 +1,199 @@
+{% extends "base.html" %}
+
+{% block custom_css %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-4 text-right pt-2">
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Twitch Bot</h1>
+        <hl><div></div></hl>
+        {% include 'parts/megalink.html' %}
+    </div>
+    <div class="col-8">
+        <div class="row">
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <h2 class="">
+                        Status
+                        <span class="pt-2
+                            {{ 'text-success' if tw_status == 'ONLINE' }}
+                            {{ 'text-info' if tw_status == 'STARTED' }}
+                            {{ 'text-danger' if tw_status == 'OFFLINE' }}
+                        ">{{ tw_status }}
+                        </span>
+                    </h2>
+                    <p class="mb-0 p-2">
+                        The Twitch bot that checks for multiple actions and responds to chat commands. It listens for
+                        channel points redemptions and subscriptions, and creates tasks for The Valkyrie Bot to complete.
+                    </p>
+                    <p class="mb-0 p-2">
+                        Possible channel point actions:<br>
+                            - Timeout a user<br>
+                            - Make a user a VIP<br>
+                            - Make a user a Mod<br>
+                    </p>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Controls</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="col-5 pt-2">Start the bot</div>
+                                <div class="col-5"><a href="/start/tw" class="btn btn-outline-info btn-sm mt-2 w-100">Start</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5 pt-2">Settings, Twitch</div>
+                                <div class="col-5"><a href="/{{ stringtable['lang'] }}/settings/twitch" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Basic</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5 pt-2">Settings, Bot Scopes</div>
+                                <div class="col-5"><a href="/{{ stringtable['lang'] }}/settings/twitch/scopes" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Scopes</a></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5 pt-2">Settings, Point Rewards</div>
+                                <div class="col-5"><a href="/{{ stringtable['lang'] }}/settings/twitch/rewards" class="btn btn-outline-white btn-sm mt-2 w-100">Settings, Rewards</a></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Stream Info</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="col-5">Stream Status</div>
+                                <div class="col-7 {{ 'text-success' if is_live else 'text-danger' }}">
+                                    {{ 'ONLINE' if is_live else 'OFFLINE' }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Stream Title</div>
+                                <div class="col-7">{{ stream_title }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Stream Game</div>
+                                <div class="col-7">{{ stream_game }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Channel Info</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="col-5">Amount of Followers</div>
+                                <div class="col-7">{{ follower_count }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Amount of Subscribers</div>
+                                <div class="col-7">{{ subscriber_count }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Amount of VIPs</div>
+                                <div class="col-7">{{ vip_count }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Amount of Moderators</div>
+                                <div class="col-7">{{ mod_count }}</div>
+                            </div>
+                            <div class="row">
+                                <div class="col-5">Amount of Emotes</div>
+                                <div class="col-7">{{ emote_count }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {#<div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-1">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Newest 5 Mods</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <table class="table table-dark table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">User</th>
+                                        <th scope="col">Reward</th>
+                                        <th scope="col">Cost</th>
+                                        <th scope="col">Input</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in mods %}
+                                    <tr>
+                                        <td>{{ task['id'] }}</td>
+                                        <td>{{ task['user_name'] }}</td>
+                                        <td>{{ task['reward_name'] }}</td>
+                                        <td>{{ task['reward_cost'] }}</td>
+                                        <td>{{ task['user_input'] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-1">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Newest 5 VIPs</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <table class="table table-dark table-sm table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">User</th>
+                                        <th scope="col">Reward</th>
+                                        <th scope="col">Cost</th>
+                                        <th scope="col">Input</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in vips %}
+                                    <tr>
+                                        <td>{{ task['id'] }}</td>
+                                        <td>{{ task['user_name'] }}</td>
+                                        <td>{{ task['reward_name'] }}</td>
+                                        <td>{{ task['reward_cost'] }}</td>
+                                        <td>{{ task['user_input'] }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>#}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}

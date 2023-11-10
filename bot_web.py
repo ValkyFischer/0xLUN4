@@ -58,26 +58,36 @@ class WebServer:
         # logs
         self.app.add_url_rule('/<lang>/logs', 'logs', self.logs)
         self.app.add_url_rule('/<lang>/logs/', 'logs', self.logs)
-        # functions
-        self.app.add_url_rule('/login', 'login', self.login, methods=['POST'])
-        self.app.add_url_rule('/logout', 'logout', self.logout)
-        self.app.add_url_rule('/start/<bot>', 'start_bot', self.start_bot)
         # valky
         self.app.add_url_rule('/<lang>/valky', 'valky', self.valky_bot)
         self.app.add_url_rule('/<lang>/valky/', 'valky', self.valky_bot)
         self.app.add_url_rule('/<lang>/valky/status', 'valky', self.valky_bot)
         self.app.add_url_rule('/<lang>/valky/status/', 'valky', self.valky_bot)
-        self.app.add_url_rule('/<lang>/valky/settings', 'valky_settings', self.valky_settings)
-        self.app.add_url_rule('/<lang>/valky/settings/', 'valky_settings', self.valky_settings)
-        self.app.add_url_rule('/<lang>/valky/luna', 'valky_luna', self.valky_luna)
-        self.app.add_url_rule('/<lang>/valky/luna/', 'valky_luna', self.valky_luna)
-        self.app.add_url_rule('/<lang>/valky/tasks', 'valky_tasks', self.valky_tasks)
-        self.app.add_url_rule('/<lang>/valky/tasks/', 'valky_tasks', self.valky_tasks)
-        self.app.add_url_rule('/<lang>/valky/tasks/new', 'valky_tasks_new', self.valky_tasks_new)
-        self.app.add_url_rule('/<lang>/valky/tasks/new/', 'valky_tasks_new', self.valky_tasks_new)
-        self.app.add_url_rule('/<lang>/valky/tasks/new', 'valky_tasks_post', self.valky_tasks_post, methods=['POST'])
-        self.app.add_url_rule('/<lang>/valky/tasks/new/', 'valky_tasks_post', self.valky_tasks_post, methods=['POST'])
-        self.app.add_url_rule('/<lang>/valky/tasks/<task_id>/<action>', 'valky_tasks_action', self.valky_tasks_action)
+        # twitch
+        self.app.add_url_rule('/<lang>/twitch', 'twitch', self.twitch_bot)
+        self.app.add_url_rule('/<lang>/twitch/', 'twitch', self.twitch_bot)
+        self.app.add_url_rule('/<lang>/twitch/status', 'twitch', self.twitch_bot)
+        self.app.add_url_rule('/<lang>/twitch/status/', 'twitch', self.twitch_bot)
+        # tasks
+        self.app.add_url_rule('/<lang>/tasks', 'valky_tasks', self.valky_tasks)
+        self.app.add_url_rule('/<lang>/tasks/', 'valky_tasks', self.valky_tasks)
+        self.app.add_url_rule('/<lang>/tasks/new', 'valky_tasks_new', self.valky_tasks_new)
+        self.app.add_url_rule('/<lang>/tasks/new/', 'valky_tasks_new', self.valky_tasks_new)
+        self.app.add_url_rule('/<lang>/tasks/new', 'valky_tasks_post', self.valky_tasks_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/tasks/new/', 'valky_tasks_post', self.valky_tasks_post, methods=['POST'])
+        self.app.add_url_rule('/<lang>/tasks/<task_id>/<action>', 'valky_tasks_action', self.valky_tasks_action)
+        # settings
+        self.app.add_url_rule('/<lang>/settings/web', 'valky_settings', self.valky_settings)
+        self.app.add_url_rule('/<lang>/settings/web/', 'valky_settings', self.valky_settings)
+        self.app.add_url_rule('/<lang>/settings/luna', 'valky_luna', self.valky_luna)
+        self.app.add_url_rule('/<lang>/settings/luna/', 'valky_luna', self.valky_luna)
+        self.app.add_url_rule('/<lang>/settings/twitch', 'twitch_settings', self.twitch_settings)
+        self.app.add_url_rule('/<lang>/settings/twitch/', 'twitch_settings', self.twitch_settings)
+
+        # functions
+        self.app.add_url_rule('/login', 'login', self.login, methods=['POST'])
+        self.app.add_url_rule('/logout', 'logout', self.logout)
+        self.app.add_url_rule('/start/<bot>', 'start_bot', self.start_bot)
     
     # ========================================================================================
     # Valkyrie Bot - Views
@@ -294,6 +304,62 @@ class WebServer:
             build=self.build,
             build_v=self.build_v
         )
+        
+    # Twitch
+    async def twitch_bot(self, lang = 'en'):
+        """
+        The Twitch bot page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        if self.tw_bot is not None:
+            if self.tw_bot.loaded:
+                tw_status = 'ONLINE'
+            elif self.tw_bot.running:
+                tw_status = 'STARTED'
+            else:
+                tw_status = 'OFFLINE'
+        else:
+            tw_status = 'UNKNOWN'
+        
+        return render_template(
+            template_name_or_list = 'twitch.html',
+            stringtable = ST[lang],
+            tw_status = tw_status,
+            build = self.build,
+            build_v = self.build_v,
+            is_live = self.tw_bot.channel.is_live,
+            stream_title = self.tw_bot.stream.title,
+            stream_game = self.tw_bot.stream.game.name,
+            follower_count = self.tw_bot.channel.follower_count,
+            subscriber_count = self.tw_bot.channel.subscriber_count,
+            vip_count = len(self.tw_bot.channel.vips),
+            mod_count = len(self.tw_bot.channel.moderators),
+            emote_count = len(self.tw_bot.channel.emotes),
+        )
+    
+    async def twitch_settings(self, lang='en'):
+        """
+        The Valkyrie bot settings page.
+        """
+        if lang not in ['en', 'de', 'ru', 'vk']:
+            lang = 'en'
+        
+        if 'loggedin' not in session:
+            return redirect('https://valky.xyz/')
+        
+        return render_template(
+            template_name_or_list='twitch/settings.html',
+            stringtable=ST[lang],
+            vk_status=self.vk_bot.ready,
+            config=self.config,
+            build=self.build,
+            build_v=self.build_v
+        )
     
     async def valky_tasks_post(self, lang='en'):
         """
@@ -321,37 +387,37 @@ class WebServer:
             if self.vk_bot.task_queue.TASK_TW_TIMEOUT == task_action:
                 if time_frame is None:
                     flash(f'Time frame is required for this task: {task_action}', 'error')
-                    return redirect(f'/{lang}/valky/tasks')
+                    return redirect(f'/{lang}/tasks')
                 if data['task_input'] is None or data['task_input'] == '':
                     flash(f'Input is required for this task: {task_action}', 'error')
-                    return redirect(f'/{lang}/valky/tasks')
+                    return redirect(f'/{lang}/tasks')
             
             if self.vk_bot.task_queue.TASK_DC_ADD_ROLE == task_action:
                 if role_assign is None:
                     flash(f'Role is required for this task: {task_action}', 'error')
-                    return redirect(f'/{lang}/valky/tasks')
+                    return redirect(f'/{lang}/tasks')
                 if data['task_input'] is None or data['task_input'] == '':
                     flash(f'Input is required for this task: {task_action}', 'error')
-                    return redirect(f'/{lang}/valky/tasks')
+                    return redirect(f'/{lang}/tasks')
             
             if self.vk_bot.task_queue.TASK_TW_ADD_MODERATOR == task_action:
                 if data['task_input'] is None or data['task_input'] == '':
                     flash(f'Input is required for this task: {task_action}', 'error')
-                    return redirect(f'/{lang}/valky/tasks')
+                    return redirect(f'/{lang}/tasks')
             
             if self.vk_bot.task_queue.TASK_TW_ADD_VIP == task_action:
                 if data['task_input'] is None or data['task_input'] == '':
                     flash(f'Input is required for this task: {task_action}', 'error')
-                    return redirect(f'/{lang}/valky/tasks')
+                    return redirect(f'/{lang}/tasks')
             
             task = Task(task_action, task_data, task_instant, time_frame, role_assign)
             self.vk_bot.task_queue.add_task(task)
             flash(f'Task "{task}" added', 'info')
-            return redirect(f'/{lang}/valky/tasks')
+            return redirect(f'/{lang}/tasks')
         
         else:
             flash('Unknown action', 'error')
-            return redirect(f'/{lang}/valky/tasks')
+            return redirect(f'/{lang}/tasks')
     
     async def valky_tasks_action(self, task_id, action, lang='en'):
         """
@@ -374,25 +440,25 @@ class WebServer:
             task = self.vk_bot.task_queue.get_task_by_id(task_id)
             self.vk_bot.task_queue.remove_task(task)
             flash(f'Task "{task.action}" ({task.id}) deleted', 'info')
-            return redirect(f'/{lang}/valky/tasks')
+            return redirect(f'/{lang}/tasks')
         
         elif action == 'start':
             task = self.vk_bot.task_queue.get_task_by_id(task_id)
             self.vk_bot.task_queue.add_task(task, True)
             flash('Task restarted', 'info')
-            return redirect(f'/{lang}/valky/tasks')
+            return redirect(f'/{lang}/tasks')
         
         elif action == 'end':
             task = self.vk_bot.task_queue.get_task_by_id(task_id)
             self.vk_bot.task_queue.end_task(task)
             flash('Task ended', 'info')
-            return redirect(f'/{lang}/valky/tasks')
+            return redirect(f'/{lang}/tasks')
         
         elif action == 'queue':
             task = self.vk_bot.task_queue.get_task_by_id(task_id)
             self.vk_bot.task_queue.add_task(task)
             flash('Task queued', 'info')
-            return redirect(f'/{lang}/valky/tasks')
+            return redirect(f'/{lang}/tasks')
         
         else:
             return redirect('https://valky.xyz/')

@@ -16,7 +16,10 @@
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white">
                     <h2>L.U.N.A.</h2>
-                    <p class="mb-0">L.U.N.A., the Limitless Universal Numeric Assistant, represents a remarkable leap forward in AI technology, driven by the power of Microsoft's GPT-4 language model.</p>
+                    <p class="mb-0 p-2">
+                        L.U.N.A., the Limitless Universal Numeric Assistant, represents a remarkable leap forward in
+                        AI technology, driven by the power of Microsoft's GPT-4 language model.
+                    </p>
                 </div>
             </div>
             <div class="col-12 p-2">
@@ -30,24 +33,20 @@
                             <div class="row">
                                 <div class="text-left col-6">
                                     <div class="md-form form-sm mt-1">
-                                        <i class="fas fa-server prefix"></i>
                                         <input type="text" name="luna_host" id="luna_host" class="form-control form-control-sm validate text-white" value="{{ config['luna']['host'] }}" required />
                                         <label data-error="wrong" data-success="right" for="luna_host">Luna API Address</label>
                                     </div>
                                     <div class="md-form form-sm">
-                                        <i class="fas fa-network-wired prefix"></i>
                                         <input type="number" name="luna_port" id="luna_port" class="form-control form-control-sm validate text-white" value="{{ config['luna']['port'] }}" required />
                                         <label data-error="wrong" data-success="right" for="luna_port">Luna API Port</label>
                                     </div>
                                 </div>
                                 <div class="text-left col-6">
                                     <div class="md-form form-sm mt-1">
-                                        <i class="fas fa-code-branch prefix"></i>
                                         <input type="number" name="luna_version" id="luna_version" class="form-control form-control-sm validate text-white" value="{{ config['luna']['version'] }}" required />
                                         <label data-error="wrong" data-success="right" for="luna_version">Luna API Version</label>
                                     </div>
                                     <div class="md-form form-sm">
-                                        <i class="fas fa-sync prefix"></i>
                                         <input type="number" name="luna_interval" id="luna_interval" class="form-control form-control-sm validate text-white" value="{{ config['luna']['interval'] }}" required />
                                         <label data-error="wrong" data-success="right" for="luna_interval">Ping Interval in Seconds</label>
                                     </div>
@@ -55,7 +54,11 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row pt-5">
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-0">
+                    <div class="row">
                         <div class="text-right col-4 pt-2">
                             <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Credentials</h3>
                             <hl><div></div></hl>
@@ -64,7 +67,6 @@
                             <div class="row">
                                 <div class="text-left col-12">
                                     <div class="md-form form-sm mt-1">
-                                        <i class="fas fa-lock prefix"></i>
                                         <input type="password" name="luna_token" id="luna_token" class="form-control form-control-sm validate text-white" value="{{ config['luna']['token'] }}" required />
                                         <label data-error="wrong" data-success="right" for="luna_token">Luna API Token</label>
                                     </div>

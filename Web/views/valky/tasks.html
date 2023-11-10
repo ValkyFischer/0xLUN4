@@ -16,14 +16,17 @@
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white">
                     <h2 class="">Tasks Queue</h2>
-                    <p class="mb-0">
+                    <p class="mb-0 p-2">
                         The tasks queue is a list of tasks that are waiting to be processed. Tasks are processed in the
                         order they are received.
                     </p>
-                    <p class="mb-0">
-                        Tasks can be queued, started, ended, failed or deleted. Queued tasks are waiting to be processed.
-                        Started tasks are currently being processed. Ended tasks have been processed and are finished.
-                        Failed tasks have been processed but failed. Deleted tasks have been deleted.
+                    <p class="mb-0 p-2">
+                        Tasks can be queued, started, ended, failed or deleted.<br>
+                            - Queued tasks are waiting to be processed<br>
+                            - Started tasks are currently being processed<br>
+                            - Ended tasks have been processed and are finished<br>
+                            - Failed tasks have been processed but failed<br>
+                            - Deleted tasks have been deleted<br>
                     </p>
                 </div>
             </div>
@@ -65,19 +68,19 @@
                                                             <div class="col-9">Queue Task</div>
                                                         </div>
                                                     </a>
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/start">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/start">
                                                         <div class="row" title="Execute the task immediately.">
                                                             <div class="col-3"><i class="fal fa-play pl-2"></i></div>
                                                             <div class="col-9">Start Task</div>
                                                         </div>
                                                     </a>
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/end">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/end">
                                                         <div class="row" title="Move and mark the task as finished.">
                                                             <div class="col-3"><i class="fal fa-check pl-2"></i></div>
                                                             <div class="col-9">End Task</div>
                                                         </div>
                                                     </a>
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/delete">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/delete">
                                                         <div class="row" title="Delete the task.">
                                                             <div class="col-3"><i class="fal fa-trash-alt pl-2"></i></div>
                                                             <div class="col-9">Delete Task</div>
@@ -126,13 +129,13 @@
                                             <div class="dropdown">
                                                 <button class="white-50" type="button" id="ddown-{{ task['id'] }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
                                                 <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown-{{ task['id'] }}">
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/queue">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/queue">
                                                         <div class="row" title="Move the task in to the queue.">
                                                             <div class="col-3"><i class="fal fa-sync pl-2"></i></div>
                                                             <div class="col-9">Queue Task</div>
                                                         </div>
                                                     </a>
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/start">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/start">
                                                         <div class="row" title="Execute the task immediately.">
                                                             <div class="col-3"><i class="fal fa-play pl-2"></i></div>
                                                             <div class="col-9">Start Task</div>
@@ -144,7 +147,7 @@
                                                             <div class="col-9">End Task</div>
                                                         </div>
                                                     </a>
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/delete">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/delete">
                                                         <div class="row" title="Delete the task.">
                                                             <div class="col-3"><i class="fal fa-trash-alt pl-2"></i></div>
                                                             <div class="col-9">Delete Task</div>
@@ -193,25 +196,25 @@
                                             <div class="dropdown">
                                                 <button class="white-50" type="button" id="ddown-{{ task['id'] }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
                                                 <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown-{{ task['id'] }}">
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/queue">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/queue">
                                                         <div class="row" title="Move the task in to the queue.">
                                                             <div class="col-3"><i class="fal fa-sync pl-2"></i></div>
                                                             <div class="col-9">Queue Task</div>
                                                         </div>
                                                     </a>
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/start">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/start">
                                                         <div class="row" title="Execute the task immediately.">
                                                             <div class="col-3"><i class="fal fa-play pl-2"></i></div>
                                                             <div class="col-9">Start Task</div>
                                                         </div>
                                                     </a>
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/end">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/end">
                                                         <div class="row" title="Move and mark the task as finished.">
                                                             <div class="col-3"><i class="fal fa-check pl-2"></i></div>
                                                             <div class="col-9">End Task</div>
                                                         </div>
                                                     </a>
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/delete">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/delete">
                                                         <div class="row" title="Delete the task.">
                                                             <div class="col-3"><i class="fal fa-trash-alt pl-2"></i></div>
                                                             <div class="col-9">Delete Task</div>
@@ -260,19 +263,19 @@
                                             <div class="dropdown">
                                                 <button class="white-50" type="button" id="ddown-{{ task['id'] }}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
                                                 <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown-{{ task['id'] }}">
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/queue">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/queue">
                                                         <div class="row" title="Move the task in to the queue.">
                                                             <div class="col-3"><i class="fal fa-sync pl-2"></i></div>
                                                             <div class="col-9">Queue Task</div>
                                                         </div>
                                                     </a>
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/start">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/start">
                                                         <div class="row" title="Execute the task immediately.">
                                                             <div class="col-3"><i class="fal fa-play pl-2"></i></div>
                                                             <div class="col-9">Start Task</div>
                                                         </div>
                                                     </a>
-                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/valky/tasks/{{ task['id'] }}/end">
+                                                    <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/tasks/{{ task['id'] }}/end">
                                                         <div class="row" title="Move and mark the task as finished.">
                                                             <div class="col-3"><i class="fal fa-check pl-2"></i></div>
                                                             <div class="col-9">End Task</div>

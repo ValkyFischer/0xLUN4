@@ -40,39 +40,6 @@
     </div>
     <div class="col-3 p-2">
         <div class="card card-body bg-dark text-white text-left">
-            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Discord Bot</h3>
-            <hl><div></div></hl>
-            <div class="text-right pb-3">
-                <h1 class="
-                    {{ 'text-success' if dc_status == 'ONLINE' }}
-                    {{ 'text-info' if dc_status == 'STARTED' }}
-                    {{ 'text-danger' if dc_status == 'OFFLINE' }}
-                ">{{ dc_status }}</h1>
-                <i class="text-white-50">STATUS</i>
-                <div class="dropdown">
-                    <button class="white-50" type="button" id="ddown_dc" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
-                    <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown_dc">
-                        <a class="dropdown-item p-1 bg-dark-4 text-white" href="/start/dc">
-                            <div class="row" title="Start the Discord Bot.">
-                                <div class="col-3"><i class="fal fa-play pl-2"></i></div>
-                                <div class="col-9">Run Bot</div>
-                            </div>
-                        </a>
-                        <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/discord/status">
-                            <div class="row" title="Check the Discord Bot.">
-                                <div class="col-3"><i class="fal fa-laptop-medical pl-2"></i></div>
-                                <div class="col-9">Bot Status</div>
-                            </div>
-                        </a>
-                    </div>
-                </div>
-            </div>
-            <i class="text-white-50"><i class="fal fa-clock"></i> {{ dc_start_time }}</i>
-            <hl><div></div></hl>
-        </div>
-    </div>
-    <div class="col-3 p-2">
-        <div class="card card-body bg-dark text-white text-left">
             <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Twitch Bot</h3>
             <hl><div></div></hl>
             <div class="text-right pb-3">
@@ -101,6 +68,39 @@
                 </div>
             </div>
             <i class="text-white-50"><i class="fal fa-clock"></i> {{ tw_start_time }}</i>
+            <hl><div></div></hl>
+        </div>
+    </div>
+    <div class="col-3 p-2">
+        <div class="card card-body bg-dark text-white text-left">
+            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Discord Bot</h3>
+            <hl><div></div></hl>
+            <div class="text-right pb-3">
+                <h1 class="
+                    {{ 'text-success' if dc_status == 'ONLINE' }}
+                    {{ 'text-info' if dc_status == 'STARTED' }}
+                    {{ 'text-danger' if dc_status == 'OFFLINE' }}
+                ">{{ dc_status }}</h1>
+                <i class="text-white-50">STATUS</i>
+                <div class="dropdown">
+                    <button class="white-50" type="button" id="ddown_dc" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><i class="fas fa-ellipsis-h"></i></button>
+                    <div class="dropdown-menu bg-dark-2" aria-labelledby="ddown_dc">
+                        <a class="dropdown-item p-1 bg-dark-4 text-white" href="/start/dc">
+                            <div class="row" title="Start the Discord Bot.">
+                                <div class="col-3"><i class="fal fa-play pl-2"></i></div>
+                                <div class="col-9">Run Bot</div>
+                            </div>
+                        </a>
+                        <a class="dropdown-item p-1 bg-dark-4 text-white" href="/{{ stringtable['lang'] }}/discord/status">
+                            <div class="row" title="Check the Discord Bot.">
+                                <div class="col-3"><i class="fal fa-laptop-medical pl-2"></i></div>
+                                <div class="col-9">Bot Status</div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <i class="text-white-50"><i class="fal fa-clock"></i> {{ dc_start_time }}</i>
             <hl><div></div></hl>
         </div>
     </div>
@@ -139,7 +139,7 @@
             <div class="col-12 p-2">
                 <div class="card card-body bg-dark text-white">
                     <h2>The Valkyrie Bot</h2>
-                    <p class="mb-0">
+                    <p class="mb-0 p-2">
                         The Valkyrie Bot is a project created by <a class="text-warning" href="https://valky.dev/en">Valky Fischer</a>,
                         designed to provide functionality for Discord and Twitch communities. It handles and executes
                         all tasks, while it aims to be versatile and user-friendly, suitable for various communities

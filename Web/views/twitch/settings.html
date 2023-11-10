@@ -1,0 +1,117 @@
+{% extends "base.html" %}
+
+{% block custom_css %}
+{% endblock %}
+
+{% block content %}
+<form method="POST">
+<div class="row">
+    <div class="text-right col-4 pt-2">
+        <h1 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Settings</h1>
+        <hl><div></div></hl>
+        {% include 'parts/megalink.html' %}
+    </div>
+    <div class="text-left col-8">
+        <div class="row">
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <h2>Twitch Bot</h2>
+                    <p class="mb-0 p-2">
+                        The Twitch Bot uses two separate accounts, where as the Bot will be used to send messages to
+                        the chat. The User will be used to get the current stream status, current game, and current
+                        channel point rewards.
+                    </p>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-0">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Twitch Basic</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-1">
+                                        <input type="text" name="tw_channel" id="tw_channel" class="form-control form-control-sm validate text-white" value="{{ config['twitch']['channel'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="tw_channel">Twitch Channel</label>
+                                    </div>
+                                </div>
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-1">
+                                        <input type="text" name="tw_prefix" id="tw_prefix" class="form-control form-control-sm validate text-white" value="{{ config['twitch']['prefix'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="tw_prefix">Twitch Command Prefix</label>
+                                    </div>
+                                </div>
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-1">
+                                        <input type="text" name="tw_api" id="tw_api" class="form-control form-control-sm validate text-white" value="{{ config['twitch']['api_uri'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="tw_api">Twitch API</label>
+                                    </div>
+                                </div>
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-1">
+                                        <input type="text" name="tw_redr" id="tw_redr" class="form-control form-control-sm validate text-white" value="{{ config['twitch']['redirect_uri'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="tw_redr">Redirect URI</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white pb-0">
+                    <div class="row">
+                        <div class="text-right col-4 pt-2">
+                            <h3 class='u-margin-bottom-md ml-3 mr-3 text-warning'>Twitch Credentials</h3>
+                            <hl><div></div></hl>
+                        </div>
+                        <div class="text-left col-8">
+                            <div class="row">
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-1">
+                                        <input type="text" name="user_id" id="user_id" class="form-control form-control-sm validate text-white" value="{{ config['twitch']['user']['client_id'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="user_id">User - Client ID</label>
+                                    </div>
+                                </div>
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-1">
+                                        <input type="password" name="user_secret" id="user_secret" class="form-control form-control-sm validate text-white" value="{{ config['twitch']['user']['client_secret'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="user_secret">User - Client Secret</label>
+                                    </div>
+                                </div>
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-1">
+                                        <input type="text" name="bot_id" id="bot_id" class="form-control form-control-sm validate text-white" value="{{ config['twitch']['bot']['client_id'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="bot_id">Bot - Client ID</label>
+                                    </div>
+                                </div>
+                                <div class="text-left col-6">
+                                    <div class="md-form form-sm mt-1">
+                                        <input type="password" name="bot_secret" id="bot_secret" class="form-control form-control-sm validate text-white" value="{{ config['twitch']['bot']['client_secret'] }}" required />
+                                        <label data-error="wrong" data-success="right" for="bot_secret">Bot - Client Secret</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-12 p-2">
+                <div class="card card-body bg-dark text-white">
+                    <div class="text-right">
+                        <button name="submit" type="submit" class="btn btn-outline-warning">Save <i class="fas fa-edit ml-1"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</form>
+
+{% endblock %}
+
+{% block custom_js %}
+{% endblock %}
