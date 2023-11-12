@@ -42,7 +42,7 @@
                                 {% for emote in guild_emojis %}
                                 {% if loop.index0 < 39 %}
                                     {% if emote.url %}
-                                    <img src="{{ emote.url }}" alt="" class="img-fluid" height="32px" width="32px" />
+                                    <img src="{{ emote.url }}" title="{{ emote.name }}" alt="{{ emote.name }}" class="img-fluid" height="32px" width="32px" />
                                     {% endif %}
                                 {% endif %}
                                 {% if loop.index0 == 39 %}

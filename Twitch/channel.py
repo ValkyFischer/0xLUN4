@@ -70,7 +70,7 @@ class Channel:
             if emote.get('name') not in self.emotes:
                 if emote.get('tier') == '1000':
                     self.emotes.append(emote.get('name'))
-                    self.emotes_raw.append(emote)
+                self.emotes_raw.append(emote)
         self.logger.info(f'Twitch Emotes | {len(self.emotes)}')
         
         # get the followers of the channel

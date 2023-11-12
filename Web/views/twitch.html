@@ -38,7 +38,7 @@
                             Channel Emotes:<br>
                             {% for emote in emotes %}
                                 {% if loop.index0 < 19 %}
-                                    <img src="{{ emote['images']['url_4x'] }}" alt="{{ emote['name'] }}" class="img-fluid" height="32px" width="32px" />
+                                    <img src="{{ emote['images']['url_4x'] }}" alt="{{ emote['name'] }}" title="{{ emote['name'] }}" class="img-fluid" height="32px" width="32px" />
                                 {% endif %}
                                 {% if loop.index0 == 19 %}
                                     <i class="fal fa-plus-hexagon fa-2x p-1 white-50" style="position: absolute;" title="..and some more!"></i>
